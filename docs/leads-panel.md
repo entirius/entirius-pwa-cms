@@ -1,4 +1,10 @@
-# Leads panel
+# CRM panel
+
+The panel is called **CRM** (menu, titles, breadcrumbs; `panels.leads` in both languages) and its screens live under
+`/crm/...`. Every old `/leads/...` address redirects there with the rest of the path and the query (one catch-all
+route at the end of `src/router/index.js`). What did not change: the panel id `leads` (`VUE_APP_PANELS`), the route
+names, `src/views/Leads`, the stores, the access areas and the API (`api/leads/v2/`). Forms → Leads (contact-form
+leads, `/forms/leads`) is another thing and keeps its name.
 
 Salesperson screens for django-leads + django-communicator, mobile first (one thumb at 390 px), desktop =
 same screens in two columns (`src/views/Leads/index.vue`, CSS grid only). One panel for both backends (there is no
@@ -14,19 +20,19 @@ from 1440 px (below that it takes the full width) and lights Companies; the boar
 gate in-view with `isModuleEnabled` — never map them in `MODULE_TO_PANEL`. Every leads-family call takes the
 channel from `src/stores/leadsChannel.js` (`VUE_APP_LEADS_CHANNEL`, default `default-europe`), never
 `VUE_APP_CHANNEL`. Review reads its draft by id (`review/<id>/`, any status).
-The thread view opens the newest thread of `leads.Company:<id>` (closed or not); older threads sit behind one "Earlier conversations" expander (first `threads/` page, more pages on demand, a row's detail loads with the row so its subject and recipient are readable collapsed) that badges an undecided opt-out; a reply that landed before our newest mail expands that section and opens its thread. A reply that sits in an older thread is marked ("The reply is in this thread") and scrolled into view on arrival (the bell carries only `subject_ref`). A waiting bubble shows no clock of its own: it states `sendState(next_slot)` like the Inbox (`src/utils/leadsTime.js`); a reply's quoted history (from its first `>` line) folds behind a toggle. `/leads/inbox` is one list of every conversation of the channel — one row per `subject_ref` (a company, or any other ref), never one per technical thread (`conversations/`: the newest thread's row, state/draft/waiting/reply from any of its threads, `thread_count > 1` as a quiet "N conversations" hint; 20 per page, a 30 s poll like the bell) behind four `FilterChip`s whose counts come with the list (`counts`): All · Drafts · Waiting · Replies — Drafts is the default while drafts wait. A row keeps one layout and one marker (`InboxRow.vue`; the chip decides it for a conversation in several states): a draft opens Review (the row's draft, even from an older thread, "To:" its own recipient), a waiting mail shows a "Scheduled" badge with `sendState(next_slot)` as its tooltip and Send now while `canSendNow`, a reply its first own line. Other rows open the company card, and a conversation without a company opens its newest thread at `/leads/conversations/:id`. The bell falls back to that view for an unmapped `subject_ref`. The empty Drafts filter keeps the old empty state ("N scheduled, <state>", `inbox-empty`), and the chip bar is `inbox-summary` — both are the emporium `InboxPage` contract. Activity messages are service strings — `activityText` (`src/utils/leadsLabels.js`) turns the known shapes into sentences. Config problems of the screen
+The thread view opens the newest thread of `leads.Company:<id>` (closed or not); older threads sit behind one "Earlier conversations" expander (first `threads/` page, more pages on demand, a row's detail loads with the row so its subject and recipient are readable collapsed) that badges an undecided opt-out; a reply that landed before our newest mail expands that section and opens its thread. A reply that sits in an older thread is marked ("The reply is in this thread") and scrolled into view on arrival (the bell carries only `subject_ref`). A waiting bubble shows no clock of its own: it states `sendState(next_slot)` like the Inbox (`src/utils/leadsTime.js`); a reply's quoted history (from its first `>` line) folds behind a toggle. `/crm/inbox` is one list of every conversation of the channel — one row per `subject_ref` (a company, or any other ref), never one per technical thread (`conversations/`: the newest thread's row, state/draft/waiting/reply from any of its threads, `thread_count > 1` as a quiet "N conversations" hint; 20 per page, a 30 s poll like the bell) behind four `FilterChip`s whose counts come with the list (`counts`): All · Drafts · Waiting · Replies — Drafts is the default while drafts wait. A row keeps one layout and one marker (`InboxRow.vue`; the chip decides it for a conversation in several states): a draft opens Review (the row's draft, even from an older thread, "To:" its own recipient), a waiting mail shows a "Scheduled" badge with `sendState(next_slot)` as its tooltip and Send now while `canSendNow`, a reply its first own line. Other rows open the company card, and a conversation without a company opens its newest thread at `/crm/conversations/:id`. The bell falls back to that view for an unmapped `subject_ref`. The empty Drafts filter keeps the old empty state ("N scheduled, <state>", `inbox-empty`), and the chip bar is `inbox-summary` — both are the emporium `InboxPage` contract. Activity messages are service strings — `activityText` (`src/utils/leadsLabels.js`) turns the known shapes into sentences. Config problems of the screen
 (outgoing SMTP) show as `ConfigBanner code="…"` and the AI toolbox state as `AiToolboxHint` (`src/components/ConfigHealth/`),
 both fed by the store `configHealth` — see `docs/config-health.md`. `data-testid`s are the contract of the
 emporium page objects (`src/entirius_tests/cms_pages/`) — rename both together.
 
-Desktop screens (≥ 1024 px; below that `DesktopOnly.vue` shows "Open on a desktop"): `/leads/board` (stage columns,
+Desktop screens (≥ 1024 px; below that `DesktopOnly.vue` shows "Open on a desktop"): `/crm/board` (stage columns,
 drag or the card's stage select → `companies/<id>/transition/`, refused move snaps back; rule badges from
-`GET rules/` — the stages payload carries none), `/leads/import` (`POST imports/`, polls the batch).
+`GET rules/` — the stages payload carries none), `/crm/import` (`POST imports/`, polls the batch).
 Settings (`meta.page`: full width, one scroller, no DesktopOnly wall; every section on PageLayout + PageHeader, its tables DataTables):
-`/leads/settings` lists the sections, each its own route — `settings/stages` (renames and moves wait for the header Save; reorder = `PATCH stages/<id>/ {order}`
+`/crm/settings` lists the sections, each its own route — `settings/stages` (renames and moves wait for the header Save; reorder = `PATCH stages/<id>/ {order}`
 per moved stage — there is no bulk order endpoint; delete 409 inline), `settings/templates` (+ `/:id`),
-`settings/sequences`, `settings/sending`, `settings/company-types` ("Company types"; the old `settings/lead-types` redirects there; the Stages pattern: rename, reorder by PATCH `order`, deactivate — all on the header Save — delete 409 inline; the code is fixed after create); a section leads back to the hub (the PageHeader `back`; a template goes back to the template list). Lead types are one list for the whole panel — `src/stores/leadTypes.js` (loaded once — a failed load is retried, logout resets it in `App.vue` together with the Inbox company-name cache `src/utils/leadsCompanyNames.js` — `label(code)`, `UNKNOWN` built in): Board chips = the active types in order, the company card's type select, the add-lead form and the template Audience (list column + edit select, shown only with the `leads` module; an audience a communicator does not send is never sent back). `/communicator/*` and `/leads/stages`
-redirect there; the route names (`CommunicatorTemplates`, `CommunicatorSettings`, `LeadsStages`, …) did not change. `/leads/companies/:id` is the company card on every width (`Company.vue`, the name as H1, the domain and the stage /
+`settings/sequences`, `settings/sending`, `settings/company-types` ("Company types"; the old `settings/lead-types` redirects there; the Stages pattern: rename, reorder by PATCH `order`, deactivate — all on the header Save — delete 409 inline; the code is fixed after create); a section leads back to the hub (the PageHeader `back`; a template goes back to the template list). Lead types are one list for the whole panel — `src/stores/leadTypes.js` (loaded once — a failed load is retried, logout resets it in `App.vue` together with the Inbox company-name cache `src/utils/leadsCompanyNames.js` — `label(code)`, `UNKNOWN` built in): Board chips = the active types in order, the company card's type select, the add-lead form and the template Audience (list column + edit select, shown only with the `leads` module; an audience a communicator does not send is never sent back). `/communicator/*` and `/crm/stages`
+redirect there; the route names (`CommunicatorTemplates`, `CommunicatorSettings`, `LeadsStages`, …) did not change. `/crm/companies/:id` is the company card on every width (`Company.vue`, the name as H1, the domain and the stage /
 lead-type selects in the PageHeader meta; tabs via `?tab=` overview | contacts | timeline ("History": the thread view
 and the company's events) | tasks | intel; a phone opens History, a desktop Overview); notification jumps open
 `?tab=timeline`.
@@ -53,7 +59,7 @@ is the one slot the Inbox rows, the Review confirmation (looked up after accept)
 Every one is dormant on an older backend: the nav entry, the hub section and the route (`meta.moduleVersion`, checked
 by the guard with `isModuleAtLeast`) need 0.5.0; the in-view parts ask `outboundOn(munin, module)`
 (`src/utils/leadsOutbound.js`, also the reply-type tones, the mailbox states and `problemText` for a draft's
-`blocker`). `/leads/approvals` (desktop entry, nav `badge: "approvals"` from `src/stores/approvals.js`, a 30 s poll the
+`blocker`). `/crm/approvals` (desktop entry, nav `badge: "approvals"` from `src/stores/approvals.js`, a 30 s poll the
 panel wrapper starts with read on `communicator.review`) is the only cross-channel screen: the approval endpoints carry
 no channel; a row of the active channel opens Review, another channel's row a drawer with its own Approve / Reject;
 bulk calls go in chunks of 100. Settings sections (`LEADS_SETTINGS_SECTIONS`, one hub card per `group`):
@@ -71,12 +77,12 @@ the draft's `blocker` and disables Send with it, a contact row opens `SendCheckD
 
 Every part is dormant on an older backend (`outboundOn(munin, "leads")`, routes `meta.moduleVersion`); tasks also
 need `isModuleInstalled("todo")` and read on `todo.tasks` (`src/api/todo/api.js`, the leads JWT client, `tz` = the
-channel's time zone). `/leads/today` (no area: its blocks gate themselves) lists the caller's tasks by chip (Due now
+channel's time zone). `/crm/today` (no area: its blocks gate themselves) lists the caller's tasks by chip (Due now
 = `today/` for "Mine", else `tasks/?due=overdue` + `?due=today`; Upcoming, No date, Done, Cancelled = `tasks/` pages;
 a cancelled row says who, when and why (`cancelledLine`, `views/Leads/tasks.js`; the date stands once, the due badge
 just says "Cancelled"), reopens, never edits; the company card's Cancelled tasks are the same row) and the
 drafts / replies waiting (links to the Inbox chips, `?filter=draft|replied`). The company card's Tasks tab lists the 20
-newest cancelled tasks under the open ones (U5); every History line of the card ends with its author (`activityActor`). `/leads/companies` is a page: search,
+newest cancelled tasks under the open ones (U5); every History line of the card ends with its author (`activityActor`). `/crm/companies` is a page: search,
 owner chips, every filter (`attr.<key>` for `show_in_list` attributes), the sort (allowlist: `last_activity_at`,
 `score_points`, `owner__username`) and the page live in the URL; the API pages (20) and filters; bulk "Assign owner"
 (`companies/assign/`). The card adds Details (owner from `assignable-users/`, origin, custom fields; a PATCH of what
@@ -90,40 +96,27 @@ with nothing typed, says "showing X of Y" in a line under the picker (U6; a live
 `settings/custom-fields` (`?entity=` company | contact | deal; the key is fixed after create, a 409 on the kind locks
 it; reorder = one PATCH `order` per moved row), `settings/scoring` (one active profile; Save creates it) and
 `settings/rules` (conditions from `GET fields/`); Scoring and Rules share `ConditionRow.vue` (ops per kind, "is empty"
-hides the value). `/leads/reports` (desktop) is the funnel as three tables, origin and period filters. `/leads/history` (desktop, U11) is
+hides the value). `/crm/reports` (desktop) is the funnel as three tables, origin and period filters. `/crm/history` (desktop, U11) is
 the channel journal (`GET activities/`, server-paged): when, who, what, on what (company link · deal), reason in its own
-column (left out of the sentence; a coded one — `reply:not_now`, `manual`, `wrong_person` — as its label, a typed one as
-typed); filters person (`activities/actors/`: one entry per person, whose "<person> via ai-crm (…)" entries come with
-it, and one Import for every batch), kind, period, company (`views/Leads/history.js`); the filters and the page live in the URL (Back from a company card
+column (left out of the sentence; a coded one — `reply:not_now`, `wrong_person` — as its label, a typed one as
+typed); filters person (`activities/actors/`: one entry per person, and one Import for every batch), kind, period, company (`views/Leads/history.js`); the filters and the page live in the URL (Back from a company card
 keeps them) and an older answer never replaces a newer one. Never parse a
 `subject_ref` / `contact_ref` in a view: `src/utils/subjectRef.js` builds and reads them.
-
-## AI CRM (django-leads app `ai_crm`, U10)
-
-`/leads/ai-crm` (`AiCrm.vue`, nav entry above Today, desk only; route `meta.module: "ai_crm"`, area `ai_crm.agent`):
-the day plan of `GET api/ai-crm/v2/admin/<channel>/plan/` (the caller's overdue and today tasks, the drafts and
-replies waiting — the same work as Today, numbered) and a conversation through `POST chat/` (`source: "cms"`, the UI
-language, the last 10 turns as `history`). The agent answers with its reply, the fresh plan and the open proposals; a
-proposal (lost deal, Do not contact, sending a draft) shows Confirm / Cancel, which call `tools/confirm_proposal/` or
-`tools/reject_proposal/`. The conversation lives in the page only. Every change is recorded by the backend as
-"<user> via ai-crm (cms)". Plan items are `task`, `drafts` or `replies`; a plan that fails to load is an error state
-with Try again (never "nothing for today"), and the proposals load apart, so their failure keeps the plan. Client:
-`src/api/aiCrm/api.js`.
 
 ## Deals (django-leads 0.5.0)
 
 Dormant on an older backend like the CRM screens (`meta.moduleVersion`, nav `minVersion`); deals ride
-`leads.companies`, deal stages `leads.settings` — no new area. `/leads/deals` (`Deals.vue`, every width, nav entry 4
+`leads.companies`, deal stages `leads.settings` — no new area. `/crm/deals` (`Deals.vue`, every width, nav entry 4
 and the phone bar) lists `GET deals/`: search, owner chips (default Mine), status (default Open; cleared = `kind=all`),
 deal stage and the expected-close range (`close_from` / `close_to`, written as one change), the sort (allowlist:
 `expected_close_date`, `value_one_off`, `value_recurring`) and the page live in the URL; a phone shows deal and
-stage only (every other column has a `priority`). `/leads/deals/board` (`DealsBoard.vue`, `meta.desktop`; the wall
+stage only (every other column has a `priority`). `/crm/deals/board` (`DealsBoard.vue`, `meta.desktop`; the wall
 links back to the list through `meta.desktopBack`) shows `GET deals/board/` columns (`DealBoardColumn.vue`,
 `DealCard.vue`): count, totals per currency (`deals.js` `totalLines` — one line per currency, never added across),
 the first 25 deals and "Show all" (the list filtered by the stage). Every move — row select, card select, drop, the
 deal card's Mark won / Mark lost / Reopen — goes through `useDealMove.js`: a lost stage opens `LostReasonDialog.vue`
 (a reason is required; the lost stage is picked only when the channel has more than one), a refusal or a cancelled
-reason snaps a dropped card back. `/leads/deals/:id` (`Deal.vue`) is the deal card: kind badge, company link and stage
+reason snaps a dropped card back. `/crm/deals/:id` (`Deal.vue`) is the deal card: kind badge, company link and stage
 select in the header; Details (`DealDetails.vue`: values, currency, period, expected close, contact, owner, custom
 fields of entity `deal`; a value without a currency is refused on Currency); Tasks (`tabs/TasksTab.vue` with `deal`:
 `subject_ref` / `subject_label` from the deal); History (`GET deals/<id>/activities/`, moves in stage labels). The
@@ -149,32 +142,6 @@ the deal card, on Add company and on the company card is `goBackTo(router, fallb
 (`composables/useNav.js`): back in the history (the list with its tab and filters), else the fallback. The board and
 the company card's Deals tab list no archived deal. History reads `deal_archived` / `deal_restored`.
 A read-only role sees neither Archive nor Restore (`mutates`).
-
-## Potential dot (django-leads with `potential`, U2)
-
-`PotentialDot.vue` (colour, ★ for a manual colour, the reason from `potential.js` as its title) on the company list
-(`CompanyList.vue`: dot, legend, filter `potential`) and on the card (`Company.vue`, with the reason). A click opens
-`PotentialDialog.vue` (`POST companies/<id>/potential/` with a required `comment`, `DELETE` = back to the rules).
-`PotentialSettings.vue` (route `LeadsPotential`, Settings → Sales process) reads and PATCHes `channel/` `potential`.
-Today shows the task of source `leads.potential.came_back` as "Come back to <company>". Every piece hides itself
-while the company rows carry no `potential` field (an older leads).
-## Prospecting (django-leads app `prospecting`, U3)
-
-New people to contact at a company whose only person was the wrong one or opted out. Gated by the module
-(`requiresModule: "prospecting"`, route `meta.module`) and the areas `prospecting.people` / `prospecting.companies`.
-
-- Nav entry **Prospecting** (desk only) opens `/leads/prospecting/people` — a route with an area, so a role without
-  `prospecting.people` does not see the entry. The page is People (`LeadsProspectingPeople`: candidates of every
-  company, status filter, waiting first, 20 per page — the service sends up to 200 in one answer). There is no
-  Companies tab: finding new companies is not built.
-- Company card tab **People** (`tabs/PeopleTab.vue`, shown with the module and `prospecting.people`, inside
-  `ReadonlyArea` of that area, like Tasks): the candidates of this company, the badge counts the waiting ones.
-- `prospecting/CandidateList.vue` (both places): name, job title, address, the four checks (role, address known,
-  still works there, address works) each `OK` or `No information` with source and date or the number of tries, the
-  missing confirmations in one line, Accept (a contact in leads; disabled without an address) and Reject. An Accept the
-  service refuses because the address was erased, or the company is not in this channel, says so in words.
-- Client: `src/api/prospecting/api.js` (the leads JWT client, the Leads channel). `POST_Search(subjectRef)` sends
-  `{ subject_ref }` only.
 
 ## Supervisor's walk before the owner's acceptance (plan 34)
 
@@ -266,7 +233,7 @@ One rule: the same thing looks the same everywhere.
   `certificate` answer has its sentence and its next step.
 - **Unknown address**: one catch-all route (`NotFound`, `src/views/NotFound/NotFound.vue`) for the whole CMS; the global
   guard gives it the panel its first path segment names (the shell's side menu and crumbs follow), and the page links
-  to that panel's start (for `/leads/…`: Today). Company types live at `settings/company-types`; `settings/lead-types`
+  to that panel's start (for `/crm/…`: Today). Company types live at `settings/company-types`; `settings/lead-types`
   redirects (route name `LeadsLeadTypes` and the API names stay).
 - **Fresh card**: a confirmed opt-out (newest or earlier conversation) emits `changed`; the card reloads its contacts,
   History and tasks.

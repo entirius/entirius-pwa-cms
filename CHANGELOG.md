@@ -6,69 +6,52 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- The Leads panel is called "Sales CRM" wherever people read it (menu, phone bar, headings, module list, import
-  texts; en + pl). The `leads` panel id, the `/leads/...` addresses and the i18n keys stay, so old links keep working;
-  the contact-form leads (Forms → Leads) keep their name.
-- Leads panel, deals: the list has Active and Archived tabs under its header instead of the "Archived" toggle
+- The Leads panel is called "CRM" wherever people read it (menu, phone bar, headings, breadcrumbs, module list,
+  import texts; en + pl), and its screens live at `/crm/...`: every old `/leads/...` address redirects, with the rest
+  of the path and the query. The `leads` panel id, the route names, the i18n keys and the API stay; the contact-form
+  leads (Forms → Leads) keep their name.
+- CRM, deals: the list has Active and Archived tabs under its header instead of the "Archived" toggle
   button; a won or lost deal shows Archive beside Reopen instead of under the more menu; Back on the deal card and on
   Add company returns to where the person came from (the list with its tab and filters), as the company card does.
-- Leads panel, one shape for one thing: a single actor label ("System", "Import") for History, the company card and
-  cancelled tasks; the potential dot uses the StatusBadge dot; cancelled tasks are the same row on Today and on the
+- CRM, one shape for one thing: a single actor label ("System", "Import") for History, the company card and
+  cancelled tasks; cancelled tasks are the same row on Today and on the
   company card (struck title, who / when / why, Reopen); Back on the company card, Add company and the deal card is
-  `goBackTo`; Prospecting loses its "Companies — coming soon" tab; the candidate list pages at 20.
+  `goBackTo`.
 - Tests: the Deals list suite moves to `tests/unit/views/Leads/DealsList.spec.js` — `Deals.spec.js` and `deals.spec.js`
   were one file on a case-insensitive file system (macOS).
 
 ### Fixed
 
-- Leads panel, Review: Undo after Skip no longer returns to the skipped draft (a skipped draft is never the next one
+- CRM, Review: Undo after Skip no longer returns to the skipped draft (a skipped draft is never the next one
   and is not counted in "Draft n of m"); a second Skip before the next draft opens is ignored.
-- Leads panel, AI CRM: a plan that fails to load shows an error with Try again instead of "Nothing is waiting for you
-  today"; a failed proposals list no longer hides the plan.
-- Leads panel: the Prospecting menu entry follows `prospecting.people`, and the company card's People tab is
-  read-only without write access to it.
-- Leads panel, History: filters and page are in the address (Back from a company card keeps them), and a slower older
+- CRM, History: filters and page are in the address (Back from a company card keeps them), and a slower older
   answer no longer replaces a newer one.
-- Leads panel, Prospecting: Accept names an erased address or a company missing from the channel; a search sends only
-  `subject_ref`; the AI CRM no longer handles a `return` plan item.
 - Polish: transaction / szkic everywhere in the Leads panel (no "deal", "draft", "Szansa sprzedaży").
 
 ### Added
 
-- Leads panel, Review on a phone: the first draft says once, above the card, that it can be swiped — "← Skip" and
+- CRM, Review on a phone: the first draft says once, above the card, that it can be swiped — "← Skip" and
   "Send →" with Got it (en + pl). Got it or the first swipe hides it for good in that browser; a desk never shows it.
-- Leads panel, Review: Skip can be undone — an Undo button beside "Skipped — this mail will not be sent" for 4 s
+- CRM, Review: Skip can be undone — an Undo button beside "Skipped — this mail will not be sent" for 4 s
   (en + pl); the skip reaches communicator only after that (or at the next Skip or Send, or on leaving the screen), so
   Undo simply reopens the draft. No API change.
-- Leads panel, potential dot (django-leads with `potential`, U2): a green / orange / red dot beside every company on
-  Companies, with a three-line legend and a "Potential" filter (green, orange, red, no dot; `?potential=` in the
-  address); the dot's hover says why ("Reply: Not now · back 15.02.2027"), ★ marks a colour set by hand. A click on the
-  dot, on the list or on the company card (dot with its reason under the title), opens the manual dialog: three
-  colours, a required Reason (Save stays greyed until it is written), an optional come-back day and "Back to
-  automatic". Settings → Potential edits the thresholds (silence until red, skipped draft and red come-back days, the
-  colour of each reply type). Today names the come-back task "Come back to <company>"; History reads the dot's changes
-  and a skipped draft. Hidden while leads sends no `potential`.
-- Leads panel, AI CRM (the `ai_crm` app of django-leads): a nav entry above Today (desk only, shown when munin reports `ai_crm` and the
-  `ai_crm.agent` area is readable) with the day plan and a conversation with the agent — "done 1: called" closes the
-  task, notes, next tasks and deal stages are written by the agent; a lost deal, Do not contact or sending a draft is
-  confirmed with Confirm / Cancel first. English and Polish.
-- Leads panel: a possible opt-out can be marked "Not an opt-out" beside Confirm opt-out (django-communicator
+- CRM: a possible opt-out can be marked "Not an opt-out" beside Confirm opt-out (django-communicator
   `dismiss-optout`, no confirm); the conversation, the card's contacts and History reload, and the reply loses its
   opt-out mark. The Next line of a possible opt-out reads "nothing is sent until you confirm the opt-out or mark it as
   not one".
-- Leads panel, deal archive (django-leads with deal archiving): a won or lost deal is archived from its card's more
+- CRM, deal archive (django-leads with deal archiving): a won or lost deal is archived from its card's more
   menu and restored from the archived card (read-only, one Restore); the Deals list shows the archived deals behind its own
   "Archived" button (a toggle kept in the address, `?archived=1`), the status filter stays Open / Won / Lost. The board
   and the company card list no archived deal; History reads "Deal archived" and "Deal restored". An older backend
   shows no Archive on the card.
 - `ActionBar`: an action's `pressed` makes its text button a toggle (`aria-pressed`, the `surface-hover` fill).
-- Leads panel, deals (django-leads 0.5.0): Deals (nav entry, also in the phone bar) lists the deals with search, owner
+- CRM, deals (django-leads 0.5.0): Deals (nav entry, also in the phone bar) lists the deals with search, owner
   chips, status, stage and expected-close filters and a stage select on every row; at a desk a board shows one column
   per deal stage with its count and totals per currency and moves deals by drag and drop. A lost stage always asks
   the reason first. The deal card shows the values, contact, owner, custom fields, tasks and history, with Mark won,
   Mark lost, Reopen and delete. The company card gains a Deals tab and "Open deal"; Settings gains Deal stages
   (open, won, lost). A bell alert about a deal opens its card.
-- Leads panel, CRM screens (django-leads 0.5.0; tasks with django-todo): Today is the panel root — the caller's
+- CRM, CRM screens (django-leads 0.5.0; tasks with django-todo): Today is the panel root — the caller's
   tasks by chip (Due now, Upcoming, No date, Done) and owner, the drafts and replies waiting, Add task and Mark done
   with an outcome. Companies is a full list page (filters, owner chips, custom-field columns, sort and page in the URL,
   bulk "Assign owner"; Board and Import are its page actions). The company card is one card on a phone and a desk:
@@ -76,7 +59,7 @@ All notable changes to this project will be documented in this file.
   cancel), Write mail (a hand-written mail; the gate's refusal is shown) and History (the mail thread and the
   company's events). Settings gains Custom fields (company, contact, deal), Scoring and Rules (conditions); Reports
   shows the funnel as tables. New access area `todo.tasks`.
-- Leads panel, outbound screens (django-communicator / django-leads 0.5.0; an older backend keeps today's panel):
+- CRM, outbound screens (django-communicator / django-leads 0.5.0; an older backend keeps today's panel):
   Approvals (desktop nav entry with a badge of waiting drafts) lists the drafts of every channel oldest first with
   their problem, approves or rejects them in bulk (a reason for a rejection, 100 ids per call, refused rows stay
   selected with their reason) and keeps a log; Settings → Mailboxes (one per salesperson plus a default, write-only
@@ -84,7 +67,7 @@ All notable changes to this project will be documented in this file.
   24 h / 7 d, the automatic-pause policy, the pause log), Automatic moves (the stage per event and, per reply type,
   the sequence, the alert and the review flag), Reply classification (AI profile) and Do not contact (reach, source,
   add, remove, check an address). The Settings hub groups its sections (Sales process · Automation · Sending).
-- Leads panel: a reply shows its type (and "Needs review", the return date, the confidence and what happens next)
+- CRM: a reply shows its type (and "Needs review", the return date, the confidence and what happens next)
   in the Inbox row and the conversation; Review says why a draft cannot go out before Send and the last reply's type;
   a contact gets "Why no mail?"; Import can start the automation on new companies; a sequence can be turned off and
   one can start automatically.
@@ -101,16 +84,16 @@ All notable changes to this project will be documented in this file.
 
 ### Changed
 
-- Leads panel: the Deals list always shows the "Archived" button, also over an empty list. The button that leaves a
+- CRM: the Deals list always shows the "Archived" button, also over an empty list. The button that leaves a
   dialog with an action of its own reads "Cancel" (Log call, task dialogs, Open deal, the lost reason, Write mail,
   Check an address); "Close" stays on dialogs with nothing to do. Confirm opt-out is hidden for a read-only role.
-- Leads panel, the owner's decisions after the fourth walk: every mail bubble says "From <address>" (the sender of a
+- CRM, the owner's decisions after the fourth walk: every mail bubble says "From <address>" (the sender of a
   reply, the mailbox our mail leaves from; also beside the recipient in Review; an older communicator shows no line);
   Log call asks only for the Outcome; Do not contact's "Add to the list" offers Reach (This channel / All channels,
   sent as `scope`; an older communicator that refuses the field gets the entry without it); the company card lists
   every earlier conversation from the start, each opening in place, so it shows as many conversations as its Inbox row
   counts.
-- Leads panel, acceptance fixes of the fourth walk: a reply's "Next:" line says what happens to the mail — no more
+- CRM, acceptance fixes of the fourth walk: a reply's "Next:" line says what happens to the mail — no more
   mail after a confirmed opt-out, nothing sent until a possible opt-out is decided, the sequence stopped, resuming on
   a date, or paused until resumed; Review confirms Skip and Send with one line above the next draft (no toast, no
   full-screen panel, the next draft opens at once) and counts its queue in the Inbox's order; Approvals puts a bulk
@@ -119,16 +102,16 @@ All notable changes to this project will be documented in this file.
   deleting a deal stage says up front how many deals stand in it; Templates says why there is no Add; smaller
   wording and layout fixes (Today's Done chip, the Inbox's empty pane, Why no mail?, the company Overview, a
   conversation without a company, Polish "wiadomość"). `MobileFilterPanel` gives a select's floating label room.
-- Leads panel, acceptance fixes of the third walk: Skip names the action that leaves a draft unsent (Review and
+- CRM, acceptance fixes of the third walk: Skip names the action that leaves a draft unsent (Review and
   Approvals) and a skipped or withdrawn draft is one closed line in the conversation; every bulk action says how many
   rows it changed and did not, refused rows keep their reason and their tick; a recipient who may not be mailed and a
   refused server certificate read in words; one not-found page for every unknown address, inside the shell of its
-  panel, and Company types at `/leads/settings/company-types` (the old address redirects); a confirmed opt-out
+  panel, and Company types at `/crm/settings/company-types` (the old address redirects); a confirmed opt-out
   reloads the company card; one phrase per date of a pause; History in one language; a waiting mail's badge reads
   Scheduled; row switches read Active / Off; the date picker's Escape closes only the calendar and its week starts on
   Monday; Today's rows open their company on a phone; smaller fixes on Inbox, Contacts, Stages, Rules, Deals,
   Mailboxes and Sending health.
-- Leads panel, acceptance fixes of the second walk: a company card and a conversation take the full width below 1440 px
+- CRM, acceptance fixes of the second walk: a company card and a conversation take the full width below 1440 px
   and the Inbox column keeps its chip; a contact's mail badge, Today's replies that need review, Reply, the
   hand-written tag, the rule runs and the import report read the new leads and communicator fields; the deal board
   takes every drop (also after a closed reason dialog), a card moves by "Move to…"; every date picker opens its
@@ -136,7 +119,7 @@ All notable changes to this project will be documented in this file.
   Review goes on to the next draft in the Inbox order and says what happened to a draft that left the queue; the words
   Conversation, Company type and Later; tasks stacked on a phone; Sending health, Templates, Mailboxes, the read-only
   notice and the select's clear button fixed.
-- Leads panel, acceptance fixes for desk work and administration: Test login says each result in words with what
+- CRM, acceptance fixes for desk work and administration: Test login says each result in words with what
   to do next; the pause log names the person ("Automatic" for an automatic pause); a rule's last runs show the
   company by name and the result in words; Reports opens with the Funnel and shows dates in the UI language; Import
   takes an owner, lists the custom-field columns and reports the ignored columns and the companies the automation
@@ -145,7 +128,7 @@ All notable changes to this project will be documented in this file.
   Approvals keeps its bulk bar in sight above the pager; Today's drafts counter and a draft opened from Approvals lead
   back to Approvals; one word for a company and the
   board throughout.
-- Leads panel, acceptance fixes for a salesperson's day: History reads every event in the interface language (stage
+- CRM, acceptance fixes for a salesperson's day: History reads every event in the interface language (stage
   moves in the channel's stage names, reply types in words) and refreshes after a mail, a call or a task; an inbound
   reply has Reply (quoted, "Re:" subject, the sender as To); Confirm opt-out asks first; message and thread states are
   badges; a hand-written mail is never labelled Follow-up. Tasks can be edited and cancelled with a reason from Today,

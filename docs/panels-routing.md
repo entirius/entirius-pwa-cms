@@ -33,7 +33,7 @@ first area is the read-only default of a route without `meta.area`
 | `pricefighter` | PriceFighter | `/pricefighter/gap` | `scale-balanced` | `pricefighter.decisions`, `pricefighter.rules` |
 | `enricher` | Enricher | `/enrichment` | `wand-magic-sparkles` | `enrichment.rules`, `enrichment.proposals` |
 | `promo` | Promo | `/promo/list` | `tags` | `checkout.discounts` |
-| `leads` | Leads | `/leads/today` (fallback `/leads/companies`) | `inbox` | `leads.companies`, `leads.settings`, `leads.gdpr`, `todo.tasks`, `communicator.review`, `communicator.content`, `communicator.conversations`, `communicator.settings`, `siteintel.audits` |
+| `leads` | CRM | `/crm/today` (fallback `/crm/companies`) | `inbox` | `leads.companies`, `leads.settings`, `leads.gdpr`, `todo.tasks`, `communicator.review`, `communicator.content`, `communicator.conversations`, `communicator.settings`, `siteintel.audits` |
 | `access` | Access | `/access/roles` | `user-shield` | `access.manage` |
 
 This array is static metadata only. Whether a panel is *usable* is decided at
@@ -66,7 +66,7 @@ path prefix and lazy-loaded (`() => import(...)`). Grouped by panel:
 | `/pricefighter/...` | GapTable, Strategies, DecisionHistory |
 | `/enrichment/...` | Review: EnrichmentReview (Proposals) and RunsPage (`runs`, `runs?task=<id>` = one run, its proposals in place) as tabs (`RouteTabs`); EnrichmentStudio RunList + RunView (`studio`, `studio/:uid?step=`); Settings (`settings/…`): Profile, Memory, EnrichmentTemplates List/Edit, EnrichmentSpawnRules List/Edit as tabs; the old `tasks`, `profile`, `memory`, `templates/…`, `spawn-rules/…` paths redirect with their query |
 | `/promo/...` | PromoList/Edit, VoucherDetail |
-| `/leads/...`, `/communicator/*` + `/leads/stages` (legacy redirects) | Inbox, Companies, Company, Review, Thread, Board, Import, Settings and its sections (communicator templates, sequences, sending, stages, lead types); every screen on PageLayout + PageHeader and the boots, with no panel stylesheet of its own |
+| `/crm/...`, `/communicator/*` + `/crm/stages` (legacy redirects) | Inbox, Companies, Company, Review, Thread, Board, Import, Settings and its sections (communicator templates, sequences, sending, stages, lead types); every screen on PageLayout + PageHeader and the boots, with no panel stylesheet of its own |
 | `/change-password`, `/password-reset` | ChangePassword (authenticated), PasswordReset (unauthenticated, from email link) |
 | `/sso/callback` | SsoCallback (unauthenticated, return leg of the optional SSO login; `docs/sso-login.md`) |
 
