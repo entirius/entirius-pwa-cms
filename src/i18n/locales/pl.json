@@ -4676,7 +4676,6 @@
           "header": "rozpoznane po nazwie kolumny",
           "custom_field": "pasuje do pola własnego",
           "content": "rozpoznane po wartościach",
-          "ai": "podpowiedź AI — sprawdź",
           "user": "Twój wybór"
         },
         "reason": {
@@ -4702,7 +4701,9 @@
         },
         "issue": {
           "REQUIRED": "Najpierw wybierz plik.",
-          "TOO_LARGE": "Plik jest większy niż 20 MB.",
+          "TOO_LARGE": "Plik jest za duży (limit to 20 MB; dla .xlsx liczy się też rozmiar po rozpakowaniu).",
+          "TOO_MANY_ROWS": "Plik ma więcej niż 100 000 wierszy — podziel go na mniejsze.",
+          "TOO_MANY_COLUMNS": "Plik ma za dużo kolumn — usuń te, których nie potrzebujesz.",
           "UNSUPPORTED_FORMAT": "Ten typ pliku nie jest obsługiwany — zapisz go jako .xlsx lub .csv (stary .xls też trzeba zapisać jako .xlsx).",
           "ENCODING": "Nie rozpoznano kodowania tekstu — zapisz plik jako CSV UTF-8 albo .xlsx.",
           "UNREADABLE": "Nie da się odczytać pliku — może być uszkodzony.",

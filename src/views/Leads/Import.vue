@@ -28,10 +28,11 @@
           type="file"
           :accept="ACCEPT"
           tabindex="-1"
+          :disabled="sending"
           data-testid="import-file"
           @change="pick"
         />
-        <BasicButton data-testid="import-choose" @click="fileInput.click()">{{ $t("leads.import.choose") }}</BasicButton>
+        <BasicButton data-testid="import-choose" :disabled="sending" @click="fileInput.click()">{{ $t("leads.import.choose") }}</BasicButton>
         <span data-testid="import-file-name">{{ file?.name || $t("leads.import.no_file") }}</span>
       </div>
       <!-- leads >= 0.5.0: the owner of the new companies (me by default); the automation starts on them only when
@@ -165,7 +166,7 @@ const actions = computed(() =>
       onClick: () => router.push({ name: "LeadsCompanyNew" }),
     },
     preview.value && !batch.value
-      ? { key: "other", label: t("leads.import.mapping.other_file"), role: "secondary", mutates: false, testid: "import-other-file", onClick: chooseAgain }
+      ? { key: "other", label: t("leads.import.mapping.other_file"), role: "secondary", mutates: false, testid: "import-other-file", disabled: sending.value, onClick: chooseAgain }
       : null,
     preview.value
       ? {
@@ -273,19 +274,27 @@ async function poll(run) {
   else timer = setTimeout(() => poll(run), POLL_MS);
 }
 
+// The import is on its way to the server: another file now would drop the answer of one that runs anyway.
+const sending = ref(false);
+
 async function upload() {
   const run = runId;
+  clearTimeout(refreshTimer);
+  refreshSeq += 1; // a preview still on its way must not clear this import's error
   error.value = "";
   busy.value = true;
+  sending.value = true;
   try {
     sentRunRules.value = outbound.value && runRules.value;
     const extras = outbound.value ? [runRules.value, ownerId.value] : [];
     const sent = preview.value ? mappingPayload(preview.value.columns, mapping.value) : null;
     const { data } = sent ? await POST_Import(file.value, extras[0], extras[1], sent) : await POST_Import(file.value, ...extras);
+    sending.value = false;
     if (run !== runId) return;
     sentMapping.value = sent;
     batch.value = data;
   } catch (err) {
+    sending.value = false;
     return run === runId ? fail(err) : undefined;
   }
   await poll(run);

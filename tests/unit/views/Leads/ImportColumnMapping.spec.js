@@ -249,6 +249,36 @@ describe("Leads Import — column mapping (U17)", () => {
     expect(wrapper.find(sel("import-check")).attributes("disabled")).toBe("false");
   });
 
+  it("while the import is on its way to the server another file cannot be picked", async () => {
+    let answer;
+    api.POST_Import.mockReturnValue(new Promise((resolve) => (answer = resolve)));
+    api.GET_Import.mockResolvedValue({ data: { id: 41, status: "done", report: [] } });
+    const wrapper = await mountChecked();
+    await wrapper.find(sel("import-upload")).trigger("click");
+    expect(wrapper.find(sel("import-choose")).attributes("disabled")).toBe("true");
+    expect(wrapper.find(sel("import-other-file")).attributes("disabled")).toBe("true");
+    expect(wrapper.find(sel("import-file")).attributes("disabled")).toBeDefined();
+    answer({ data: { id: 41, status: "pending" } });
+    await flushPromises();
+    expect(wrapper.find(sel("import-choose")).attributes("disabled")).toBe("false");
+  });
+
+  it("a preview answering after the import failed does not clear the import's error", async () => {
+    vi.useFakeTimers();
+    const wrapper = await mountChecked();
+    let answer;
+    api.POST_ImportPreview.mockReturnValue(new Promise((resolve) => (answer = resolve)));
+    api.POST_Import.mockRejectedValue({ response: { status: 400, data: { detail: "Import refused" } } });
+    setControl(wrapper, "mapping-field-5", "phone");
+    await vi.advanceTimersByTimeAsync(500);
+    await wrapper.find(sel("import-upload")).trigger("click");
+    await flushPromises();
+    expect(wrapper.get(sel("import-error")).text()).toContain("Import refused");
+    answer({ data: PREVIEW });
+    await flushPromises();
+    expect(wrapper.get(sel("import-error")).text()).toContain("Import refused");
+  });
+
   it("a full name chosen with a first or last name: both rows say so, Import waits, no refresh is asked", async () => {
     vi.useFakeTimers();
     const wrapper = await mountChecked();

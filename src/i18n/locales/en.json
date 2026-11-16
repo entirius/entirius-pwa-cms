@@ -4677,7 +4677,6 @@
           "header": "recognised by the column name",
           "custom_field": "matches a custom field",
           "content": "recognised by the values",
-          "ai": "suggested by AI — check it",
           "user": "your choice"
         },
         "reason": {
@@ -4703,7 +4702,9 @@
         },
         "issue": {
           "REQUIRED": "Choose a file first.",
-          "TOO_LARGE": "The file is larger than 20 MB.",
+          "TOO_LARGE": "The file is too large (the limit is 20 MB; for .xlsx the size after unpacking counts too).",
+          "TOO_MANY_ROWS": "The file has more than 100,000 rows — split it into smaller files.",
+          "TOO_MANY_COLUMNS": "The file has too many columns — remove the ones you do not need.",
           "UNSUPPORTED_FORMAT": "This file type is not supported — save it as .xlsx or .csv (an old .xls also needs saving as .xlsx).",
           "ENCODING": "The text encoding of the file is not recognised — save it as UTF-8 CSV or .xlsx.",
           "UNREADABLE": "The file cannot be read — it may be damaged.",
