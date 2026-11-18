@@ -19,7 +19,7 @@
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="supplier-list__search"
+          class="list-search supplier-list__search"
           data-testid="suppliers-search-input"
           @input="debouncedFetch(searchAndFetch)"
         />
@@ -283,7 +283,8 @@
 import { useNotifyStore } from "@/stores/notify";
 import { useRegionalStore } from "@/stores/regional";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
-import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import {
   GET_Sources,
   POST_Source,
@@ -486,10 +487,7 @@ export default {
         this.suppliers = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -553,10 +551,7 @@ export default {
       } catch (err) {
         this.handleApiError(err);
         if (Object.keys(this.errors).length === 0) {
-          this.notify.spawnNotification({
-            type: "negative",
-            msg: extractApiMessage(err, this.$t("notifications.error")),
-          });
+          notifyApiError(this.notify, err, this.$t("notifications.error"));
         }
       } finally {
         this.creating = false;
@@ -602,10 +597,7 @@ export default {
         this.deleteTarget = null;
         this.fetchSuppliers();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.deleting = false;
       }
@@ -615,11 +607,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.supplier-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
 .suppliers-delete-impact {
   background: var(--negative-subtle);
   color: var(--negative);

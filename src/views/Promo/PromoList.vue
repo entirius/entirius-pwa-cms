@@ -17,13 +17,13 @@
         :options="tabOptions"
         class="mb-8"
       />
-      <div v-if="activeTab === 'discounts'" class="promo-list__toolbar">
+      <div v-if="activeTab === 'discounts'" class="list-toolbar promo-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           :aria-label="$t('common.start_typing')"
           icon="search"
-          class="promo-list__search"
+          class="list-search promo-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <MobileFilterPanel
@@ -183,7 +183,7 @@ import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { GET_DiscountRules, GET_DiscountMeta, POST_BulkRules } from "@/api/promo/api";
 import VouchersSection from "./VouchersSection.vue";
 import PromoChannelSelect from "./PromoChannelSelect.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 export default {
   name: "PromoList",
@@ -392,10 +392,7 @@ export default {
         this.rules = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -480,10 +477,7 @@ export default {
         this.currentPage = 1;
         await this.fetchRules();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -493,19 +487,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.promo-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-
-.promo-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
-
 .promo-list__modifier-filter {
   min-width: 150px;
   max-width: 220px;

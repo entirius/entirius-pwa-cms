@@ -16,13 +16,13 @@
       </PageHeader>
     </template>
     <template #toolbar>
-      <div class="order-list__toolbar">
+      <div class="list-toolbar order-list__toolbar">
         <BasicInput
           v-model="search"
           icon="search"
           :placeholder="$t('checkout_orders.search_placeholder')"
-          class="order-list__search"
-          @input="onSearchInput"
+          class="list-search order-list__search"
+          @input="debouncedFetch(onSearchInput)"
         />
         <div class="filter-chip-row" role="group" :aria-label="$t('checkout_orders.filters')">
           <FilterChip
@@ -78,8 +78,9 @@
 <script>
 import { GET_Orders } from "@/api/orders/api";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { formatDate } from "@/utils/format";
+import { useSearchDebounce } from "@/composables/useSearchDebounce";
 
 const STATUS_VARIANTS = {
   UNPAID: "warning",
@@ -96,7 +97,8 @@ export default {
   name: "OrderList",
   setup() {
     const notify = useNotifyStore();
-    return { notify };
+    const { debouncedFetch } = useSearchDebounce(400);
+    return { notify, debouncedFetch };
   },
   data() {
     return {
@@ -105,7 +107,6 @@ export default {
       loading: false,
       selectedStatus: "all",
       search: "",
-      searchTimer: null,
       pageSize: 20,
       activeChannel: process.env.VUE_APP_CHANNEL || "default-local",
       channels: [],
@@ -224,17 +225,13 @@ export default {
         this.orders = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
     },
     onSearchInput() {
-      clearTimeout(this.searchTimer);
-      this.searchTimer = setTimeout(() => this.updateQuery({ page: 1 }), 400);
+      this.updateQuery({ page: 1 });
     },
     setStatusFilter(key) {
       this.selectedStatus = key;
@@ -277,17 +274,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.order-list__toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-5);
-}
-.order-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
 .order-list__channel-dropdown {
   min-width: 160px;
 }

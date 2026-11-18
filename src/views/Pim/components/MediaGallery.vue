@@ -17,7 +17,7 @@ import {
   PATCH_ProductVideo,
   DELETE_ProductVideo,
 } from "@/api/pim/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 const props = defineProps({
   channelIdx: { type: String, required: true },
@@ -200,10 +200,7 @@ async function fetchAll() {
     pictures.value = picRes.data.results || picRes.data || [];
     videos.value = vidRes.data.results || vidRes.data || [];
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   } finally {
     loading.value = false;
   }
@@ -214,10 +211,7 @@ async function refetchPictures() {
     const { data } = await GET_ProductPictures(props.channelIdx, props.sku);
     pictures.value = data.results || data || [];
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   }
 }
 
@@ -226,10 +220,7 @@ async function refetchVideos() {
     const { data } = await GET_ProductVideos(props.channelIdx, props.sku);
     videos.value = data.results || data || [];
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   }
 }
 
@@ -253,10 +244,7 @@ async function onDragEnd(evt) {
           });
         }
       } catch (err) {
-        notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, t("notifications.error")),
-        });
+        notifyApiError(notify, err, t("notifications.error"));
       }
     }
   }
@@ -340,10 +328,7 @@ async function uploadPicture(file) {
     selectedIndex.value = mediaItems.value.length - 1;
     emit("media-changed");
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   } finally {
     uploadingPicture.value = false;
   }
@@ -365,10 +350,7 @@ async function addVideo() {
     selectedIndex.value = mediaItems.value.length - 1;
     emit("media-changed");
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   } finally {
     addingVideo.value = false;
   }
@@ -437,10 +419,7 @@ async function saveEdit() {
     emit("media-changed");
     closeEdit();
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   }
 }
 
@@ -475,10 +454,7 @@ async function deleteItem(item) {
     }
     emit("media-changed");
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   } finally {
     deletingKey.value = null;
   }

@@ -4,12 +4,12 @@
       <PageHeader :title="$t('faq.groups')" />
     </template>
     <template #toolbar>
-      <div class="group-list__toolbar">
+      <div class="list-toolbar group-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="group-list__search"
+          class="list-search group-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <div class="filter-chip-row" role="group" :aria-label="$t('faq.filters')">
@@ -105,7 +105,7 @@ import {
   GET_FaqGroups,
   PATCH_FaqGroupsReorder,
 } from "@/api/faq/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { pluralKey } from "@/utils/plural";
 
 export default {
@@ -176,10 +176,7 @@ export default {
         this.groups = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -206,10 +203,7 @@ export default {
           msg: this.$t("faq.reorder_saved"),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     onPageChange(page) {
@@ -223,19 +217,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.group-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-
-.group-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
-
 .group-row {
   padding: var(--space-3) var(--space-5);
   border-bottom: 1px solid var(--border-subtle);

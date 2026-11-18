@@ -89,6 +89,7 @@ import { t } from "@/i18n";
 import { goBackTo } from "@/composables/useNav";
 import { DELETE_Deal, GET_Attributes, GET_Company, GET_Deal, GET_DealActivities, GET_DealStages, POST_DealArchive, POST_DealRestore } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { ReadonlyArea, usePageReadonly } from "@/composables/useReadonly";
 import { AREAS } from "@/configs/areas";
 import { useAccessStore } from "@/stores/access";
@@ -158,7 +159,7 @@ async function setArchived(call, toast) {
     notify.spawnNotification({ msg: t(toast), type: "positive" });
     loadHistory();
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.common.error"));
   } finally {
     archiving.value = false;
   }
@@ -201,7 +202,7 @@ async function remove() {
     await DELETE_Deal(deal.value.id);
     router.push({ name: "LeadsDeals" });
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.common.error"));
   }
 }
 

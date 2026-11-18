@@ -219,7 +219,7 @@ Traps:
   footer, a sticky decision bar) keep the FAB's corner clear through `--fab-lane`.
 - **List view.** The toolbar holds a search `BasicInput` with `useSearchDebounce`, then the filters, and it wraps.
   Filters: one chip set is an inline `FilterChip` row (it scrolls sideways on a phone); more than one filter group
-  goes into `MobileFilterPanel`; a filter select is a `BasicSelect` with `floatingLabel`. The row wraps (`flex-wrap`, `gap: var(--space-5)`); below 768 px the search (the row's first control) takes the whole row and the filters line up under it (PageLayout sets it — a view never sizes its search for a phone). In `DataTable`, secondary columns get fixed
+  goes into `MobileFilterPanel`; a filter select is a `BasicSelect` with `floatingLabel`. The row is `.list-toolbar` (wraps, `gap: var(--space-5)`) and the search `.list-search` (150-400 px), both global in `src/assets/scss/utils/_list-toolbar.scss`; below 768 px the search (the row's first control) takes the whole row and the filters line up under it (PageLayout sets it — a view never sizes its search for a phone). In `DataTable`, secondary columns get fixed
   widths and only the primary text column gets `1fr`, truncated with an ellipsis. A cell either fits (its column
   grows to the badge or buttons) or truncates with a `title`, never spills into its neighbour; a status badge column
   is `max-content`, never truncated; numbers take

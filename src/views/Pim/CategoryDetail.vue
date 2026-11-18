@@ -235,7 +235,8 @@ import { GET_Category, PATCH_Category, DELETE_Category, POST_UploadPicture } fro
 import CategoryProducts from "./components/CategoryProducts.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
 import ProductT9nField from "./components/ProductT9nField.vue";
-import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { isNotFound } from "@/api/createClient";
 
 // Translatable fields per card, and the control each one takes (the drawer uses the same).
@@ -371,10 +372,7 @@ export default {
         this.form.image_url = data.image_url || "";
         this.notify.spawnNotification({ type: "positive", msg: this.$t("pim.picture_uploaded") });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.uploadingImage = false;
       }
@@ -418,10 +416,7 @@ export default {
       } catch (err) {
         this.notFound = isNotFound(err);
         if (this.notFound) return;
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -482,10 +477,7 @@ export default {
         });
         await this.fetchCategory();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.save_error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.save_error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -506,10 +498,7 @@ export default {
         this.confirmLeave();
         this.$router.push("/pim/categories");
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }

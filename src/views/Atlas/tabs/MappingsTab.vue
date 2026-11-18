@@ -285,7 +285,8 @@ import AttributeMappingRow from "../components/AttributeMappingRow.vue";
 import CategoryMappingRow from "../components/CategoryMappingRow.vue";
 import { useNotifyStore } from "@/stores/notify";
 import { fetchAllPages } from "@/composables/useRemoteOptions";
-import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import {
   GET_MappingProfiles,
   POST_MappingProfile,
@@ -470,10 +471,7 @@ export default {
         await Promise.all(profiles.map((p) => this.hydrateMappings(p)));
         this.profiles = profiles;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -580,10 +578,7 @@ export default {
       } catch (err) {
         this.handleApiError(err);
         if (Object.keys(this.errors).length === 0) {
-          this.notify.spawnNotification({
-            type: "negative",
-            msg: extractApiMessage(err, this.$t("notifications.error")),
-          });
+          notifyApiError(this.notify, err, this.$t("notifications.error"));
         }
       } finally {
         this.formBusy = false;
@@ -628,10 +623,7 @@ export default {
           busy: false,
         };
         if (silent) return;
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     // etap-02: debounced validate after mapping row save/delete
@@ -719,10 +711,7 @@ export default {
         this.deleteTarget = null;
         this.fetchProfiles();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     addAttributeRow(profile) {
@@ -759,10 +748,7 @@ export default {
             profile._attributeMappings || []
           ).filter((r) => r.id !== undefined);
         }
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         profile._busy = false;
       }
@@ -773,10 +759,7 @@ export default {
         await this.hydrateMappings(profile);
         this._scheduleValidate(profile);
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     addCategoryRow(profile) {
@@ -807,10 +790,7 @@ export default {
             (r) => r.id !== undefined
           );
         }
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         profile._busy = false;
       }
@@ -821,10 +801,7 @@ export default {
         await this.hydrateMappings(profile);
         this._scheduleValidate(profile);
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
   },

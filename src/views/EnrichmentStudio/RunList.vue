@@ -79,7 +79,7 @@
 <script>
 import { GET_Runs } from "@/api/enrichment/api";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { formatDate, formatRelative } from "@/utils/format";
 import CostLabel from "@/views/EnrichmentReview/CostLabel.vue";
 import NewRunDialog from "./NewRunDialog.vue";
@@ -167,7 +167,7 @@ export default {
         this.count = data.count || 0;
         this.waitingCount = waiting.data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

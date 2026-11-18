@@ -23,7 +23,7 @@
 <script>
 import { useNotifyStore } from "@/stores/notify";
 import { GET_GapsStatus, POST_GapsRecompute } from "@/api/pim/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 const POLL_INTERVAL_MS = 2000;
 const POLL_MAX_ATTEMPTS = 30; // ~60s safety window
@@ -92,10 +92,7 @@ export default {
         this.startPolling();
       } catch (err) {
         this.recomputing = false;
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("pim.gaps_recompute_error")),
-        });
+        notifyApiError(this.notify, err, this.$t("pim.gaps_recompute_error"));
       }
     },
     startPolling() {

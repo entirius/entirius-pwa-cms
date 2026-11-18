@@ -8,12 +8,12 @@
       </PageHeader>
     </template>
     <template #toolbar>
-      <div class="spawn-rules-list__toolbar">
+      <div class="list-toolbar spawn-rules-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="spawn-rules-list__search"
+          class="list-search spawn-rules-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <FilterChip
@@ -87,7 +87,7 @@
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import RouteTabs from "@/components/Navigation/RouteTabs.vue";
 import { ENRICHMENT_SETTINGS_TABS, routeTabPanel } from "@/components/Navigation/nav-routes";
 import { GET_SpawnRules, GET_Tasks, POST_SpawnRuleRun } from "@/api/enrichment/api";
@@ -169,10 +169,7 @@ export default {
         this.totalCount = data.count || 0;
         await this.fetchRunning();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -213,10 +210,7 @@ export default {
         });
         await this.fetchRunning();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -246,16 +240,5 @@ export default {
 .spawn-rules-list {
   display: flex;
   flex-direction: column;
-}
-.spawn-rules-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-.spawn-rules-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
 }
 </style>

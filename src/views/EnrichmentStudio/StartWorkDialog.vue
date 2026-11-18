@@ -48,7 +48,7 @@
 import { GET_Workflows } from "@/api/enrichment/api";
 import { listOf } from "@/api/enrichment/listOf";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { studioTasks } from "./startLogic";
 
 // "New" in the Studio — the one place to start AI work, in two groups: Tasks (a template run once on products the
@@ -87,7 +87,7 @@ export default {
         this.workflows = listOf(data);
       } catch (err) {
         this.workflows = [];
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

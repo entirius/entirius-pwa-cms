@@ -362,7 +362,7 @@ import AttributeLibrary from "./components/AttributeLibrary.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
 import RequiredOverrideControl from "./components/RequiredOverrideControl.vue";
 import { usePimCapabilities, noteFeatureList } from "@/composables/usePimCapabilities";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { fetchAllPages } from "@/composables/useRemoteOptions";
 
 export default {
@@ -551,10 +551,7 @@ export default {
         });
       } catch (err) {
         group.name = this._oldGroupName;
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async createGroup() {
@@ -588,10 +585,7 @@ export default {
           msg: this.$t("pim.group_created"),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     toggleCollapse(groupIdx) {
@@ -637,10 +631,7 @@ export default {
         this.allGroups = groupsRes.data.results || groupsRes.data || [];
         this.buildGroups();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         if (!silent) this.loading = false;
       }
@@ -715,10 +706,7 @@ export default {
           msg: this.$t("pim.feature_set_saved"),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -733,10 +721,7 @@ export default {
         element.is_required = data.is_required ?? element.is_required;
       } catch (err) {
         element.is_required_override = before;
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async saveReorder() {
@@ -788,10 +773,7 @@ export default {
         await this.fetchData({ silent: true });
         this.$refs.library?.fetchFeatures();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
         await this.fetchData({ silent: true });
         this.$refs.library?.fetchFeatures();
       }
@@ -808,10 +790,7 @@ export default {
         await this.fetchData({ silent: true });
         this.$refs.library?.fetchFeatures();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
         await this.fetchData({ silent: true });
         this.$refs.library?.fetchFeatures();
       }
@@ -825,10 +804,7 @@ export default {
         await this.fetchData({ silent: true });
         this.$refs.library?.fetchFeatures();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -861,10 +837,7 @@ export default {
         });
         this.$router.push("/pim/feature-sets");
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }

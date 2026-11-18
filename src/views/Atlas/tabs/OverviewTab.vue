@@ -298,7 +298,8 @@
 <script>
 import { useNotifyStore } from "@/stores/notify";
 import { useRegionalStore } from "@/stores/regional";
-import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { PATCH_Source } from "@/api/atlas/api";
 
 const OVERVIEW_FORMATS = { sku_prefix: { format: "key" }, contact_email: { format: "email" } };
@@ -499,10 +500,7 @@ export default {
       } catch (err) {
         this.handleApiError(err);
         if (Object.keys(this.errors).length === 0) {
-          this.notify.spawnNotification({
-            type: "negative",
-            msg: extractApiMessage(err, this.$t("notifications.error")),
-          });
+          notifyApiError(this.notify, err, this.$t("notifications.error"));
         }
       } finally {
         this.saving = false;

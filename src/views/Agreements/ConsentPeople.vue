@@ -115,7 +115,7 @@ import {
   GET_MarketingSubscribers,
   GET_MarketingSubscribersExport,
 } from "@/api/agreements/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { ReadonlyOff } from "@/composables/useReadonly";
 
 export default {
@@ -242,10 +242,7 @@ export default {
         this.people = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -256,10 +253,7 @@ export default {
         const { data } = await GET_MarketingSubscribers();
         this.subscribers = data.results || data || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.subscribersLoading = false;
       }
@@ -276,10 +270,7 @@ export default {
         link.remove();
         window.URL.revokeObjectURL(url);
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     searchAndFetch() {

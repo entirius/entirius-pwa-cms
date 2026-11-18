@@ -8,12 +8,12 @@
       </PageHeader>
     </template>
     <template #toolbar>
-      <div class="category-list__toolbar">
+      <div class="list-toolbar category-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="category-list__search"
+          class="list-search category-list__search"
         />
         <BasicSelect
           :floating-label="$t('pim.status')"
@@ -86,7 +86,7 @@ import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import CategoryTree from "./components/CategoryTree.vue";
 import CategoryTreeNode from "./components/CategoryTreeNode.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
@@ -109,10 +109,7 @@ const focusKey = () => `cms_pim_category_focus_${channelIdx.value}`;
 const tree = useCategoryTree({
   getChannel: () => channelIdx.value,
   onError: (err) =>
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    }),
+    notifyApiError(notify, err, t("notifications.error")),
 });
 
 const rootsLoading = computed(() => {
@@ -227,12 +224,6 @@ onMounted(loadTree);
 </script>
 
 <style lang="scss" scoped>
-.category-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
 .category-list__busy {
   margin: 0 0 var(--space-3);
 }
@@ -241,10 +232,5 @@ onMounted(loadTree);
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-2) var(--space-3);
-}
-.category-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
 }
 </style>

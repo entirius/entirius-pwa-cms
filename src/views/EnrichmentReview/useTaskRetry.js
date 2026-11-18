@@ -1,6 +1,6 @@
 import { ref } from "vue";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { t } from "@/i18n";
 import { POST_RetryTask } from "@/api/enrichment/api";
 import { spawnToast } from "@/views/Pim/components/enrichment/runLane";
@@ -21,7 +21,7 @@ export function useTaskRetry() {
       notify.spawnNotification(spawnToast(data));
       return data;
     } catch (err) {
-      notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, t("notifications.error")) });
+      notifyApiError(notify, err, t("notifications.error"));
       return null;
     } finally {
       retrying.value = retrying.value.filter((id) => id !== task.id);

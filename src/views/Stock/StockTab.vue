@@ -40,7 +40,7 @@
 import { useLoaderStore } from "@/stores/loader"
 import { useNotifyStore } from "@/stores/notify"
 import { GET_StockBySku, PATCH_StockBySku } from "@/api/stock/api"
-import { extractApiMessage } from "@/composables/useFormErrors"
+import { notifyApiError } from "@/composables/useNotify"
 
 export default {
   name: "StockTab",
@@ -89,10 +89,7 @@ export default {
         const { data } = await GET_StockBySku(this.sku)
         this.rows = data || []
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        })
+        notifyApiError(this.notify, err, this.$t("notifications.error"))
       } finally {
         this.loading = false
       }
@@ -124,10 +121,7 @@ export default {
         this.notify.spawnNotification({ type: "positive", msg: this.$t("stock.saved") })
         this.fetchStock()
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.save_error")),
-        })
+        notifyApiError(this.notify, err, this.$t("notifications.save_error"))
       } finally {
         this.loader.loaderFinish()
       }

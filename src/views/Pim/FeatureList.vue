@@ -8,12 +8,12 @@
       </PageHeader>
     </template>
     <template #toolbar>
-      <div class="feature-list__toolbar">
+      <div class="list-toolbar feature-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="feature-list__search"
+          class="list-search feature-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <MobileFilterPanel
@@ -83,7 +83,7 @@ import {
   scopeLabel,
 } from "./helpers/pimEnums";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 export default {
   name: "FeatureList",
@@ -224,10 +224,7 @@ export default {
         this.features = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -271,18 +268,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.feature-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-.feature-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
-
 @media only screen and (max-width: 768px) {
   .pim-list-layout {
     overflow-x: visible !important;

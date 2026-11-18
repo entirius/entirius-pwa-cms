@@ -193,7 +193,8 @@
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
-import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import ImagesController from "@/configs/builder/components/ImagesController/index.vue";
 import {
   GET_Author,
@@ -373,10 +374,7 @@ export default {
         };
         this.snapshotForm();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -445,10 +443,7 @@ export default {
         }
       } catch (err) {
         this.formErrors.handleApiError(err);
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.save_error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.save_error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -484,10 +479,7 @@ export default {
         });
         this.$router.push("/pages/authors");
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }

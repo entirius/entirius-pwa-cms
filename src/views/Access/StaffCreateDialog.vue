@@ -59,6 +59,7 @@ import { t } from "@/i18n";
 import { isConflict } from "@/api/createClient";
 import { useNotifyStore } from "@/stores/notify";
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 const FIELDS = ["username", "email", "role", "password"];
 const EMPTY = { username: "", email: "", role: null, generate: true, password: "" };
@@ -121,7 +122,7 @@ function showRefusal(err) {
   const password = fieldMessages(err, "password");
   if (password) formErrors.errors.password = { status: "error", msg: password };
   if (FIELDS.some((field) => formErrors.getFieldError(field))) return;
-  notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, t("notifications.error")) });
+  notifyApiError(notify, err, t("notifications.error"));
   close();
 }
 

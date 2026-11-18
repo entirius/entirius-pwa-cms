@@ -120,7 +120,7 @@ import {
   leadStatusLabel,
   leadStatusVariant,
 } from "./helpers/leadStatus";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 export default {
   name: "BookingList",
@@ -266,10 +266,7 @@ export default {
         this.bookings = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

@@ -141,7 +141,7 @@
 <script>
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { safeHref } from "@/utils/safeHref";
 import ProductPreviewCard from "./ProductPreviewCard.vue";
 import { acceptChosen } from "./applyMode";
@@ -344,7 +344,7 @@ export default {
         this.notify.spawnNotification({ type: "positive", msg: this.$t("enrichment.review.toast.accepted") });
         this.advance();
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.acting = false;
       }
@@ -369,7 +369,7 @@ export default {
         this.remember({ ...proposal, status: "rejected" });
         this.advance();
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.acting = false;
       }

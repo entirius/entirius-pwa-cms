@@ -350,7 +350,8 @@ import { useLoaderStore } from "@/stores/loader";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
-import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import {
   GET_Point,
   POST_Point,
@@ -550,10 +551,7 @@ export default {
         const { data } = await GET_DPChannels({ page_size: 100 });
         this.channels = data.results || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async fetchTranslations() {
@@ -561,10 +559,7 @@ export default {
         const { data } = await GET_PointT9N(this.$route.params.id);
         this.translations = data.results || data || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async addTranslation() {
@@ -579,10 +574,7 @@ export default {
         this.addingLanguage = null;
         await this.fetchTranslations();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async saveTranslation(t9n) {
@@ -597,10 +589,7 @@ export default {
           msg: this.$t("dp.point_saved"),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.save_error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.save_error"));
       }
     },
     async deleteTranslation(language) {
@@ -608,10 +597,7 @@ export default {
         await DELETE_PointT9N(this.$route.params.id, language);
         await this.fetchTranslations();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async saveAndLeave() {
@@ -623,10 +609,7 @@ export default {
         const { data } = await GET_Types({ page_size: 100 });
         this.types = data.results || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async fetchCountries() {
@@ -634,10 +617,7 @@ export default {
         const { data } = await GET_Countries();
         this.countries = data || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async fetchPoint() {
@@ -649,10 +629,7 @@ export default {
         this.snapshot(this.form);
         this.track(this.form);
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -724,10 +701,7 @@ export default {
         }
       } catch (err) {
         this.formErrors.handleApiError(err);
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.save_error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.save_error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -744,10 +718,7 @@ export default {
         });
         this.$router.push("/points/list");
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }

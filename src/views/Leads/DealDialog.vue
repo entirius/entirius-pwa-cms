@@ -22,7 +22,8 @@ import { computed, nextTick, reactive, ref, watch } from "vue";
 import { useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_Companies, GET_Company, POST_Deal } from "@/api/leads/api";
-import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useNotifyStore } from "@/stores/notify";
 import DealForm from "./DealForm.vue";
 import { contactOptions, currencyOptions, dealBody, dealForm, dealFormErrors, loadCurrencies } from "./deals";
@@ -102,7 +103,7 @@ async function submit() {
   } catch (err) {
     handleApiError(err);
     if (!Object.keys(errors.value).length) {
-      notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+      notifyApiError(notify, err, t("leads.common.error"));
       emit("update:open", false);
     }
   } finally {

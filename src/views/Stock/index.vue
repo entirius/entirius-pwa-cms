@@ -25,7 +25,7 @@
 import { useLoaderStore } from "@/stores/loader"
 import { useNotifyStore } from "@/stores/notify"
 import { GET_Warehouses } from "@/api/stock/api"
-import { extractApiMessage } from "@/composables/useFormErrors"
+import { notifyApiError } from "@/composables/useNotify"
 import StockWarehousePicker from "./StockWarehousePicker.vue"
 
 export default {
@@ -71,10 +71,7 @@ export default {
           this.activeWarehouse = this.sortedWarehouses[0]
         }
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        })
+        notifyApiError(this.notify, err, this.$t("notifications.error"))
       } finally {
         this.loading = false
       }

@@ -4,12 +4,12 @@
       <PageHeader :title="$t('agm.definitions')" />
     </template>
     <template #toolbar>
-      <div class="agm-list__toolbar">
+      <div class="list-toolbar agm-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="agm-list__search"
+          class="list-search agm-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <div class="filter-chip-row" role="group" :aria-label="$t('agm.category')">
@@ -67,7 +67,7 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { GET_Definitions } from "@/api/agreements/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 export default {
   name: "AgreementList",
@@ -173,10 +173,7 @@ export default {
         this.definitions = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -210,18 +207,3 @@ export default {
   },
 };
 </script>
-
-<style lang="scss" scoped>
-.agm-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-
-.agm-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
-</style>

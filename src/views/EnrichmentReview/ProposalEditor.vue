@@ -108,7 +108,7 @@
 import { computed, ref } from "vue";
 import { marked } from "marked";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { ReadonlyOff } from "@/composables/useReadonly";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
@@ -227,7 +227,7 @@ export default {
       } catch (err) {
         if (isNotFound(err)) return;
         this.loadFailed = true;
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async loadTask(taskId) {
@@ -270,7 +270,7 @@ export default {
         this.notify.spawnNotification({ type: "positive", msg: this.$t("enrichment.review.toast.accepted") });
         this.goBack();
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.applying = false;
       }
@@ -285,7 +285,7 @@ export default {
         await POST_RejectProposal(proposal.id, reason ? { reason } : {});
         this.goBack();
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     goBack() {

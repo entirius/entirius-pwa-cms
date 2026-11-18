@@ -4,12 +4,12 @@
       <PageHeader :title="$t('dp.points')" />
     </template>
     <template #toolbar>
-      <div class="point-list__toolbar">
+      <div class="list-toolbar point-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="point-list__search"
+          class="list-search point-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <BasicSelect
@@ -84,7 +84,7 @@ import {
   GET_PointsChannel,
   GET_DPChannels,
 } from "@/api/deliverypoints/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { isNotFound } from "@/api/createClient";
 
 export default {
@@ -192,10 +192,7 @@ export default {
         const { data } = await GET_DPChannels({ page_size: 100 });
         this.channels = data.results || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     onChannelFilter(val) {
@@ -229,10 +226,7 @@ export default {
         if (!this.points.length && this.currentPage > 1) this.resetToFirstPage();
       } catch (err) {
         if (isNotFound(err) && this.currentPage > 1) return this.resetToFirstPage();
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -274,18 +268,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.point-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-.point-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
-
 .point-list__channel {
   min-width: 150px;
   max-width: 200px;

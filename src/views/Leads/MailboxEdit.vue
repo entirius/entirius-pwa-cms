@@ -134,6 +134,7 @@ import { DELETE_Mailbox, GET_Health, GET_Mailbox, PATCH_Mailbox, POST_Mailbox, P
 import { GET_AssignableUsers } from "@/api/leads/api";
 import { fieldText, missingFields } from "@/utils/leadsForm";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { useNotifyStore } from "@/stores/notify";
 import { mailboxStateLabel } from "@/utils/leadsLabels";
@@ -293,7 +294,7 @@ async function remove() {
     snapshot(form);
     router.push({ name: "LeadsMailboxes" });
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.common.error"));
   }
 }
 

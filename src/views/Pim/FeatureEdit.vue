@@ -192,7 +192,8 @@ import {
 } from "./helpers/pimEnums";
 import OptionsManager from "./components/OptionsManager.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
-import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 const ORDER_FORMAT = { display_order: { format: "integer", min: 0 } };
 const CREATE_FORMATS = { ...ORDER_FORMAT, idx: { format: "key" } };
@@ -364,10 +365,7 @@ export default {
         this.snapshot(this.form);
         this.track(this.form);
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -509,10 +507,7 @@ export default {
         });
         this.$router.push("/pim/features");
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }

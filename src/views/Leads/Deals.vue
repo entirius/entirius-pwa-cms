@@ -78,7 +78,7 @@ import { listBoardOptions } from "@/utils/leadsLabels";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_DealStages, GET_Deals } from "@/api/leads/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { useMediaQuery } from "@/composables/useMediaQuery";
 import { ReadonlyOff, usePageReadonly } from "@/composables/useReadonly";
@@ -214,7 +214,7 @@ async function load() {
     count.value = data.count ?? data.results.length;
     othersExist.value = others;
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.common.error"));
   } finally {
     if (run === latest) loading.value = false;
   }

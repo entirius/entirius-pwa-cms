@@ -134,7 +134,7 @@ import { useLoaderStore } from '@/stores/loader'
 import { useNotifyStore } from '@/stores/notify'
 import { usePfChannels } from '@/composables/usePfChannels'
 import { GET_PfDecisions } from '@/api/pricefighter/api'
-import { extractApiMessage } from '@/composables/useFormErrors'
+import { notifyApiError } from '@/composables/useNotify'
 import { PF_PAGE_SIZE, RECOMMENDATIONS, RECOMMENDATION_VARIANTS, pfFormat } from './constants'
 import GapRowDetail from './components/GapRowDetail.vue'
 import ApplyPreviewModal from './components/ApplyPreviewModal.vue'
@@ -239,10 +239,7 @@ export default {
         this.totalCount = data.count || 0
       } catch (err) {
         this.rows = []
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loading = false
       }

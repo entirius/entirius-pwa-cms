@@ -125,7 +125,7 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { GET_Booking } from "@/api/contactForms/api";
 import { leadStatusLabel, leadStatusVariant } from "./helpers/leadStatus";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { safeHref } from "@/utils/safeHref";
 
 export default {
@@ -174,10 +174,7 @@ export default {
         const { data } = await GET_Booking(this.$route.params.id);
         this.booking = data;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

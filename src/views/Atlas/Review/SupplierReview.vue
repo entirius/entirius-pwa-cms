@@ -17,7 +17,7 @@
           icon="search"
           class="review-search"
           data-testid="review-search-input"
-          @input="onSearchChange"
+          @input="debouncedFetch(onSearchChange)"
         />
         <BasicSelect
           :floating-label="$t('atlas.review.list.col.supplier')"
@@ -63,6 +63,7 @@ import SwipeMode from "./SwipeMode.vue";
 import ListMode from "./ListMode.vue";
 import EventsMode from "./EventsMode.vue";
 import { GET_Suppliers } from "@/api/atlas/api";
+import { useSearchDebounce } from "@/composables/useSearchDebounce";
 
 const UpdatedMode = defineAsyncComponent(() => import("./UpdatedMode.vue"));
 
@@ -71,6 +72,10 @@ export default {
   components: { SwipeMode, ListMode, EventsMode, UpdatedMode },
   props: {
     kind: { type: String, default: "procurement" },
+  },
+  setup() {
+    const { debouncedFetch } = useSearchDebounce();
+    return { debouncedFetch };
   },
   data() {
     return {
@@ -81,7 +86,6 @@ export default {
         status: "queued",
         search: "",
       },
-      searchTimer: null,
     };
   },
   computed: {
@@ -138,10 +142,7 @@ export default {
       this.filters = { ...this.filters, status: val };
     },
     onSearchChange() {
-      clearTimeout(this.searchTimer);
-      this.searchTimer = setTimeout(() => {
-        this.filters = { ...this.filters };
-      }, 300);
+      this.filters = { ...this.filters };
     },
     onReviewed() {
       // Bubble-up hook (e.g. global counter); SwipeMode advances internally.
