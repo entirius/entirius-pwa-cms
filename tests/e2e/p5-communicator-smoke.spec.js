@@ -122,7 +122,8 @@ test.describe('P5 Communicator settings', () => {
     await openPage(page, '/crm/settings/sending');
 
     await expect(h1(page)).toHaveText(either((t) => t.communicator.settings.title));
-    for (const section of ['policy', 'channel', 'footer', 'scheduled', 'suppressions']) {
+    // The suppression list lives under Settings → Do not contact since communicator 0.5.0.
+    for (const section of ['policy', 'channel', 'footer', 'scheduled']) {
       await expect(page.getByTestId(`settings-${section}`)).toBeVisible();
     }
     await expect(page.getByTestId('settings-save')).toBeVisible();

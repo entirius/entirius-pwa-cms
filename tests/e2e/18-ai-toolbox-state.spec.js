@@ -29,6 +29,10 @@ for (const row of STATES) {
     await page.route('**/api/munin/v2/health/', (route) =>
       route.request().method() === 'GET' ? route.fulfill({ json: healthBody(row) }) : route.continue()
     );
+    // An incomplete company profile adds its own health row, and the header warning with it.
+    await page.route(/\/api\/enrichment\/v2\/admin\/profile\/status\//, (route) =>
+      route.fulfill({ json: { channel: '', complete: true, sections: [] } })
+    );
     await login(page);
     await page.goto('/translation-jobs');
     await page.getByTestId('translation-translate-store').click();

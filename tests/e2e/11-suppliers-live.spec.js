@@ -13,7 +13,7 @@
  *   2. DB seeded:     make seed-fresh        (loads fixture, runs import-package)
  *
  * Usage:
- *   npm run test:suppliers:live
+ *   npm run test:suppliers:live   (sets SUPPLIERS_LIVE=1; a plain `playwright test` skips this file)
  *
  * Single worker (--workers=1) — these tests share DB state and must run sequentially.
  *
@@ -35,6 +35,8 @@ let jwt;
 test.describe.configure({ mode: 'serial' });
 
 test.describe('Suppliers panel — live backend', () => {
+  test.skip(!process.env.SUPPLIERS_LIVE, 'writes to the backend: run on a throwaway seed with SUPPLIERS_LIVE=1');
+
   test.beforeAll(async () => {
     await assertBackendHealthy();
     jwt = await getJwt();

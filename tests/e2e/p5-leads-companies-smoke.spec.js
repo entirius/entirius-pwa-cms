@@ -39,7 +39,7 @@ test.describe('P5 Leads companies (desktop)', () => {
       await expect(page.getByTestId('company-card')).toBeVisible();
       await expect(h1(page)).toHaveText(either((t) => t.leads.company.title));
       await expect(page.getByTestId('thread-company')).not.toBeEmpty();
-      await expect(page.getByTestId('company-communicate')).toBeVisible();
+      await expect(page.getByTestId('company-compose')).toBeVisible();
 
       const stage = page.getByRole('combobox', { name: either((t) => t.leads.company.stage) });
       await expect(stage).toBeVisible();

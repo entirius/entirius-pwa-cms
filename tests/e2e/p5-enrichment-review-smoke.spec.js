@@ -60,16 +60,18 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
       collector.assertNoErrors(expect, 'Enrichment review list');
     });
 
-    test('focus mode: Accept is the one primary, Reject and Skip beside it', async ({ page }) => {
+    test('focus mode: Apply is the one primary, Reject and Skip beside it', async ({ page }) => {
       const collector = createErrorCollector(page);
       await openReview(page);
 
       await page.getByTestId('enrichment-mode-focus').click();
       await expect(page).toHaveURL(/mode=focus/);
-      const accept = page.getByTestId('enrichment-focus-accept');
-      await expect(accept.or(page.locator('.empty-state').first())).toBeVisible();
-      if (await accept.count()) {
-        await expect(page.getByTestId('enrichment-focus-reject')).toBeVisible();
+      // The queue's next item is one proposal (a card with Reject) or a whole product.
+      const card = page.getByTestId('enrichment-focus-card');
+      const item = card.or(page.getByTestId('enrichment-focus-product'));
+      await expect(item.or(page.locator('.empty-state')).first()).toBeVisible();
+      if (await item.count()) {
+        if (await card.count()) await expect(card.getByTestId('proposal-reject')).toBeVisible();
         await expect(page.getByTestId('enrichment-focus-skip')).toBeVisible();
         await expect(page.locator('.focus-mode .button-basic--primary')).toHaveCount(1);
       }
