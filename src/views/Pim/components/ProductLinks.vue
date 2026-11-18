@@ -179,7 +179,8 @@ import draggable from "vuedraggable";
 import { ReadonlyOff, useReadonly } from "@/composables/useReadonly";
 import { t } from "@/i18n";
 import { useNotifyStore } from "@/stores/notify";
-import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useProductFetch } from "@/composables/useEntityFetch";
 import {
   GET_ProductLinks,
@@ -262,10 +263,7 @@ async function fetchLinkTypes() {
     const { data } = await GET_LinkTypes({ page_size: 100, ordering: "position" });
     linkTypes.value = data.results || [];
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   }
 }
 
@@ -278,10 +276,7 @@ async function fetchLinks() {
     const { data } = await GET_ProductLinks(props.channelIdx, props.sku, params);
     links.value = data.results || [];
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   } finally {
     loading.value = false;
   }
@@ -346,10 +341,7 @@ async function submitForm() {
   } catch (err) {
     handleApiError(err);
     if (Object.keys(errors).length === 0) {
-      notify.spawnNotification({
-        type: "negative",
-        msg: extractApiMessage(err, t("notifications.error")),
-      });
+      notifyApiError(notify, err, t("notifications.error"));
     }
   } finally {
     formBusy.value = false;
@@ -384,10 +376,7 @@ async function onDragEnd() {
     );
     notify.spawnNotification({ type: "positive", msg: t("pim.links.toast_reordered") });
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
     await fetchLinks();
   } finally {
     reordering.value = false;
@@ -403,10 +392,7 @@ async function executeDelete() {
     deleteTarget.value = null;
     await fetchLinks();
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   }
 }
 

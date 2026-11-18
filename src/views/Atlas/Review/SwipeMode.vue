@@ -81,7 +81,7 @@
 
 <script>
 import ProductCard from "./ProductCard.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import RawDataModal from "./RawDataModal.vue";
 import RawDataPanel from "./RawDataPanel.vue";
 import GalleryModal from "./GalleryModal.vue";
@@ -161,10 +161,7 @@ export default {
         this.queue = data.results || [];
         this.index = 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -180,10 +177,7 @@ export default {
           this.fetchQueue();
         }
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }

@@ -111,7 +111,8 @@ import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { POST_Category } from "@/api/pim/api";
 import { useCategoryOptions } from "@/composables/useRemoteOptions";
-import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
 
 export default {
@@ -221,10 +222,7 @@ export default {
         });
         this.$router.push(`/pim/categories/${data.idx}`);
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.save_error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.save_error"));
       } finally {
         this.loader.loaderFinish();
       }

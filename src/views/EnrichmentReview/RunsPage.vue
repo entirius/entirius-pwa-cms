@@ -124,7 +124,7 @@
 
 <script>
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { GET_Task, GET_Tasks, GET_Templates, GET_Workers } from "@/api/enrichment/api";
 import { formatDate } from "@/utils/format";
 import RouteTabs from "@/components/Navigation/RouteTabs.vue";
@@ -264,10 +264,7 @@ export default {
         this.scheduleRefresh();
       } catch (err) {
         if (mine !== this.fetchSeq) return;
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         if (mine === this.fetchSeq) this.loading = false;
       }

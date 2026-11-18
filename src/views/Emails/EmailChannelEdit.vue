@@ -100,7 +100,7 @@ import {
   GET_EmailLangConfigs,
   PATCH_EmailChannel,
 } from "@/api/emails/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import EmailCard from "./EmailCard.vue";
 
 export default {
@@ -170,10 +170,7 @@ export default {
         this.langConfigs = configsRes.data.results || [];
       } catch (err) {
         this.loadFailed = true;
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("emails.error_load_channel")),
-        });
+        notifyApiError(this.notify, err, this.$t("emails.error_load_channel"));
       } finally {
         this.loading = false;
       }
@@ -200,10 +197,7 @@ export default {
           msg: this.$t("emails.saved"),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("emails.error_save")),
-        });
+        notifyApiError(this.notify, err, this.$t("emails.error_save"));
       } finally {
         this.loader.loaderFinish();
         this.saving = false;

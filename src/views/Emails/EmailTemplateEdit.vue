@@ -54,7 +54,7 @@
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { GET_EmailTemplate, PATCH_EmailTemplate } from "@/api/emails/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { emailTypeLabel, PREVIEW_VARIANTS } from "./emailTypes";
 import EmailPreview from "./components/EmailPreview.vue";
 
@@ -343,10 +343,7 @@ export default {
         this.savedPayload = snapshot(this.payload);
       } catch (err) {
         this.loadFailed = true;
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("emails.error_load_template")),
-        });
+        notifyApiError(this.notify, err, this.$t("emails.error_load_template"));
       } finally {
         this.loading = false;
       }
@@ -367,10 +364,7 @@ export default {
           msg: this.$t("emails.saved"),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("emails.error_save")),
-        });
+        notifyApiError(this.notify, err, this.$t("emails.error_save"));
       } finally {
         this.loader.loaderFinish();
       }

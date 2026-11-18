@@ -286,7 +286,7 @@
 
 <script>
 import RawDataModal from "../Review/RawDataModal.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import GalleryModal from "../Review/GalleryModal.vue";
 import ProductCard from "../Review/ProductCard.vue";
 import RawDataPanel from "../Review/RawDataPanel.vue";
@@ -698,10 +698,7 @@ export default {
         this.products = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -779,10 +776,7 @@ export default {
         });
         this.fetchProducts();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.detailBusy = false;
       }
@@ -800,10 +794,7 @@ export default {
         this.closeDetail();
         this.fetchProducts();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.detailBusy = false;
       }
@@ -838,10 +829,7 @@ export default {
         });
         this.fetchProducts();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async pushProduct(row) {
@@ -854,10 +842,7 @@ export default {
         this._emitPushEventToasts(resp?.data?.events);
         this.fetchProducts();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     confirmForceRepush(row) {
@@ -877,10 +862,7 @@ export default {
         this.repushTarget = null;
         this.fetchProducts();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     /**

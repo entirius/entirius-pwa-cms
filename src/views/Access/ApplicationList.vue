@@ -37,7 +37,7 @@
 <script>
 import { useNotifyStore } from "@/stores/notify";
 import { GET_AccessAllApplications, GET_AccessAllTokens } from "@/api/access/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 // Applications (django-access): the machine clients that hold API tokens, with their state, token count and whether
 // they carry imported legacy keys. The application list answers neither (ApplicationResponse has no token_count or
@@ -105,7 +105,7 @@ export default {
         const applications = await GET_AccessAllApplications();
         this.applications = applications.map((application) => ({ ...application, token_count: null, legacy: false }));
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

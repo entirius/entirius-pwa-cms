@@ -290,7 +290,7 @@ import GapStatusAlert from "./components/GapStatusAlert.vue";
 import PimTranslateDialog from "./components/PimTranslateDialog.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
 import FeatureAttributeSelect from "./components/FeatureAttributeSelect.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 const HIDE_QUALITY_KEY = "pim_hide_quality_sensor";
 
@@ -583,10 +583,7 @@ export default {
         this.fetchSupplierStatuses();
         this.fetchQualityFindings();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -786,10 +783,7 @@ export default {
         this.selectedProducts = [];
         await this.fetchProducts();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }

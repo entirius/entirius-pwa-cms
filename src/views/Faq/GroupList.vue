@@ -105,7 +105,7 @@ import {
   GET_FaqGroups,
   PATCH_FaqGroupsReorder,
 } from "@/api/faq/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { pluralKey } from "@/utils/plural";
 
 export default {
@@ -176,10 +176,7 @@ export default {
         this.groups = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -206,10 +203,7 @@ export default {
           msg: this.$t("faq.reorder_saved"),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     onPageChange(page) {

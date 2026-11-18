@@ -105,6 +105,7 @@ import {
   POST_VoucherLookup,
 } from "@/api/voucher/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { isNotFound } from "@/api/createClient";
 import { enumLabel } from "./promo-enum-hints";
 import { ReadonlyOff } from "@/composables/useReadonly";
@@ -263,10 +264,7 @@ export default {
         this.vouchers = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

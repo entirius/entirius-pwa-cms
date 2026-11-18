@@ -87,7 +87,7 @@ import { getLang } from "@/i18n";
 import GapStatusAlert from "./components/GapStatusAlert.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
 import QualitySettings from "./components/QualitySettings.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { ReadonlyOff } from "@/composables/useReadonly";
 
 export default {
@@ -200,10 +200,7 @@ export default {
         this.rules = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

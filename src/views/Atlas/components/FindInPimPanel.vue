@@ -74,7 +74,7 @@
 <script>
 import DedupSearchBox from "@/components/lookup/DedupSearchBox.vue";
 import CandidateRow from "@/components/lookup/CandidateRow.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useNotifyStore } from "@/stores/notify";
 import { POST_LinkToRealProduct } from "@/api/atlas/api";
 import { groupHits } from "@/utils/lookupMatch";
@@ -134,10 +134,7 @@ export default {
         });
         this.$emit("linked", sku);
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.linkingSku = "";
       }

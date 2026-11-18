@@ -78,7 +78,7 @@
 <script>
 import { GET_Orders } from "@/api/orders/api";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { formatDate } from "@/utils/format";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 
@@ -225,10 +225,7 @@ export default {
         this.orders = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

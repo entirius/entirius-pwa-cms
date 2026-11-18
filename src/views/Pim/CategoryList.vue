@@ -86,7 +86,7 @@ import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import CategoryTree from "./components/CategoryTree.vue";
 import CategoryTreeNode from "./components/CategoryTreeNode.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
@@ -109,10 +109,7 @@ const focusKey = () => `cms_pim_category_focus_${channelIdx.value}`;
 const tree = useCategoryTree({
   getChannel: () => channelIdx.value,
   onError: (err) =>
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    }),
+    notifyApiError(notify, err, t("notifications.error")),
 });
 
 const rootsLoading = computed(() => {

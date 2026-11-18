@@ -66,7 +66,7 @@
 <script>
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { GET_AccessGroups, GET_AccessAllRoles, POST_AccessGrant, DELETE_AccessGrant } from "@/api/access/api";
 import { grantPayload, grantErrorMessage, roleOptions } from "./grants";
 
@@ -116,7 +116,7 @@ export default {
         this.groups = data.results || [];
         this.count = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

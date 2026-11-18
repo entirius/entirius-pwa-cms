@@ -106,7 +106,8 @@
 <script>
 import { useLoaderStore } from "@/stores/loader"
 import { useNotifyStore } from "@/stores/notify"
-import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors"
+import { useFormErrors } from "@/composables/useFormErrors"
+import { notifyApiError } from "@/composables/useNotify"
 import { GET_WarehouseProducts, PATCH_WarehouseStock } from "@/api/stock/api"
 import { useSearchDebounce } from "@/composables/useSearchDebounce"
 import ImportCSVModal from "./ImportCSVModal.vue"
@@ -201,10 +202,7 @@ export default {
         this.products = data.results || []
         this.totalCount = data.count || 0
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        })
+        notifyApiError(this.notify, err, this.$t("notifications.error"))
       } finally {
         this.loading = false
       }
@@ -249,10 +247,7 @@ export default {
         this.fetchProducts()
       } catch (err) {
         this.formErrors.handleApiError(err)
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.save_error")),
-        })
+        notifyApiError(this.notify, err, this.$t("notifications.save_error"))
       } finally {
         this.loader.loaderFinish()
       }

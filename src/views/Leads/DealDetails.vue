@@ -31,7 +31,8 @@
 import { computed, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_AssignableUsers, PATCH_Deal } from "@/api/leads/api";
-import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useNotifyStore } from "@/stores/notify";
 import { formatDay } from "@/utils/format";
 import CustomFields from "./CustomFields.vue";
@@ -124,7 +125,7 @@ async function save() {
   } catch (err) {
     handleApiError(err);
     if (!Object.keys(errors.value).length && !Object.keys(attrErrors.value).length) {
-      notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+      notifyApiError(notify, err, t("leads.common.error"));
     }
   } finally {
     saving.value = false;

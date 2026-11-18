@@ -84,7 +84,7 @@
 
 <script>
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { isNotFound } from "@/api/createClient";
 import { GET_Product, GET_ProductPictures } from "@/api/pim/api";
 
@@ -146,10 +146,7 @@ export default {
         this.mainPicture = mainPicture;
       } catch (err) {
         if (!(isNotFound(err))) {
-          this.notify.spawnNotification({
-            type: "negative",
-            msg: extractApiMessage(err, this.$t("notifications.error")),
-          });
+          notifyApiError(this.notify, err, this.$t("notifications.error"));
         }
         this.product = null;
       } finally {

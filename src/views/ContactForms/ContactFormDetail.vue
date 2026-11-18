@@ -140,7 +140,7 @@ import {
   GET_AttachmentDownload,
   PATCH_SubmissionStatus,
 } from "@/api/contactForms/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 export default {
   name: "ContactFormDetail",
@@ -196,10 +196,7 @@ export default {
           msg: this.$t("cf.status_updated"),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     formatDate(isoStr) {
@@ -234,10 +231,7 @@ export default {
         const { data } = await GET_Submission(pk);
         this.submission = data;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

@@ -113,7 +113,7 @@ import { useNotifyStore } from '@/stores/notify'
 import { useSearchDebounce } from '@/composables/useSearchDebounce'
 import { usePfChannels } from '@/composables/usePfChannels'
 import { GET_PfHistory } from '@/api/pricefighter/api'
-import { extractApiMessage } from '@/composables/useFormErrors'
+import { notifyApiError } from '@/composables/useNotify'
 import { PF_PAGE_SIZE, pfFormat } from './constants'
 import { formatDate } from '@/utils/format'
 import MarketCell from './components/MarketCell.vue'
@@ -174,10 +174,7 @@ export default {
         this.totalCount = data.count || 0
       } catch (err) {
         this.decisions = []
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loading = false
       }

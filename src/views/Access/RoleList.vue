@@ -34,7 +34,7 @@
 <script>
 import { useNotifyStore } from "@/stores/notify";
 import { GET_AccessAllRoles } from "@/api/access/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 // Built-in and custom roles (django-access), every page of them.
 
@@ -74,7 +74,7 @@ export default {
       try {
         this.roles = await GET_AccessAllRoles();
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

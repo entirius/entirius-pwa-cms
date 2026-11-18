@@ -316,7 +316,7 @@ import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import EditNavLinkModal from "@/functionals/EditNavLinkModal.vue";
 import EditBannerModal from "@/functionals/EditBannerModal.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { usePageReadonly } from "@/composables/useReadonly";
 
 function uuid() {
@@ -436,10 +436,7 @@ export default {
         this.originalJson = JSON.stringify(this.navigationItems);
         this.originalChannelsJson = JSON.stringify(this.selectedChannels);
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -629,10 +626,7 @@ export default {
         this.originalChannelsJson = JSON.stringify(this.selectedChannels);
         this.notify.spawnNotification({ type: "positive", msg: this.$t("layout_extender.saved") });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -647,10 +641,7 @@ export default {
         this.originalChannelsJson = JSON.stringify(this.selectedChannels);
         this.notify.spawnNotification({ type: "positive", msg: this.$t("layout_extender.published_success") });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }

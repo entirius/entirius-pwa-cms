@@ -112,7 +112,7 @@ import {
 import LinkedSuppliersPanel from "./supplier/LinkedSuppliersPanel.vue";
 import SupplierTimeline from "./supplier/SupplierTimeline.vue";
 import ForcePreferredModal from "./supplier/ForcePreferredModal.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { isNotFound } from "@/api/createClient";
 
 export default {
@@ -187,10 +187,7 @@ export default {
         if (isNotFound(err)) {
           this.data = null;
         } else {
-          this.notify.spawnNotification({
-            type: "negative",
-            msg: extractApiMessage(err, this.$t("notifications.error")),
-          });
+          notifyApiError(this.notify, err, this.$t("notifications.error"));
         }
       } finally {
         this.loading = false;
@@ -266,13 +263,11 @@ export default {
         await this.fetch();
         this.$emit("refreshed");
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(
-            err,
-            this.$t("pim.supplier.toast.force_preferred_error")
-          ),
-        });
+        notifyApiError(
+          this.notify,
+          err,
+          this.$t("pim.supplier.toast.force_preferred_error")
+        );
       } finally {
         this.forcing = false;
       }
@@ -291,13 +286,11 @@ export default {
         await this.fetch();
         this.$emit("refreshed");
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(
-            err,
-            this.$t("pim.supplier.toast.reset_to_auto_error")
-          ),
-        });
+        notifyApiError(
+          this.notify,
+          err,
+          this.$t("pim.supplier.toast.reset_to_auto_error")
+        );
       } finally {
         this.resetting = false;
       }

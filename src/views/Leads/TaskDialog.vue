@@ -77,7 +77,8 @@ import { computed, reactive, ref, watch } from "vue";
 import { t } from "@/i18n";
 import { GET_AssignableUsers, GET_Companies, GET_Company } from "@/api/leads/api";
 import { PATCH_Task, POST_Task, POST_TaskCancel, POST_TaskDone } from "@/api/todo/api";
-import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useNotifyStore } from "@/stores/notify";
 import { useAccessStore } from "@/stores/access";
 import { companySubjectRef, contactIdFromRef, contactSubjectRef } from "@/utils/subjectRef";
@@ -255,7 +256,7 @@ function fail(err) {
   const shown = outcomeOnly.value ? [] : ["title", "due_at", "owner_id", "subject_ref"];
   const onField = shown.some((name) => getFieldError(name));
   if (onField) return;
-  notify.spawnNotification({ msg: extractApiMessage(err, t("leads.task.error")), type: "negative" });
+  notifyApiError(notify, err, t("leads.task.error"));
   emit("update:open", false);
 }
 

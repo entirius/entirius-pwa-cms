@@ -18,7 +18,7 @@
 
 <script>
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { GET_Proposals, POST_ReviseTask } from "@/api/enrichment/api";
 import CorrectionBar from "./CorrectionBar.vue";
 import { reviseBody } from "./correction";
@@ -60,7 +60,7 @@ export default {
         this.count = data.count || 0;
       } catch (err) {
         this.count = 0;
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     close() {
@@ -80,7 +80,7 @@ export default {
         this.notify.spawnNotification({ type: "positive", msg: this.$t("enrichment.correct.all_queued", { count: data.queued }) });
         this.$emit("queued", data.queued);
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }

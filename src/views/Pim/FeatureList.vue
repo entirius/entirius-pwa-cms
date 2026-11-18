@@ -83,7 +83,7 @@ import {
   scopeLabel,
 } from "./helpers/pimEnums";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 export default {
   name: "FeatureList",
@@ -224,10 +224,7 @@ export default {
         this.features = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

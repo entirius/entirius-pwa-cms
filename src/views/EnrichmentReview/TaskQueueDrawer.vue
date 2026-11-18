@@ -84,7 +84,7 @@
 
 <script>
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { GET_Task, GET_TaskTargets } from "@/api/enrichment/api";
 import { isActive } from "@/views/Pim/components/enrichment/productAi";
 import { runUidOf } from "@/views/EnrichmentReview/reviewLogic";
@@ -221,10 +221,7 @@ export default {
         this.reachedEnd = this.targets.length === 0;
       } catch (err) {
         this.targets = [];
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

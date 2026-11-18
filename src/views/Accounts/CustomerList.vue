@@ -102,7 +102,7 @@ import {
   GET_AccountsGroups,
   GET_AccountsChannels,
 } from "@/api/accounts/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 export default {
   name: "CustomerList",
@@ -184,10 +184,7 @@ export default {
         this.customers = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

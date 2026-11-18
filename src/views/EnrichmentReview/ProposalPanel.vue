@@ -99,7 +99,7 @@
 <script>
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 import { GET_Product } from "@/api/pim/api";
 import { PATCH_Proposal } from "@/api/enrichment/api";
@@ -297,7 +297,7 @@ export default {
         this.notify.spawnNotification({ type: "positive", msg: this.$t("enrichment.review.toast.edited") });
         return true;
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
         return false;
       } finally {
         this.saving = false;

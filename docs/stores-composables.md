@@ -111,7 +111,8 @@ components keep using stores directly via the `setup()` return pattern.
 - **`useLoader`** — thin wrapper over `useLoaderStore`. Returns `{ loading,
   handyLoading, start, finish, handyStart, handyFinish }`.
 - **`useNotify`** — notification shortcuts over `useNotifyStore`: `{ success,
-  error, info, warning, hide }`.
+  error, info, warning, hide }`. `notifyApiError(notify, err, fallback)` spawns the
+  negative toast with the API message or the translated `fallback`.
 - **`useSearchDebounce(delay = 300)`** — debounced search input for list
   views. Returns `{ search, debouncedFetch(fetchFn) }`; timer auto-cleans on
   unmount.

@@ -35,7 +35,7 @@
 import { useLoaderStore } from '@/stores/loader'
 import { useNotifyStore } from '@/stores/notify'
 import { GET_PmTaxClasses } from '@/api/pricemanager/api'
-import { extractApiMessage } from '@/composables/useFormErrors'
+import { notifyApiError } from '@/composables/useNotify'
 
 export default {
   name: 'PmTaxClassList',
@@ -78,10 +78,7 @@ export default {
         const { data } = await GET_PmTaxClasses()
         this.taxClasses = Array.isArray(data) ? data : data.results || []
       } catch (err) {
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loading = false
       }

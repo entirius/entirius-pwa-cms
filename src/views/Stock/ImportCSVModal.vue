@@ -39,7 +39,7 @@
 <script>
 import { useNotifyStore } from "@/stores/notify"
 import { POST_ImportCSV } from "@/api/stock/api"
-import { extractApiMessage } from "@/composables/useFormErrors"
+import { notifyApiError } from "@/composables/useNotify"
 import ImportChooseFile from "./ImportChooseFile.vue"
 
 export default {
@@ -94,10 +94,7 @@ export default {
         const { data } = await POST_ImportCSV(this.warehouseCode, formData)
         this.report = data
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        })
+        notifyApiError(this.notify, err, this.$t("notifications.error"))
         this.$emit("close")
       } finally {
         this.uploading = false

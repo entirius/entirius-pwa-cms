@@ -67,6 +67,7 @@ import { GET_Templates } from "@/api/communicator/api";
 import { GET_LatestAudit, POST_AuditRerun } from "@/api/siteintel/api";
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
@@ -205,7 +206,7 @@ async function run(call, successKey) {
     notify.spawnNotification({ msg: t(successKey) });
     emit("changed");
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.review.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.review.error"));
   }
 }
 

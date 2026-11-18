@@ -68,6 +68,7 @@ import { t } from "@/i18n";
 import { DELETE_DealStage, GET_Deals, GET_DealStages, PATCH_DealStage, POST_DealStage } from "@/api/leads/api";
 import { apiFieldErrors, missingFields } from "@/utils/leadsForm";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { useNotifyStore } from "@/stores/notify";
@@ -166,7 +167,7 @@ async function saveOrder() {
   try {
     for (const { stage, order } of moved) await PATCH_DealStage(stage.id, { order });
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.stages.order_failed")), type: "negative" });
+    notifyApiError(notify, err, t("leads.stages.order_failed"));
   }
   await load();
 }

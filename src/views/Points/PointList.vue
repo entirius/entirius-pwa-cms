@@ -84,7 +84,7 @@ import {
   GET_PointsChannel,
   GET_DPChannels,
 } from "@/api/deliverypoints/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { isNotFound } from "@/api/createClient";
 
 export default {
@@ -192,10 +192,7 @@ export default {
         const { data } = await GET_DPChannels({ page_size: 100 });
         this.channels = data.results || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     onChannelFilter(val) {
@@ -229,10 +226,7 @@ export default {
         if (!this.points.length && this.currentPage > 1) this.resetToFirstPage();
       } catch (err) {
         if (isNotFound(err) && this.currentPage > 1) return this.resetToFirstPage();
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

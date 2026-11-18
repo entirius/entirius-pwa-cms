@@ -183,7 +183,7 @@ import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { GET_DiscountRules, GET_DiscountMeta, POST_BulkRules } from "@/api/promo/api";
 import VouchersSection from "./VouchersSection.vue";
 import PromoChannelSelect from "./PromoChannelSelect.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 export default {
   name: "PromoList",
@@ -392,10 +392,7 @@ export default {
         this.rules = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -480,10 +477,7 @@ export default {
         this.currentPage = 1;
         await this.fetchRules();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }

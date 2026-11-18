@@ -58,7 +58,7 @@
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { GET_EmailChannels, GET_EmailTemplates } from "@/api/emails/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import EmailCard from "./EmailCard.vue";
 
 export default {
@@ -134,10 +134,7 @@ export default {
           (_, i) => typeCounts[i] > 0
         );
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("emails.error_load_channels")),
-        });
+        notifyApiError(this.notify, err, this.$t("emails.error_load_channels"));
       } finally {
         this.loading = false;
       }

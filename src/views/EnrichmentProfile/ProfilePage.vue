@@ -92,7 +92,7 @@ import {
   POST_RestoreProfileVersion,
   PUT_Profile,
 } from "@/api/enrichment/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { useNotifyStore } from "@/stores/notify";
 import { useEnrichmentProfileStore } from "@/stores/enrichmentProfile";
@@ -333,7 +333,7 @@ export default {
       this.versions = versions.data || [];
     },
     toastError(err) {
-      this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+      notifyApiError(this.notify, err, this.$t("notifications.error"));
     },
   },
 };

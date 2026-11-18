@@ -135,6 +135,7 @@ import { GET_Order, POST_OrderMailResend } from "@/api/orders/api";
 import { isThrottled } from "@/api/createClient";
 import { useNotifyStore } from "@/stores/notify";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { formatDate } from "@/utils/format";
 import OrderMails from "./components/OrderMails.vue";
 
@@ -219,7 +220,7 @@ export default {
       try {
         await this.loadOrder();
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
         this.$router.push({ name: "OrderList" });
       } finally { this.loading = false; }
     },

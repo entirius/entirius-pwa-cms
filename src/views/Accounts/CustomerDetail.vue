@@ -118,7 +118,7 @@
 <script>
 import { useNotifyStore } from "@/stores/notify";
 import { GET_Customer } from "@/api/accounts/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 export default {
   name: "CustomerDetail",
@@ -159,10 +159,7 @@ export default {
         const { data } = await GET_Customer(this.$route.params.uid);
         this.customer = data;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
         this.$router.push("/accounts/customers");
       } finally {
         this.loading = false;

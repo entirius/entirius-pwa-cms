@@ -182,7 +182,8 @@ import {
 } from "@/api/pim/api";
 
 import OptionTranslationsDrawer from "./OptionTranslationsDrawer.vue";
-import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 const PAGE_SIZE = 50;
 
@@ -306,10 +307,7 @@ export default {
         this.options = results;
         this.totalCount = data.count ?? results.length;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

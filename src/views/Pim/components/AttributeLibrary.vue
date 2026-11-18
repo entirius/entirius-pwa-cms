@@ -70,7 +70,7 @@ import { GET_Features } from "@/api/pim/api";
 import { featureTypeLabel, featureTypeTone } from "../helpers/pimEnums";
 import draggable from "vuedraggable";
 import { useReadonly } from "@/composables/useReadonly";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 
 export default {
@@ -149,10 +149,7 @@ export default {
           _from_library: true,
         }));
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
