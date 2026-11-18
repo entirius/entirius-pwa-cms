@@ -276,6 +276,8 @@ const handledText = computed(() =>
 // Only the latest read writes the screen (Next, a conflict and the accept timer may change the draft quickly); a failed
 // read shows no draft rather than the previous one under the new address.
 let latestRead = 0;
+// The read of the queue for the open draft: a Skip or Send pressed before it lands waits for the next draft's place.
+let queueRead = Promise.resolve();
 
 async function load() {
   const read = ++latestRead;
@@ -288,7 +290,8 @@ async function load() {
     handled.value = found?.status === REVIEW_STATUS ? null : found?.status || "gone";
     message.value = handled.value ? null : found;
     if (handled.value) return;
-    await Promise.all([loadQueuePosition(), loadOutbound()]);
+    queueRead = loadQueuePosition();
+    await Promise.all([queueRead, loadOutbound()]);
   } finally {
     if (read === latestRead) loading.value = false;
   }
@@ -368,6 +371,9 @@ function followingId() {
 
 // After Skip or Send (`afterAction`) an empty queue keeps the screen; otherwise it is the way back.
 async function goNext(afterAction = false) {
+  const read = latestRead;
+  await queueRead;
+  if (read !== latestRead) return; // Undo or another draft took over the screen meanwhile
   const id = followingId();
   if (id) return router.replace({ name: "LeadsReview", params: { id }, ...(fromApprovals.value && { query: route.query }) });
   try {
