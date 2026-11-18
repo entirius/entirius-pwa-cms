@@ -4,12 +4,12 @@
       <PageHeader :title="$t('dp.points')" />
     </template>
     <template #toolbar>
-      <div class="point-list__toolbar">
+      <div class="list-toolbar point-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="point-list__search"
+          class="list-search point-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <BasicSelect
@@ -274,18 +274,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.point-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-.point-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
-
 .point-list__channel {
   min-width: 150px;
   max-width: 200px;

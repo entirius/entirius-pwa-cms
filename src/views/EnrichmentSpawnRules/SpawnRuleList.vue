@@ -8,12 +8,12 @@
       </PageHeader>
     </template>
     <template #toolbar>
-      <div class="spawn-rules-list__toolbar">
+      <div class="list-toolbar spawn-rules-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="spawn-rules-list__search"
+          class="list-search spawn-rules-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <FilterChip
@@ -246,16 +246,5 @@ export default {
 .spawn-rules-list {
   display: flex;
   flex-direction: column;
-}
-.spawn-rules-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-.spawn-rules-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
 }
 </style>

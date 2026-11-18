@@ -4,7 +4,7 @@
       <PageHeader :title="$t('pricefighter.history')" />
     </template>
     <template #toolbar>
-      <div class="history__toolbar">
+      <div class="list-toolbar history__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('pricefighter.search_sku')"
@@ -204,13 +204,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.history__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-
 .history__search {
   flex: 1;
   min-width: 150px;

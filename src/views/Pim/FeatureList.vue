@@ -8,12 +8,12 @@
       </PageHeader>
     </template>
     <template #toolbar>
-      <div class="feature-list__toolbar">
+      <div class="list-toolbar feature-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="feature-list__search"
+          class="list-search feature-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <MobileFilterPanel
@@ -271,18 +271,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.feature-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-.feature-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
-
 @media only screen and (max-width: 768px) {
   .pim-list-layout {
     overflow-x: visible !important;

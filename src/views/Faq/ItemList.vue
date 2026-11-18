@@ -4,12 +4,12 @@
       <PageHeader :title="$t('faq.items')" />
     </template>
     <template #toolbar>
-      <div class="item-list__toolbar">
+      <div class="list-toolbar item-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="item-list__search"
+          class="list-search item-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <MobileFilterPanel
@@ -265,19 +265,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.item-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-
-.item-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
-
 .item-list__group-filter {
   min-width: 150px;
   max-width: 200px;

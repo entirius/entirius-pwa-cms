@@ -16,12 +16,12 @@
       </PageHeader>
     </template>
     <template #toolbar>
-      <div class="order-list__toolbar">
+      <div class="list-toolbar order-list__toolbar">
         <BasicInput
           v-model="search"
           icon="search"
           :placeholder="$t('checkout_orders.search_placeholder')"
-          class="order-list__search"
+          class="list-search order-list__search"
           @input="debouncedFetch(onSearchInput)"
         />
         <div class="filter-chip-row" role="group" :aria-label="$t('checkout_orders.filters')">
@@ -277,17 +277,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.order-list__toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-5);
-}
-.order-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
 .order-list__channel-dropdown {
   min-width: 160px;
 }

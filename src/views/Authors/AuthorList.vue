@@ -4,12 +4,12 @@
       <PageHeader :title="$t('authors.title')" />
     </template>
     <template v-if="!unavailable" #toolbar>
-      <div class="author-list__toolbar">
+      <div class="list-toolbar author-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="author-list__search"
+          class="list-search author-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <MobileFilterPanel
@@ -219,15 +219,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.author-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-.author-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
 </style>

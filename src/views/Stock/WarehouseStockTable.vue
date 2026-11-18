@@ -22,13 +22,13 @@
     </template>
 
     <template #toolbar>
-      <div class="stock-table__toolbar">
+      <div class="list-toolbar stock-table__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('stock.search_sku')"
           :aria-label="$t('stock.search_sku')"
           icon="search"
-          class="stock-table__search"
+          class="list-search stock-table__search"
           @input="debouncedFetch(onSearch)"
         />
         <div class="filter-chip-row" role="group" :aria-label="$t('stock.status')">
@@ -272,18 +272,3 @@ export default {
   },
 }
 </script>
-
-<style lang="scss" scoped>
-.stock-table__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-
-.stock-table__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
-</style>

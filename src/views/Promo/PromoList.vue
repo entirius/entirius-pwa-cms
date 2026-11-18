@@ -17,13 +17,13 @@
         :options="tabOptions"
         class="mb-8"
       />
-      <div v-if="activeTab === 'discounts'" class="promo-list__toolbar">
+      <div v-if="activeTab === 'discounts'" class="list-toolbar promo-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           :aria-label="$t('common.start_typing')"
           icon="search"
-          class="promo-list__search"
+          class="list-search promo-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <MobileFilterPanel
@@ -493,19 +493,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.promo-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-
-.promo-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
-
 .promo-list__modifier-filter {
   min-width: 150px;
   max-width: 220px;

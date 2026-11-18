@@ -18,7 +18,7 @@
             v-model="search"
             :placeholder="$t('common.start_typing')"
             icon="search"
-            class="gap-def-list__search"
+            class="list-search gap-def-list__search"
             @input="debouncedFetch(searchAndFetch)"
           />
         </ReadonlyOff>
@@ -240,10 +240,5 @@ export default {
   gap: var(--space-5);
   margin-bottom: var(--space-10);
   flex-wrap: wrap;
-}
-.gap-def-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
 }
 </style>

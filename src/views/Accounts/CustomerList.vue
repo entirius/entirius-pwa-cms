@@ -4,12 +4,12 @@
       <PageHeader :title="$t('accounts.customers')" />
     </template>
     <template #toolbar>
-      <div class="acc-list__toolbar">
+      <div class="list-toolbar acc-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="acc-list__search"
+          class="list-search acc-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <BasicSelect
@@ -261,19 +261,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.acc-list__toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-5);
-}
-
-.acc-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
-
 .acc-list__filter-dropdown {
   min-width: 120px;
   max-width: 200px;

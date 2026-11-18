@@ -19,7 +19,7 @@
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="supplier-list__search"
+          class="list-search supplier-list__search"
           data-testid="suppliers-search-input"
           @input="debouncedFetch(searchAndFetch)"
         />
@@ -615,11 +615,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.supplier-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
 .suppliers-delete-impact {
   background: var(--negative-subtle);
   color: var(--negative);
