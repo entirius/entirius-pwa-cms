@@ -6249,6 +6249,7 @@
       "pim": {
         "products": "Products and media",
         "categories": "Categories and positions",
+        "attribute_values": "Attribute values",
         "schema": "Features, attributes, sets and link types",
         "quality": "Quality gaps",
         "product_delete": "Delete products (SKU)"

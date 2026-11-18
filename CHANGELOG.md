@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- CRM, Review: Skip or Send pressed before the draft queue is read waits for it and opens the next draft, instead of saying the queue is empty.
+- Access: the `pim.attribute_values` area has its label in English and Polish.
 - CRM, Import: a refused file or column count (`TOO_MANY_COLUMNS`, `TOO_MANY_ROWS`, `TOO_LARGE`, `UNREADABLE`, ...) shows its own message instead of "Request validation failed." (the screen read an axios-shaped error the API client never rejects with), and an older backend without the preview (404/405) falls back to the plain upload again; the same wrong read is gone from the new-company and contact forms; the column mapping table scrolls inside its card at 1024 px instead of widening the page; a refused row names the CRM field by its label (with the file's column) instead of the internal key.
 - CRM, Review: Skip or Send pressed while the previous skip is still being sent no longer acts on the next draft, which nobody has read.
 - CRM, Import: another file cannot be picked while the import is on its way to the server; a late preview no longer clears an import error; row, column and size limits have texts in English and Polish.

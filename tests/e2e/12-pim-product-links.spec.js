@@ -8,7 +8,7 @@
  *
  * Pre-conditions:
  *   1. Backend up:    make dev (or make up)
- *   2. PIM seeded:    products with SKUs 1100-69 and 1310-31 exist in channel england
+ *   2. PIM seeded:    at least four products in VUE_APP_CHANNEL (the first ones are used)
  *   3. ProductLinkType rows seeded: related/crosssell/upsell/navigation
  *
  * Cleanup happens via API in beforeEach/afterEach so tests are idempotent and
@@ -31,9 +31,10 @@ const pl = require('../../src/i18n/locales/pl.json');
 const inEither = (pick) => new RegExp(`${escapeRegExp(pick(en))}|${escapeRegExp(pick(pl))}`, 'i');
 
 const API_BASE = process.env.VUE_APP_API_URL || 'http://localhost:8000';
-const CHANNEL = 'england';
-const PRODUCT_SKU = '1100-69';
-const LINKED_SKU = '1310-31';
+const CHANNEL = process.env.VUE_APP_CHANNEL || 'default-europe';
+let PRODUCT_SKU;
+let LINKED_SKU;
+let OTHER_SKUS;
 
 test.describe.configure({ mode: 'serial' });
 
@@ -45,9 +46,19 @@ async function getJwt() {
     data: { username: user, password: pass },
   });
   expect(res.ok(), `JWT login failed: ${res.status()}`).toBeTruthy();
-  const { access } = await res.json();
+  const body = await res.json();
   await ctx.dispose();
-  return access;
+  return body.data?.access || body.access;
+}
+
+async function firstSkus(jwt) {
+  const ctx = await request.newContext({ extraHTTPHeaders: { Authorization: `Bearer ${jwt}` } });
+  const res = await ctx.get(`${API_BASE}/api/pim/v2/admin/${CHANNEL}/products/?page=1&page_size=4`);
+  expect(res.ok(), `product list failed: ${res.status()}`).toBeTruthy();
+  const { results } = await res.json();
+  await ctx.dispose();
+  expect(results.length, 'four products in the channel').toBe(4);
+  return results.map((product) => product.sku);
 }
 
 async function deleteAllLinks(jwt) {
@@ -71,7 +82,7 @@ async function deleteAllLinks(jwt) {
 }
 
 async function openLinkedProductsTab(page) {
-  await page.goto(`/pim/products/${PRODUCT_SKU}`);
+  await page.goto(`/pim/products/${encodeURIComponent(PRODUCT_SKU)}`);
   await page.waitForLoadState('networkidle', { timeout: 15000 });
   // Click the "Linked products" tab via its label
   await page.getByRole('tab', { name: inEither((t) => t.pim.tab_links) }).click();
@@ -82,6 +93,7 @@ let jwt;
 
 test.beforeAll(async () => {
   jwt = await getJwt();
+  [PRODUCT_SKU, LINKED_SKU, ...OTHER_SKUS] = await firstSkus(jwt);
 });
 
 test.beforeEach(async ({ page }) => {
@@ -127,7 +139,7 @@ test.describe('PIM Linked products', () => {
       .click();
     // Type a search term that matches the linked SKU (the picker panel opens in a popover)
     const skuInput = page.getByRole('combobox', { name: inEither((t) => t.pim.links.linked_sku_placeholder) });
-    await skuInput.fill('1310');
+    await skuInput.fill(LINKED_SKU);
     // Wait for picker debounce + API + render
     const firstOption = page.getByRole('option').first();
     await firstOption.waitFor({ state: 'visible', timeout: 5000 });
@@ -223,32 +235,30 @@ test.describe('PIM Linked products', () => {
     // All shows 2 rows
     await page.locator('[data-testid="linked-filter-all"]').click();
     await page.waitForLoadState('networkidle');
-    expect(await page.locator('[data-testid="linked-row"]').count()).toBe(2);
+    await expect(page.locator('[data-testid="linked-row"]')).toHaveCount(2);
 
     // Related shows 1
     await page.locator('[data-testid="linked-filter-related"]').click();
     await page.waitForLoadState('networkidle');
-    expect(await page.locator('[data-testid="linked-row"]').count()).toBe(1);
+    await expect(page.locator('[data-testid="linked-row"]')).toHaveCount(1);
 
     // Upsell shows 1
     await page.locator('[data-testid="linked-filter-upsell"]').click();
     await page.waitForLoadState('networkidle');
-    expect(await page.locator('[data-testid="linked-row"]').count()).toBe(1);
+    await expect(page.locator('[data-testid="linked-row"]')).toHaveCount(1);
 
     // Crosssell shows 0
     await page.locator('[data-testid="linked-filter-crosssell"]').click();
     await page.waitForLoadState('networkidle');
-    expect(await page.locator('[data-testid="linked-row"]').count()).toBe(0);
+    await expect(page.locator('[data-testid="linked-row"]')).toHaveCount(0);
   });
 
   test('7. drag-and-drop reorder updates positions (filtered view)', async ({ page }) => {
     // Pre-seed 3 related links with positions 1, 2, 3 against different linked SKUs.
-    // Use any 3 SKUs that exist in the england channel.
     const ctx = await request.newContext({
       extraHTTPHeaders: { Authorization: `Bearer ${jwt}` },
     });
-    // Pick candidates likely present (mirrors fixture data in this seed).
-    const candidates = ['1310-31', '1320-31', '140-07', '143005R'];
+    const candidates = [LINKED_SKU, ...OTHER_SKUS];
     const seeded = [];
     for (const lsku of candidates) {
       const res = await ctx.post(
@@ -268,21 +278,27 @@ test.describe('PIM Linked products', () => {
     await page.waitForLoadState('networkidle');
 
     // Capture initial order
+    await expect(page.locator('[data-testid="linked-row"]')).toHaveCount(seeded.length);
     const rowsBefore = await page
       .locator('[data-testid="linked-row"]')
       .allTextContents();
     expect(rowsBefore.length).toBe(seeded.length);
 
-    // Drag first handle onto the last row using Playwright's real-mouse drag
-    const firstHandle = page
+    // Drag the first handle onto the last row. Sortable needs the moves in between: dragTo jumps to the target.
+    const handle = await page
       .locator('[data-testid="linked-row"] [data-testid="linked-handle"]')
-      .first();
-    const lastRow = page
-      .locator('[data-testid="linked-row"]')
-      .last();
-    await firstHandle.dragTo(lastRow);
-
-    // Wait for PATCH requests to settle
+      .first()
+      .boundingBox();
+    const target = await page.locator('[data-testid="linked-row"]').last().boundingBox();
+    const saved = page.waitForResponse(
+      (res) => res.request().method() === 'PATCH' && res.url().includes('/links/')
+    );
+    await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(handle.x + handle.width / 2, target.y + target.height / 2, { steps: 12 });
+    await page.mouse.move(handle.x + handle.width / 2, target.y + target.height - 2, { steps: 4 });
+    await page.mouse.up();
+    await saved;
     await page.waitForLoadState('networkidle', { timeout: 5000 });
 
     const rowsAfter = await page

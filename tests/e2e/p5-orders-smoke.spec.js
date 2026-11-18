@@ -39,7 +39,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
         await page.waitForLoadState('networkidle');
         const mails = page.getByTestId('order-mails');
         await expect(mails).toBeVisible();
-        await expect(mails).toContainText(either((t) => t.checkout_orders.mails.title));
+        await expect(mails.locator('.section-label').first()).toHaveText(either((t) => t.checkout_orders.mails.title));
       }
 
       collector.assertNoErrors(expect, 'Orders');

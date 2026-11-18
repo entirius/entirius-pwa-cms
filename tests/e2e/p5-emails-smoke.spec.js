@@ -10,6 +10,9 @@ const pl = require('../../src/i18n/locales/pl.json');
  * sends, confirms or deletes.
  */
 
+// Chromium logs a blocked script for every sandboxed srcdoc frame (the preview), even an empty one: not a page error.
+const SRCDOC_NOTE = ["Blocked script execution in 'about:srcdoc'"];
+
 const VIEWPORTS = {
   desktop: { width: 1280, height: 720 },
   phone: { width: 390, height: 844 },
@@ -77,7 +80,7 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
 
     for (const type of ['checkout-order-confirmation', 'checkout-order-canceled']) {
       test(`${type} template shows its preview`, async ({ page }) => {
-        const collector = createErrorCollector(page);
+        const collector = createErrorCollector(page, { whitelist: SRCDOC_NOTE });
         await page.goto(`/emails/templates/${type}`);
         await page.waitForLoadState('networkidle');
 

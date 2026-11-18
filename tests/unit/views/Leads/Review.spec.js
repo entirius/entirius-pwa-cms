@@ -625,6 +625,22 @@ describe("Leads Review", () => {
     expect(api.GET_ReviewNext).not.toHaveBeenCalled();
   });
 
+  it("a Skip pressed before the queue is read waits for it and opens the next draft", async () => {
+    let answerQueue;
+    api.GET_ReviewList.mockReturnValue(new Promise((resolve) => (answerQueue = resolve)));
+    api.GET_ReviewNext.mockResolvedValue({ data: { id: 5 } }); // the service's oldest draft is the skipped one
+    api.POST_ReviewSkip.mockReturnValue(ok());
+    const wrapper = await mountReview();
+    await wrapper.get('[data-testid="review-skip"]').trigger("click");
+    await flushPromises();
+    expect(wrapper.find('[data-testid="review-empty"]').exists()).toBe(false);
+    expect(replace).not.toHaveBeenCalled();
+    answerQueue({ data: { results: [{ id: 4 }, { id: 5 }] } }); // Inbox: 5, 4
+    await flushPromises();
+    expect(replace).toHaveBeenCalledWith({ name: "LeadsReview", params: { id: 4 } });
+    expect(api.GET_ReviewNext).not.toHaveBeenCalled();
+  });
+
   // FIX-17 item 4: after a send the next draft is visibly another one.
   // k6 (walk 4): the number counts in the Inbox's order — its Drafts rows first (newest activity), then the drafts no
   // row shows

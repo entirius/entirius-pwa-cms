@@ -6248,6 +6248,7 @@
       "pim": {
         "products": "Produkty i media",
         "categories": "Kategorie i pozycje",
+        "attribute_values": "Wartości atrybutów",
         "schema": "Cechy, atrybuty, zestawy i typy powiązań",
         "quality": "Braki jakości",
         "product_delete": "Usuwanie produktów (SKU)"
