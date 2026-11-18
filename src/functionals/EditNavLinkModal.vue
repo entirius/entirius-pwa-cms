@@ -11,9 +11,13 @@ const props = defineProps({
     type: Boolean,
     default: false,
   },
-  link: {
+  item: {
     type: Object,
     default: null,
+  },
+  withDisplayAs: {
+    type: Boolean,
+    default: false,
   },
   languages: {
     type: Array,
@@ -37,6 +41,15 @@ const pageFetch = computed(() => usePageFetch());
 const emit = defineEmits(["save", "close"]);
 
 const linkTypes = computed(linkTypeOptions);
+const displayAsOptions = computed(() => [
+  { label: t("layout_extender.simple_link"), value: "link" },
+  { label: t("layout_extender.mega_menu"), value: "megamenu" },
+]);
+
+const title = computed(() => {
+  if (props.withDisplayAs) return props.item ? t("layout_extender.edit_item") : t("layout_extender.add_item");
+  return props.item ? t("layout_extender.edit_link") : t("layout_extender.add_link");
+});
 
 const footerActions = computed(() => [
   { key: "cancel", label: t("common.cancel"), role: "secondary", onClick: () => emit("close") },
@@ -48,6 +61,7 @@ const translatingField = ref(null);
 const form = ref({
   label: "",
   label_t9n: {},
+  display_as: "link",
   link_type: "category",
   link_value: "",
   link_display: "",
@@ -59,16 +73,17 @@ watch(
     if (!val) return;
     translatingField.value = null;
     skipLinkTypeClear.value = true;
-    if (props.link) {
+    if (props.item) {
       form.value = {
-        label: props.link.label || "",
-        label_t9n: props.link.label_t9n ? { ...props.link.label_t9n } : {},
-        link_type: props.link.link_type || "category",
-        link_value: props.link.link_value || "",
-        link_display: props.link.link_display || "",
+        label: props.item.label || "",
+        label_t9n: props.item.label_t9n ? { ...props.item.label_t9n } : {},
+        display_as: props.withDisplayAs ? props.item.display_as || "link" : "link",
+        link_type: props.item.link_type || "category",
+        link_value: props.item.link_value || "",
+        link_display: props.item.link_display || "",
       };
     } else {
-      form.value = { label: "", label_t9n: {}, link_type: "category", link_value: "", link_display: "" };
+      form.value = { label: "", label_t9n: {}, display_as: "link", link_type: "category", link_value: "", link_display: "" };
     }
   }
 );
@@ -91,14 +106,15 @@ function onTranslationsSave({ values }) {
 
 function onSave() {
   if (!form.value.label.trim()) return;
-  emit("save", { ...form.value });
+  const { display_as, ...link } = form.value;
+  emit("save", props.withDisplayAs ? { ...form.value } : link);
 }
 </script>
 
 <template>
   <BasicModal
     :open="visible"
-    :title="link ? $t('layout_extender.edit_link') : $t('layout_extender.add_link')"
+    :title="title"
     size="md"
     :actions="footerActions"
     @update:open="(open) => !open && emit('close')"
@@ -117,35 +133,41 @@ function onSave() {
         </div>
       </FormField>
 
-      <FormField :label="$t('layout_extender.link_type')">
-        <BasicRadioGroup v-model="form.link_type" :options="linkTypes" />
+      <FormField v-if="withDisplayAs" :label="$t('layout_extender.display_as')">
+        <BasicRadioGroup v-model="form.display_as" :options="displayAsOptions" />
       </FormField>
 
-      <FormField :label="form.link_type === 'url' ? $t('layout_extender.url') : $t('layout_extender.link_value')">
-        <EntitySearchPicker
-          v-if="form.link_type === 'category'"
-          :modelValue="form.link_value"
-          :displayValue="form.link_display"
-          :fetchFn="categoryFetch"
-          :placeholder="$t('layout_extender.search_category')"
-          :manual="!pimEnabled"
-          @update:modelValue="form.link_value = $event"
-          @update:displayValue="form.link_display = $event"
-          @clear="form.link_value = ''; form.link_display = ''"
-        />
-        <EntitySearchPicker
-          v-else-if="form.link_type === 'page'"
-          :modelValue="form.link_value"
-          :displayValue="form.link_display"
-          :fetchFn="pageFetch"
-          :placeholder="$t('layout_extender.search_page')"
-          :clientFilter="true"
-          @update:modelValue="form.link_value = $event"
-          @update:displayValue="form.link_display = $event"
-          @clear="form.link_value = ''; form.link_display = ''"
-        />
-        <BasicInput v-else v-model="form.link_value" :placeholder="'https://...'" />
-      </FormField>
+      <template v-if="form.display_as === 'link'">
+        <FormField :label="$t('layout_extender.link_type')">
+          <BasicRadioGroup v-model="form.link_type" :options="linkTypes" />
+        </FormField>
+
+        <FormField :label="form.link_type === 'url' ? $t('layout_extender.url') : $t('layout_extender.link_value')">
+          <EntitySearchPicker
+            v-if="form.link_type === 'category'"
+            :modelValue="form.link_value"
+            :displayValue="form.link_display"
+            :fetchFn="categoryFetch"
+            :placeholder="$t('layout_extender.search_category')"
+            :manual="!pimEnabled"
+            @update:modelValue="form.link_value = $event"
+            @update:displayValue="form.link_display = $event"
+            @clear="form.link_value = ''; form.link_display = ''"
+          />
+          <EntitySearchPicker
+            v-else-if="form.link_type === 'page'"
+            :modelValue="form.link_value"
+            :displayValue="form.link_display"
+            :fetchFn="pageFetch"
+            :placeholder="$t('layout_extender.search_page')"
+            :clientFilter="true"
+            @update:modelValue="form.link_value = $event"
+            @update:displayValue="form.link_display = $event"
+            @clear="form.link_value = ''; form.link_display = ''"
+          />
+          <BasicInput v-else v-model="form.link_value" :placeholder="'https://...'" />
+        </FormField>
+      </template>
     </div>
   </BasicModal>
 
