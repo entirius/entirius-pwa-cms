@@ -73,7 +73,8 @@ describe("Leads Import", () => {
   // FIX-17 item 13: the screen says which columns, which legal bases and what happens next, and offers a sample.
   it("explains the columns, the legal bases and what happens after the upload", () => {
     const wrapper = mount(Import, { global: { components: leadsFrame.components, stubs: { ...leadsFrame.stubs, RouterLink: true } } });
-    expect(wrapper.findAll('[data-testid="import-columns"] li')).toHaveLength(4);
+    expect(wrapper.findAll('[data-testid="import-columns"] li')).toHaveLength(5);
+    expect(t("leads.import.column_brand")).toContain("brand"); // U21
     expect(t("leads.import.column_company")).toContain("company_name");
     expect(t("leads.import.column_legal_basis")).toContain("consent, legitimate_interest, contract");
     expect(t("leads.import.after")).toContain("first stage");

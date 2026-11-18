@@ -10,7 +10,12 @@ const leads = vi.hoisted(() => ({
   GET_Funnel: vi.fn(() => Promise.resolve({ data: { origins: [{ origin: "fair", companies: 2 }] } })),
   GET_AssignableUsers: vi.fn(() => Promise.resolve([{ id: 7, username: "anna", name: "Anna" }])),
   POST_AssignOwner: vi.fn(() => Promise.resolve({ data: { updated: 2 } })),
+  POST_CompanyBrand: vi.fn(() => Promise.resolve({ data: { updated: 2 } })),
 }));
+const communicator = vi.hoisted(() => ({
+  GET_Mailboxes: vi.fn(() => Promise.resolve({ data: { results: [{ id: 1, brand: "entirius" }, { id: 2, brand: "ecom.house" }, { id: 3, brand: "" }] } })),
+}));
+vi.mock("@/api/communicator/api", () => communicator);
 const crm = vi.hoisted(() => ({ on: true }));
 vi.mock("@/api/leads/api", () => leads);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
@@ -96,6 +101,38 @@ describe("Leads → Companies", () => {
     wrapper.findComponent('[data-testid="companies-bulk"]').vm.$emit("action", "assign", "7");
     await flushPromises();
     expect(leads.POST_AssignOwner).toHaveBeenCalledWith([1, 2], 7);
+  });
+
+  // U21: the brand — a column once a row has one, a filter and a bulk action from the brands of the mailboxes.
+  it("sets the brand of the selected companies in bulk, or clears it", async () => {
+    leads.GET_Companies.mockResolvedValue({ data: { count: 2, results: [company(1, { brand: "entirius" }), company(2, { brand: "" })] } });
+    const wrapper = await mounted();
+    expect(wrapper.findComponent('[data-testid="companies-table"]').props("columns").map((column) => column.key)).toContain("brand");
+    expect(wrapper.findComponent('[data-testid="companies-filter-brand"]').props("options").map((option) => option.value)).toEqual(["none", "ecom.house", "entirius"]);
+    wrapper.findComponent('[data-testid="companies-table"]').vm.$emit("select", [company(1), company(2)]);
+    await flushPromises();
+    const bar = wrapper.findComponent('[data-testid="companies-bulk"]');
+    const brandAction = bar.props("actions").find((action) => action.key === "brand");
+    expect(brandAction.options.map((option) => option.value)).toEqual(["none", "ecom.house", "entirius"]);
+    bar.vm.$emit("action", "brand", "ecom.house");
+    await flushPromises();
+    expect(leads.POST_CompanyBrand).toHaveBeenCalledWith([1, 2], "ecom.house");
+    expect(leads.POST_AssignOwner).not.toHaveBeenCalled();
+    wrapper.findComponent('[data-testid="companies-table"]').vm.$emit("select", [company(1)]);
+    await flushPromises();
+    wrapper.findComponent('[data-testid="companies-bulk"]').vm.$emit("action", "brand", "none");
+    await flushPromises();
+    expect(leads.POST_CompanyBrand).toHaveBeenLastCalledWith([1], "");
+  });
+
+  it("no mailbox brand: no brand filter, no Set brand, no brand column", async () => {
+    communicator.GET_Mailboxes.mockRejectedValueOnce({ httpStatus: 403 });
+    const wrapper = await mounted();
+    expect(wrapper.find('[data-testid="companies-filter-brand"]').exists()).toBe(false);
+    expect(wrapper.findComponent('[data-testid="companies-table"]').props("columns").map((column) => column.key)).not.toContain("brand");
+    wrapper.findComponent('[data-testid="companies-table"]').vm.$emit("select", [company(1)]);
+    await flushPromises();
+    expect(wrapper.findComponent('[data-testid="companies-bulk"]').props("actions").map((action) => action.key)).toEqual(["assign"]);
   });
 
   it("filters with no match offer Clear filters", async () => {

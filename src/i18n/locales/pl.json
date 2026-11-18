@@ -4472,7 +4472,12 @@
       "import_list": "Zaimportuj listę",
       "clear_filters": "Wyczyść filtry",
       "load_error": "Nie udało się wczytać firm",
-      "type_unknown": "Nieznany"
+      "type_unknown": "Nieznany",
+      "brand": "Marka",
+      "set_brand": "Ustaw markę",
+      "brand_set_one": "{count} firmie ustawiono markę: {name}.",
+      "brand_set_few": "{count} firmom ustawiono markę: {name}.",
+      "brand_set_many": "{count} firmom ustawiono markę: {name}."
     },
     "board": {
       "title": "Tablica",
@@ -4528,7 +4533,10 @@
       "save": "Zapisz",
       "cancel": "Anuluj",
       "saved": "Zapisano",
-      "not_found": "Nie znaleziono firmy"
+      "not_found": "Nie znaleziono firmy",
+      "brand": "Marka",
+      "brand_hint": "Wybiera konto, z którego wychodzi poczta do tej firmy.",
+      "brand_none": "Bez marki"
     },
     "communicate": {
       "template": "Szablon",
@@ -4614,7 +4622,8 @@
         "csv_error": "plik nie jest czytelnym CSV",
         "encoding_error": "plik nie jest tekstem UTF-8",
         "no_stages": "kanał nie ma etapów — dodaj je w Ustawieniach → Etapy",
-        "internal_error": "błąd po stronie serwera — spróbuj ponownie albo zapytaj administratora"
+        "internal_error": "błąd po stronie serwera — spróbuj ponownie albo zapytaj administratora",
+        "invalid_brand": "marka może mieć tylko małe litery, cyfry, kropkę i myślnik (do 32 znaków)"
       },
       "file": "Plik",
       "mapping": {
@@ -4670,7 +4679,8 @@
           "phone": "Telefon",
           "job_title": "Stanowisko",
           "language": "Język",
-          "legal_basis": "Podstawa prawna"
+          "legal_basis": "Podstawa prawna",
+          "brand": "Marka"
         },
         "source": {
           "exact": "dokładna nazwa kolumny",
@@ -4715,7 +4725,8 @@
           "DUPLICATE_FIELD": "Dwie kolumny trafiają do tego samego pola — zostaw jedną.",
           "NO_COMPANY_KEY": "Wybierz kolumnę z domeną, stroną www albo adresem e-mail."
         }
-      }
+      },
+      "column_brand": "brand (opcjonalnie) — marka firmy, np. entirius albo ecom.house; wybiera konto nadawcy"
     },
     "stages": {
       "title": "Etapy",
@@ -5020,7 +5031,9 @@
       "empty": "Brak kont pocztowych — poczta wychodzi przez ustawienia poczty kanału",
       "load_error": "Nie udało się wczytać kont pocztowych — spróbuj ponownie.",
       "today_of": "{sent} z {cap}",
-      "today_uncapped": "{sent} (bez limitu)"
+      "today_uncapped": "{sent} (bez limitu)",
+      "user_default": "Domyślne handlowca",
+      "col_brand": "Marka"
     },
     "mailbox_state": {
       "active": "Aktywne",
@@ -5039,7 +5052,7 @@
       "not_found": "Nie znaleziono konta pocztowego",
       "address": "Adres",
       "display_name": "Wyświetlana nazwa",
-      "cc": "Kopia każdej wiadomości do",
+      "cc": "DW (kopia widoczna dla odbiorcy)",
       "user": "Handlowiec",
       "is_default": "Domyślne konto",
       "send_enabled": "Wysyła pocztę",
@@ -5082,7 +5095,26 @@
         "unreachable": "Serwer {part} nie odpowiedział: sprawdź host, port i zabezpieczenie połączenia, zapisz i przetestuj ponownie.",
         "failed": "Sprawdź ustawienia {part}, zapisz i przetestuj ponownie.",
         "certificate": "Serwer {part} przedstawił certyfikat, któremu ten host nie ufa: sprawdź, czy nazwa hosta zgadza się z certyfikatem (lub zapytaj dostawcę poczty o właściwy host), zapisz i przetestuj ponownie."
-      }
+      },
+      "cc_hint": "Każda wiadomość z tego konta trafia też do tych adresów; odbiorca je widzi. Do 10 adresów.",
+      "bcc": "UDW (kopia ukryta)",
+      "bcc_hint": "Kopia każdej wiadomości, niewidoczna dla odbiorcy. Do 10 adresów.",
+      "address_add": "Wpisz adres i naciśnij Enter",
+      "list_error": {
+        "email": "To nie jest poprawny adres e-mail",
+        "too_many": "Najwyżej 10 adresów"
+      },
+      "brand": "Marka",
+      "brand_hint": "Np. entirius albo ecom.house — małe litery, cyfry, kropka i myślnik. Puste = bez marki.",
+      "brand_hint_known": "Marki na kontach: {brands}. Małe litery, cyfry, kropka i myślnik; puste = bez marki.",
+      "brand_format": "Tylko małe litery, cyfry, kropka i myślnik (do 32 znaków)",
+      "is_user_default": "Domyślne konto tego handlowca",
+      "signature": "Podpis",
+      "signature_help": "Podpis HTML wstawiany pod treścią każdej wiadomości z tego konta, nad stopką. Serwer zostawia tylko bezpieczny HTML. Puste = bez podpisu.",
+      "signature_html": "HTML podpisu",
+      "signature_placeholder": "<p><strong>Anna Nowak</strong><br>Handlowiec · Przykładowa sp. z o.o.</p>",
+      "signature_preview": "Podgląd podpisu",
+      "signature_empty": "Brak podpisu"
     },
     "health": {
       "title": "Kondycja wysyłki",
@@ -5819,18 +5851,23 @@
     },
     "footer": {
       "title": "Stopka wiadomości",
-      "help": "Jeden blok HTML na język pod każdą wiadomością — podpis, logo, dane firmy. {{ legal }} oznacza miejsce na tekst prawny podstawy przetwarzania kontaktu; musi wystąpić dokładnie raz.",
+      "help": "Jeden blok HTML na markę i język pod każdą wiadomością — logo, dane firmy. {{ legal }} oznacza miejsce na tekst prawny podstawy przetwarzania kontaktu; musi wystąpić dokładnie raz. {{ unsubscribe }} (opcjonalnie) wstawia w tym miejscu link wypisu; bez niego link trafia na dół małym drukiem.",
       "html": "HTML stopki ({language})",
       "placeholder": "<p>Anna Nowak · Przykładowa sp. z o.o.</p>\n{{ legal }}",
       "needs_legal": "Dodaj {{ legal }} w miejscu tekstu prawnego — bez niego stopka nie zostanie zapisana.",
       "preview": "Podgląd (przykładowy tekst prawny)",
       "sample_legal": "Administratorem Twoich danych jest Przykładowa sp. z o.o. Piszemy na podstawie prawnie uzasadnionego interesu.\n\nOdpisz „nie”, a nie napiszemy ponownie.",
-      "discard_confirm": "Zmiana języka odrzuci niezapisane zmiany w tej stopce.",
+      "discard_confirm": "Zmiana marki lub języka odrzuci niezapisane zmiany w tej stopce.",
       "remove": "Usuń stopkę",
       "remove_title": "Usunąć stopkę {language}?",
       "remove_message": "Wiadomości w tym języku użyją wtedy stopki języka domyślnego, a bez niej samego tekstu prawnego.",
       "removed": "Stopka usunięta",
-      "load_error": "Nie udało się wczytać zapisanych stopek — odśwież stronę przed edycją"
+      "load_error": "Nie udało się wczytać zapisanych stopek — odśwież stronę przed edycją",
+      "brand": "Marka",
+      "all_brands": "Wszystkie marki",
+      "unsubscribe_label": "Tekst linku wypisu",
+      "unsubscribe_hint": "Puste = tekst domyślny dla języka stopki.",
+      "remove_message_brand": "Wiadomości tej marki w tym języku użyją wtedy stopki dla wszystkich marek."
     }
   },
   "ai_usage": {

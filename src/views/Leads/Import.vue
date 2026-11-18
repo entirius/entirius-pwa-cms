@@ -116,7 +116,7 @@ const sentRunRules = ref(false);
 const ownerId = ref(useAccessStore().me?.user?.id ?? null);
 const owners = ref([]);
 const customColumns = ref([]);
-const COLUMN_KEYS = ["column_company", "column_domain", "column_contact", "column_legal_basis"];
+const COLUMN_KEYS = ["column_company", "column_domain", "column_contact", "column_legal_basis", "column_brand"];
 const ATTRIBUTE_PREFIXES = [
   ["company", "attr."],
   ["contact", "contact.attr."],

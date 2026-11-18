@@ -24,7 +24,8 @@ import MailboxEdit from "@/views/Leads/MailboxEdit.vue";
 import { byTestid, mountOutbound } from "./outboundFrame";
 
 const mailbox = (extra = {}) => ({
-  id: 2, address: "anna@firma.test", display_name: "Anna", cc_address: "", user_id: 7, is_default: false,
+  id: 2, address: "anna@firma.test", display_name: "Anna", user_id: 7, is_default: false, is_user_default: true,
+  brand: "entirius", cc_addresses: ["michal@firma.test"], bcc_addresses: [], signature_html: "<p>Anna</p>",
   state: "active", smtp_host: "smtp.test", smtp_port: 587, smtp_security: "starttls", smtp_user: "", smtp_password_set: true,
   send_enabled: true, imap_host: "", imap_port: 993, imap_use_ssl: true, imap_user: "", imap_password_set: false,
   folder: "INBOX", receive_enabled: false, daily_cap: 40, warmup_start_cap: null, warmup_step: 0, warmup_started_on: null,
@@ -161,5 +162,82 @@ describe("Leads → Settings → Mailboxes", () => {
     route.params.id = "2";
     const readonly = await mounted(MailboxEdit, { write: false });
     ["mailbox-save", "mailbox-test", "mailbox-delete", "mailbox-pause"].forEach((id) => expect(byTestid(readonly, id).exists()).toBe(false));
+  });
+
+  // U21: several mailboxes per user — the brand column and the user's default on the list.
+  it("lists the brand and marks the user's default mailbox", async () => {
+    const wrapper = await mounted(Mailboxes);
+    expect(wrapper.findComponent('[data-testid="mailboxes-table"]').props("columns").map((column) => column.key)).toContain("brand");
+    expect(wrapper.findAll('[data-testid="mailbox-user-default"]')).toHaveLength(2);
+  });
+
+  // U20–U22: CC and BCC lists, brand, the user's default and the signature go out with the save; cc_address is gone.
+  it("edits the CC / BCC lists, brand, user default and signature, and sends them", async () => {
+    api.PATCH_Mailbox.mockResolvedValue({ data: mailbox() });
+    const wrapper = await mounted(MailboxEdit);
+    expect(wrapper.findAll('[data-testid="mailbox-cc-item"]').map((tag) => tag.text())).toEqual(["michal@firma.test"]);
+    const bcc = wrapper.get('[data-testid="mailbox-bcc-input"] input');
+    await bcc.setValue("Boss@Firma.test, team@firma.test; boss@firma.test");
+    await bcc.trigger("keydown.enter");
+    expect(wrapper.findAll('[data-testid="mailbox-bcc-item"]').map((tag) => tag.text())).toEqual(["boss@firma.test", "team@firma.test"]);
+    await wrapper.findAll('[data-testid="mailbox-cc-item"] button')[0].trigger("click");
+    wrapper.findComponent('[data-testid="mailbox-brand"]').vm.$emit("update:modelValue", " Ecom.House ");
+    wrapper.findComponent('[data-testid="mailbox-user-default"]').vm.$emit("update:modelValue", false);
+    wrapper.findComponent('[data-testid="mailbox-signature"]').vm.$emit("update:modelValue", "<p><b>Anna Nowak</b></p>");
+    await flushPromises();
+    expect(wrapper.get('[data-testid="mailbox-signature-preview"]').attributes("srcdoc")).toContain("<p><b>Anna Nowak</b></p>");
+    await byTestid(wrapper, "mailbox-save").trigger("click");
+    await flushPromises();
+    const body = api.PATCH_Mailbox.mock.calls[0][1];
+    expect(body).toMatchObject({
+      cc_addresses: [],
+      bcc_addresses: ["boss@firma.test", "team@firma.test"],
+      brand: "ecom.house",
+      is_user_default: false,
+      signature_html: "<p><b>Anna Nowak</b></p>",
+    });
+    expect(body).not.toHaveProperty("cc_address");
+  });
+
+  it("a wrong address stays in the field with its error and holds the save; a bad brand is named", async () => {
+    const wrapper = await mounted(MailboxEdit);
+    const cc = wrapper.get('[data-testid="mailbox-cc-input"] input');
+    await cc.setValue("not-an-address");
+    await cc.trigger("keydown.enter");
+    expect(cc.element.value).toBe("not-an-address");
+    const errorOf = (label) => wrapper.findAllComponents({ name: "FormField" }).find((field) => field.props("label") === label).props("error");
+    expect(errorOf("leads.mailbox.cc")).toBe("Not a valid e-mail address");
+    await byTestid(wrapper, "mailbox-save").trigger("click");
+    await flushPromises();
+    expect(api.PATCH_Mailbox).not.toHaveBeenCalled();
+    await cc.setValue("");
+    await cc.trigger("focusout");
+    wrapper.findComponent('[data-testid="mailbox-brand"]').vm.$emit("update:modelValue", "ecom house!");
+    await byTestid(wrapper, "mailbox-save").trigger("click");
+    await flushPromises();
+    expect(errorOf("leads.mailbox.cc")).toBe("");
+    expect(errorOf("leads.mailbox.brand")).toBe("Lower-case letters, digits, dot and hyphen only (up to 32)");
+    expect(api.PATCH_Mailbox).not.toHaveBeenCalled();
+  });
+
+  it("a list holds at most 10 addresses; a mailbox without a user has no user-default switch", async () => {
+    api.GET_Mailbox.mockResolvedValue({ data: mailbox({ user_id: null, cc_addresses: Array.from({ length: 9 }, (_, i) => `a${i}@firma.test`) }) });
+    api.PATCH_Mailbox.mockResolvedValue({ data: mailbox() });
+    const wrapper = await mounted(MailboxEdit);
+    expect(wrapper.find('[data-testid="mailbox-user-default"]').exists()).toBe(false);
+    const cc = wrapper.get('[data-testid="mailbox-cc-input"] input');
+    await cc.setValue("x@firma.test y@firma.test");
+    await cc.trigger("keydown.enter");
+    expect(wrapper.findAll('[data-testid="mailbox-cc-item"]')).toHaveLength(10);
+    expect(wrapper.find('[data-testid="mailbox-cc-input"]').exists()).toBe(false);
+    await byTestid(wrapper, "mailbox-save").trigger("click");
+    await flushPromises();
+    expect(api.PATCH_Mailbox).not.toHaveBeenCalled(); // "At most 10 addresses" waits on the list
+    await wrapper.findAll('[data-testid="mailbox-cc-item"] button')[0].trigger("click");
+    await byTestid(wrapper, "mailbox-save").trigger("click");
+    await flushPromises();
+    const body = api.PATCH_Mailbox.mock.calls[0][1];
+    expect(body.cc_addresses).toHaveLength(9);
+    expect(body).not.toHaveProperty("is_user_default");
   });
 });

@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- CRM, sender settings (U20–U25): a salesperson may have several mailboxes, each with a brand, a "default for this
+  salesperson" switch, CC and BCC lists (up to 10 addresses each, replacing the single CC address) and an HTML
+  signature with a preview; the mail footer is set per brand and language, with the text of its unsubscribe link and
+  a preview of the link at `{{ unsubscribe }}` or under the footer; companies carry a brand (Details card, Companies
+  column, filter and bulk "Set brand"), and the import names the `brand` column.
+
 ### Fixed
 
 - CRM, Import: a refused file or column count (`TOO_MANY_COLUMNS`, `TOO_MANY_ROWS`, `TOO_LARGE`, `UNREADABLE`, ...) shows its own message instead of "Request validation failed." (the screen read an axios-shaped error the API client never rejects with), and an older backend without the preview (404/405) falls back to the plain upload again; the same wrong read is gone from the new-company and contact forms; the column mapping table scrolls inside its card at 1024 px instead of widening the page; a refused row names the CRM field by its label (with the file's column) instead of the internal key.

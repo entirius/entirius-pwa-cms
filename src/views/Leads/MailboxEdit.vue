@@ -38,14 +38,34 @@
           <FormField :label="$t('leads.mailbox.display_name')" :error="fieldError('display_name')">
             <BasicInput v-model="form.display_name" :maxlength="128" data-testid="mailbox-display-name" />
           </FormField>
-          <FormField :label="$t('leads.mailbox.cc')" :error="fieldError('cc_address')">
-            <BasicInput v-model="form.cc_address" format="email" :maxlength="254" data-testid="mailbox-cc" />
-          </FormField>
           <FormField :label="$t('leads.mailbox.user')" :error="fieldError('user_id')">
             <BasicSelect v-model="form.user_id" searchable clearable :options="userOptions" data-testid="mailbox-user" />
           </FormField>
+          <FormField :label="$t('leads.mailbox.brand')" :hint="brandHint" :error="fieldError('brand')">
+            <BasicInput v-model="form.brand" :maxlength="32" data-testid="mailbox-brand" />
+          </FormField>
           <BasicSwitch v-model="form.is_default" :label="$t('leads.mailbox.is_default')" data-testid="mailbox-default" />
+          <BasicSwitch
+            v-if="form.user_id"
+            v-model="form.is_user_default"
+            :label="$t('leads.mailbox.is_user_default')"
+            data-testid="mailbox-user-default"
+          />
+          <FormField class="form-grid__wide" :label="$t('leads.mailbox.cc')" :hint="$t('leads.mailbox.cc_hint')" :error="fieldError('cc_addresses')">
+            <AddressList v-model="form.cc_addresses" :label="$t('leads.mailbox.cc')" testid="mailbox-cc" @invalid="listInvalid('cc_addresses', $event)" />
+          </FormField>
+          <FormField class="form-grid__wide" :label="$t('leads.mailbox.bcc')" :hint="$t('leads.mailbox.bcc_hint')" :error="fieldError('bcc_addresses')">
+            <AddressList v-model="form.bcc_addresses" :label="$t('leads.mailbox.bcc')" testid="mailbox-bcc" @invalid="listInvalid('bcc_addresses', $event)" />
+          </FormField>
         </div>
+      </BasicCard>
+
+      <BasicCard :title="$t('leads.mailbox.signature')" gap data-testid="mailbox-signature-card">
+        <p class="t-muted m-0">{{ $t("leads.mailbox.signature_help") }}</p>
+        <FormField :label="$t('leads.mailbox.signature_html')" :error="fieldError('signature_html')">
+          <BasicTextarea v-model="form.signature_html" :maxlength="20000" :rows="6" :placeholder="$t('leads.mailbox.signature_placeholder')" data-testid="mailbox-signature" />
+        </FormField>
+        <MailPreview :title="$t('leads.mailbox.signature_preview')" :html="signaturePreview" testid="mailbox-signature-preview" />
       </BasicCard>
 
       <BasicCard :title="$t('leads.mailbox.sending')" gap>
@@ -138,18 +158,24 @@ import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { useNotifyStore } from "@/stores/notify";
 import { mailboxStateLabel } from "@/utils/leadsLabels";
 import { MAILBOX_TONES, mailboxState, sentToday } from "@/utils/leadsOutbound";
+import { BRAND_PATTERN, loadBrands, normaliseBrand } from "@/utils/mailBrands";
+import MailPreview from "@/views/Communicator/settings/MailPreview.vue";
+import AddressList from "./AddressList.vue";
 import MailboxReasonDialog from "./MailboxReasonDialog.vue";
 
-// One mailbox (`:id` = "new" adds one): sender, SMTP, IMAP, caps and warm-up. Passwords are write-only: the API says
+// One mailbox (`:id` = "new" adds one): sender (with its brand, CC / BCC lists and the user's default flag, U20–U21),
+// signature (U22), SMTP, IMAP, caps and warm-up. A user may have several mailboxes, one of them their default. Passwords are write-only: the API says
 // only whether one is stored ("saved" as the placeholder); an empty field keeps it and is never sent.
 const EMPTY = {
-  address: "", display_name: "", cc_address: "", user_id: null, is_default: false,
+  address: "", display_name: "", user_id: null, brand: "", is_default: false, is_user_default: false,
+  cc_addresses: [], bcc_addresses: [], signature_html: "",
   send_enabled: true, smtp_host: "", smtp_port: 587, smtp_security: "starttls", smtp_user: "", smtp_password: "",
   receive_enabled: false, imap_host: "", imap_port: 993, imap_use_ssl: true, imap_user: "", imap_password: "", folder: "INBOX",
   daily_cap: null, warmup_start_cap: null, warmup_step: 0, warmup_started_on: null,
 };
 const PASSWORDS = ["smtp_password", "imap_password"];
 const NULLABLE = ["user_id", "daily_cap", "warmup_start_cap", "warmup_started_on"];
+const LISTS = ["cc_addresses", "bcc_addresses"];
 
 const route = useRoute();
 const router = useRouter();
@@ -168,6 +194,7 @@ const busy = ref("");
 const test = ref(null);
 const reasonFor = ref(null);
 const deleting = ref(false);
+const brands = ref([]);
 
 const isNew = computed(() => route.params.id === "new");
 const title = computed(() => stored.value?.address || t("leads.mailboxes.add"));
@@ -195,7 +222,13 @@ const actions = computed(() => {
 });
 
 const missing = ref({}); // required fields left empty, caught before the request (T7)
-const fieldError = (field) => missing.value[field] || fieldText(formErrors.getFieldError(field)?.msg, field);
+const listErrors = ref({}); // an address the CC / BCC list refused, or one too many
+const listInvalid = (field, code) => (listErrors.value = { ...listErrors.value, [field]: code ? t(`leads.mailbox.list_error.${code}`) : "" });
+const brandHint = computed(() =>
+  brands.value.length ? t("leads.mailbox.brand_hint_known", { brands: brands.value.join(", ") }) : t("leads.mailbox.brand_hint")
+);
+const signaturePreview = computed(() => form.signature_html.trim() || `<p style="color:#888">${t("leads.mailbox.signature_empty")}</p>`);
+const fieldError = (field) => missing.value[field] || listErrors.value[field] || fieldText(formErrors.getFieldError(field)?.msg, field);
 const savedHint = (kind) => (stored.value?.[`${kind}_password_set`] ? t("leads.mailbox.password_saved") : "");
 // A login test answers per part: ok, not_configured, no_password, auth_failed, certificate or unreachable — each in
 // words, with what to do next; an unknown code reads as a failure with the generic advice.
@@ -210,7 +243,11 @@ const testAdvice = (part, code) => t(`leads.mailbox.test_next.${testCode(code)}`
 
 function fill(mailbox) {
   stored.value = mailbox.id ? mailbox : null;
-  Object.keys(EMPTY).forEach((key) => (form[key] = PASSWORDS.includes(key) ? "" : (mailbox[key] ?? EMPTY[key])));
+  Object.keys(EMPTY).forEach((key) => {
+    if (PASSWORDS.includes(key)) form[key] = "";
+    else if (LISTS.includes(key)) form[key] = [...(mailbox[key] || [])];
+    else form[key] = mailbox[key] ?? EMPTY[key];
+  });
   snapshot(form);
   track(form);
 }
@@ -222,13 +259,16 @@ function body() {
     if (PASSWORDS.includes(key) && !value) continue;
     out[key] = NULLABLE.includes(key) && (value === "" || value === undefined) ? null : value;
   }
+  out.brand = normaliseBrand(form.brand);
+  if (!out.user_id) delete out.is_user_default; // only a user's mailbox can be their default
   return out;
 }
 
 async function loadExtras(id) {
-  const [report, people] = await Promise.allSettled([id ? GET_Health() : Promise.reject(), GET_AssignableUsers()]);
+  const [report, people, known] = await Promise.allSettled([id ? GET_Health() : Promise.reject(), GET_AssignableUsers(), loadBrands()]);
   if (report.status === "fulfilled") health.value = report.value.data.mailboxes.find((row) => row.id === id) || null;
   if (people.status === "fulfilled") users.value = people.value;
+  if (known.status === "fulfilled") brands.value = known.value;
 }
 
 async function load() {
@@ -258,7 +298,8 @@ async function save() {
   error.value = "";
   formErrors.clearErrors();
   missing.value = missingFields(form, ["address", "smtp_host", "smtp_port"]);
-  if (Object.keys(missing.value).length) return;
+  if (!BRAND_PATTERN.test(normaliseBrand(form.brand))) missing.value.brand = t("leads.mailbox.brand_format");
+  if (Object.keys(missing.value).length || Object.values(listErrors.value).some(Boolean)) return;
   busy.value = "save";
   try {
     const { data } = isNew.value ? await POST_Mailbox(body()) : await PATCH_Mailbox(stored.value.id, body());

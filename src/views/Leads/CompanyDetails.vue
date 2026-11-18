@@ -17,6 +17,9 @@
         <FormField :label="$t('leads.company.origin')" :error="errorOf('origin')">
           <BasicInput v-model="form.origin" :maxlength="64" data-testid="company-origin" />
         </FormField>
+        <FormField v-if="hasBrand" :label="$t('leads.company.brand')" :hint="$t('leads.company.brand_hint')" :error="errorOf('brand')">
+          <BasicSelect v-model="form.brand" :options="brands" clearable :placeholder="$t('leads.company.brand_none')" data-testid="company-brand" />
+        </FormField>
       </div>
       <CustomFields v-model="form.attributes" :fields="fields" :errors="attrErrors" />
     </div>
@@ -35,10 +38,12 @@ import { t } from "@/i18n";
 import { GET_AssignableUsers, PATCH_Company } from "@/api/leads/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
 import { useNotifyStore } from "@/stores/notify";
+import { brandOptions, loadBrands } from "@/utils/mailBrands";
 import CustomFields from "./CustomFields.vue";
 import { changedValues, formatValue, validateValues } from "./customFields";
 
-// Overview → Details: owner, origin and the company's custom fields; Edit turns the card into a form (its actions are
+// Overview → Details: owner, origin, brand (U21: picks the sending mailbox; from the brands of the channel's
+// mailboxes, shown once the API carries it) and the company's custom fields; Edit turns the card into a form (its actions are
 // secondary: the page's one primary stays Write mail). Save sends only what changed and hands the answer up.
 const props = defineProps({
   company: { type: Object, required: true },
@@ -50,7 +55,9 @@ const { handleApiError, getFieldError, clearErrors } = useFormErrors();
 const editing = ref(false);
 const saving = ref(false);
 const owners = ref([]);
-const form = reactive({ ownerId: null, origin: "", attributes: {} });
+const form = reactive({ ownerId: null, origin: "", brand: null, attributes: {} });
+const brands = ref([]);
+const hasBrand = computed(() => "brand" in props.company);
 const localErrors = ref({});
 
 const ownerName = (owner) => owner.name || owner.username;
@@ -63,13 +70,14 @@ const rows = computed(() => [
     testid: "company-owner",
   },
   { key: "origin", label: t("leads.company.origin"), value: props.company.origin, testid: "company-origin" },
+  hasBrand.value && { key: "brand", label: t("leads.company.brand"), value: props.company.brand || t("leads.company.brand_none"), muted: !props.company.brand, testid: "company-brand" },
   ...props.fields.map((field) => ({
     key: field.key,
     label: field.label,
     value: formatValue(field, props.company.attributes?.[field.key]),
     testid: `custom-field-${field.key}`,
   })),
-]);
+].filter(Boolean));
 const errorOf = (name) => getFieldError(name)?.msg || "";
 const attrErrors = computed(() => ({
   ...Object.fromEntries(props.fields.map((field) => [field.key, errorOf(`attributes.${field.key}`)]).filter(([, error]) => error)),
@@ -92,18 +100,21 @@ function edit() {
   Object.assign(form, {
     ownerId: props.company.owner?.id ?? null,
     origin: props.company.origin || "",
+    brand: props.company.brand || null,
     attributes: { ...(props.company.attributes || {}) },
   });
   localErrors.value = {};
   clearErrors();
   editing.value = true;
   loadOwners();
+  if (hasBrand.value) loadBrands().then((known) => (brands.value = brandOptions(known, props.company.brand)));
 }
 
 function body() {
   const changes = { attributes: changedValues(props.fields, form.attributes, props.company.attributes) };
   if (form.ownerId !== (props.company.owner?.id ?? null)) changes.owner_id = form.ownerId;
   if (form.origin !== (props.company.origin || "")) changes.origin = form.origin.trim();
+  if (hasBrand.value && (form.brand || "") !== (props.company.brand || "")) changes.brand = form.brand || "";
   if (!Object.keys(changes.attributes).length) delete changes.attributes;
   return changes;
 }
@@ -120,7 +131,7 @@ async function save() {
     emit("saved", data);
   } catch (err) {
     handleApiError(err);
-    if (!errorOf("owner_id") && !errorOf("origin") && !Object.keys(attrErrors.value).length) {
+    if (!errorOf("owner_id") && !errorOf("origin") && !errorOf("brand") && !Object.keys(attrErrors.value).length) {
       notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
     }
   } finally {

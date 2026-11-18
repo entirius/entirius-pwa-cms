@@ -4473,7 +4473,12 @@
       "import_list": "Import a list",
       "clear_filters": "Clear filters",
       "load_error": "The companies could not be loaded",
-      "type_unknown": "Unknown"
+      "type_unknown": "Unknown",
+      "brand": "Brand",
+      "set_brand": "Set brand",
+      "brand_set_one": "Brand of {count} company set to {name}.",
+      "brand_set_few": "Brand of {count} companies set to {name}.",
+      "brand_set_many": "Brand of {count} companies set to {name}."
     },
     "board": {
       "title": "Board",
@@ -4529,7 +4534,10 @@
       "save": "Save",
       "cancel": "Cancel",
       "saved": "Saved",
-      "not_found": "Company not found"
+      "not_found": "Company not found",
+      "brand": "Brand",
+      "brand_hint": "Picks the mailbox mail to this company leaves from.",
+      "brand_none": "No brand"
     },
     "communicate": {
       "template": "Template",
@@ -4615,7 +4623,8 @@
         "csv_error": "the file is not a readable CSV",
         "encoding_error": "the file is not UTF-8 text",
         "no_stages": "the channel has no stages — add one in Settings → Stages",
-        "internal_error": "an error on the server — try again or ask the administrator"
+        "internal_error": "an error on the server — try again or ask the administrator",
+        "invalid_brand": "the brand may hold only lower-case letters, digits, dot and hyphen (up to 32)"
       },
       "file": "File",
       "mapping": {
@@ -4671,7 +4680,8 @@
           "phone": "Phone",
           "job_title": "Job title",
           "language": "Language",
-          "legal_basis": "Legal basis"
+          "legal_basis": "Legal basis",
+          "brand": "Brand"
         },
         "source": {
           "exact": "the exact column name",
@@ -4716,7 +4726,8 @@
           "DUPLICATE_FIELD": "Two columns go to the same field — keep one of them.",
           "NO_COMPANY_KEY": "Choose a column for the domain, the website or the e-mail address."
         }
-      }
+      },
+      "column_brand": "brand (optional) — the company's brand, e.g. entirius or ecom.house; picks the sending mailbox"
     },
     "stages": {
       "title": "Stages",
@@ -5021,7 +5032,9 @@
       "empty": "No mailbox yet — mail leaves through the channel's mail settings",
       "load_error": "The mailboxes could not be loaded — try again.",
       "today_of": "{sent} of {cap}",
-      "today_uncapped": "{sent} (no cap)"
+      "today_uncapped": "{sent} (no cap)",
+      "user_default": "Salesperson's default",
+      "col_brand": "Brand"
     },
     "mailbox_state": {
       "active": "Active",
@@ -5040,7 +5053,7 @@
       "not_found": "Mailbox not found",
       "address": "Address",
       "display_name": "Name shown",
-      "cc": "Copy every mail to",
+      "cc": "CC (a copy the recipient sees)",
       "user": "Salesperson",
       "is_default": "Default mailbox",
       "send_enabled": "Sends mail",
@@ -5083,7 +5096,26 @@
         "unreachable": "The {part} server did not answer: check the host, the port and the security setting, save, then test again.",
         "failed": "Check the {part} settings, save, then test again.",
         "certificate": "The {part} server answered with a certificate this host does not trust: check the host name matches the certificate (or ask the mail provider for the right host), save, then test again."
-      }
+      },
+      "cc_hint": "Every mail from this mailbox also goes to these addresses; the recipient sees them. Up to 10.",
+      "bcc": "BCC (a hidden copy)",
+      "bcc_hint": "A copy of every mail the recipient does not see. Up to 10.",
+      "address_add": "Type an address and press Enter",
+      "list_error": {
+        "email": "Not a valid e-mail address",
+        "too_many": "At most 10 addresses"
+      },
+      "brand": "Brand",
+      "brand_hint": "E.g. entirius or ecom.house — lower-case letters, digits, dot and hyphen. Empty = no brand.",
+      "brand_hint_known": "Brands on the mailboxes: {brands}. Lower-case letters, digits, dot and hyphen; empty = no brand.",
+      "brand_format": "Lower-case letters, digits, dot and hyphen only (up to 32)",
+      "is_user_default": "This salesperson's default mailbox",
+      "signature": "Signature",
+      "signature_help": "An HTML signature under the text of every mail from this mailbox, above the footer. The server keeps only safe HTML. Empty = no signature.",
+      "signature_html": "Signature HTML",
+      "signature_placeholder": "<p><strong>Anna Nowak</strong><br>Sales · Example Ltd</p>",
+      "signature_preview": "Signature preview",
+      "signature_empty": "No signature"
     },
     "health": {
       "title": "Sending health",
@@ -5820,18 +5852,23 @@
     },
     "footer": {
       "title": "Mail footer",
-      "help": "One HTML block per language under every mail — signature, logo, company data. {{ legal }} marks where the legal text of the contact's legal basis goes; it must be there exactly once.",
+      "help": "One HTML block per brand and language under every mail — logo, company data. {{ legal }} marks where the legal text of the contact's legal basis goes; it must be there exactly once. {{ unsubscribe }} (optional) puts the unsubscribe link there; without it the link goes at the bottom in small print.",
       "html": "Footer HTML ({language})",
       "placeholder": "<p>Anna Nowak · Example Ltd</p>\n{{ legal }}",
       "needs_legal": "Add {{ legal }} where the legal text goes — the footer is refused without it.",
       "preview": "Preview (sample legal text)",
       "sample_legal": "The controller of your data is Example Ltd. We write under legitimate interest.\n\nReply “no” and we will not write again.",
-      "discard_confirm": "Switching the language discards your unsaved changes to this footer.",
+      "discard_confirm": "Switching the brand or language discards your unsaved changes to this footer.",
       "remove": "Remove footer",
       "remove_title": "Remove the {language} footer?",
       "remove_message": "Mail in this language then uses the default language's footer, else the legal text alone.",
       "removed": "Footer removed",
-      "load_error": "Could not load the saved footers — reload the page before editing"
+      "load_error": "Could not load the saved footers — reload the page before editing",
+      "brand": "Brand",
+      "all_brands": "All brands",
+      "unsubscribe_label": "Unsubscribe link text",
+      "unsubscribe_hint": "Empty = the default text of the footer's language.",
+      "remove_message_brand": "Mail of this brand in this language then uses the footer for all brands."
     }
   },
   "ai_usage": {

@@ -9,6 +9,10 @@ const leads = vi.hoisted(() => ({
 const todo = vi.hoisted(() => ({ GET_Tasks: vi.fn(), POST_TaskReopen: vi.fn() }));
 vi.mock("@/api/leads/api", () => leads);
 vi.mock("@/api/todo/api", () => todo);
+const communicator = vi.hoisted(() => ({
+  GET_Mailboxes: vi.fn(() => Promise.resolve({ data: { results: [{ id: 1, brand: "entirius" }, { id: 2, brand: "ecom.house" }] } })),
+}));
+vi.mock("@/api/communicator/api", () => communicator);
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: vi.fn() }) }));
 vi.mock("@/stores/access", () => ({ useAccessStore: () => ({ can: () => true, me: null }) }));
 
@@ -69,6 +73,34 @@ describe("Company card → Details", () => {
     wrapper.findComponent({ name: "CustomFields" }).vm.$emit("update:modelValue", { platform: "m2", employees: "" });
     await byTestid(wrapper, "company-details-save").trigger("click");
     expect(leads.PATCH_Company).not.toHaveBeenCalled();
+  });
+
+  // U21: the brand picks the sending mailbox; its options are the brands of the channel's mailboxes.
+  it("the brand reads and edits from the mailbox brands, and is sent only when it changed", async () => {
+    leads.PATCH_Company.mockResolvedValue({ data: company({ brand: "ecom.house" }) });
+    const wrapper = await mount(CompanyDetails, { company: company({ brand: "" }), fields });
+    expect(byTestid(wrapper, "company-brand").text()).toBe("No brand");
+    await byTestid(wrapper, "company-details-edit").trigger("click");
+    await flushPromises();
+    expect(wrapper.findComponent('[data-testid="company-brand"]').props("options").map((option) => option.value)).toEqual(["ecom.house", "entirius"]);
+    setControl(wrapper, "company-brand", "ecom.house");
+    await byTestid(wrapper, "company-details-save").trigger("click");
+    await flushPromises();
+    expect(leads.PATCH_Company).toHaveBeenCalledWith(5, { brand: "ecom.house" });
+  });
+
+  it("a brand no mailbox carries stays offered; clearing it sends an empty brand; an older API shows no brand", async () => {
+    leads.PATCH_Company.mockResolvedValue({ data: company({ brand: "" }) });
+    const wrapper = await mount(CompanyDetails, { company: company({ brand: "old.brand" }), fields });
+    await byTestid(wrapper, "company-details-edit").trigger("click");
+    await flushPromises();
+    expect(wrapper.findComponent('[data-testid="company-brand"]').props("options").map((option) => option.value)).toContain("old.brand");
+    setControl(wrapper, "company-brand", null);
+    await byTestid(wrapper, "company-details-save").trigger("click");
+    await flushPromises();
+    expect(leads.PATCH_Company).toHaveBeenCalledWith(5, { brand: "" });
+    const older = await mount(CompanyDetails, { company: company(), fields });
+    expect(byTestid(older, "company-brand").exists()).toBe(false);
   });
 
   it("read-only: no Edit", async () => {

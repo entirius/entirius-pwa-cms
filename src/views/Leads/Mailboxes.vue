@@ -25,6 +25,7 @@
             <!-- the row opens on a click; the address is the keyboard's way in (N26); a narrow row breaks it after its "@" -->
             <router-link :to="{ name: 'LeadsMailboxEdit', params: { id: row.id } }" class="t-accent" data-testid="mailbox-link" @click.stop>{{ addressParts(row.address)[0] }}<wbr />{{ addressParts(row.address)[1] }}</router-link>
             <StatusBadge v-if="row.is_default" tone="neutral" size="sm" :dot="false" :label="$t('leads.mailboxes.default')" />
+            <StatusBadge v-if="row.is_user_default && row.user_id" tone="neutral" size="sm" :dot="false" :label="$t('leads.mailboxes.user_default')" data-testid="mailbox-user-default" />
           </span>
           <span v-if="row.display_name" class="t-muted fs-200">{{ row.display_name }}</span>
         </span>
@@ -74,13 +75,17 @@ const addressParts = (address) => {
   const at = address.indexOf("@") + 1;
   return [address.slice(0, at), address.slice(at)];
 };
-const columns = [
-  { key: "address", label: t("leads.mailboxes.col_address"), width: "1fr" },
-  { key: "user", label: t("leads.mailboxes.col_user"), width: "max-content", priority: 2 },
-  { key: "state", label: t("leads.mailboxes.col_state"), width: "max-content" },
-  { key: "today", label: t("leads.mailboxes.col_today"), numeric: true, priority: 2 },
-  { key: "actions", label: "", actions: true },
-];
+// U21: a user may have several mailboxes, one per brand; the brand column shows once a mailbox carries one.
+const columns = computed(() =>
+  [
+    { key: "address", label: t("leads.mailboxes.col_address"), width: "1fr" },
+    { key: "user", label: t("leads.mailboxes.col_user"), width: "max-content", priority: 2 },
+    mailboxes.value.some((mailbox) => mailbox.brand) && { key: "brand", label: t("leads.mailboxes.col_brand"), width: "max-content", priority: 3 },
+    { key: "state", label: t("leads.mailboxes.col_state"), width: "max-content" },
+    { key: "today", label: t("leads.mailboxes.col_today"), numeric: true, priority: 2 },
+    { key: "actions", label: "", actions: true },
+  ].filter(Boolean)
+);
 const actions = [
   { key: "add", role: "primary", label: t("leads.mailboxes.add"), testid: "mailboxes-add", onClick: () => edit({ id: "new" }) },
 ];

@@ -121,11 +121,16 @@ export const GET_Messages = (params) => communicatorApi.get(`${base()}/messages/
 export const POST_SendNow = (id) => communicatorApi.post(`${base()}/messages/${id}/send-now/`, {});
 
 // UX-007 — the mail footer per language: HTML around `{{ legal }}` (the agreements text), sanitised on save.
+// U23 / U25: per brand too (blank = every brand: no `brand` param), with the text of its unsubscribe link.
 export const GET_Footers = () => communicatorApi.get(`${base()}/footers/`);
 
-export const PUT_Footer = (language, html) => communicatorApi.put(`${base()}/footers/${language}/`, { html });
+const brandParams = (brand) => (brand ? { params: { brand } } : undefined);
 
-export const DELETE_Footer = (language) => communicatorApi.delete(`${base()}/footers/${language}/`);
+// body: { html, unsubscribe_label }
+export const PUT_Footer = (language, body, brand = "") =>
+  communicatorApi.put(`${base()}/footers/${language}/`, body, brandParams(brand));
+
+export const DELETE_Footer = (language, brand = "") => communicatorApi.delete(`${base()}/footers/${language}/`, brandParams(brand));
 
 // Leads CRM plan 14 (communicator >= 0.5.0) — the approval inbox crosses channels: no channel in its path.
 const APPROVALS = "/api/communicator/v2/admin/approvals";
@@ -139,7 +144,8 @@ export const POST_ApprovalsBulk = ({ action, ids, reason = "" }) =>
 
 export const GET_ApprovalsLog = (params) => communicatorApi.get(`${APPROVALS}/log/`, { params });
 
-// Mailboxes: passwords are write-only (`*_password_set` comes back, never the value).
+// Mailboxes: passwords are write-only (`*_password_set` comes back, never the value). U20–U22: `cc_addresses` and
+// `bcc_addresses` (lists, replaced whole on PATCH), `brand`, `is_user_default`, `signature_html`.
 export const GET_Mailboxes = () => communicatorApi.get(`${base()}/mailboxes/`);
 
 export const GET_Mailbox = (id) => communicatorApi.get(`${base()}/mailboxes/${id}/`);

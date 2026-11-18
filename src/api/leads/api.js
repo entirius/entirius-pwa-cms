@@ -118,6 +118,9 @@ export const POST_Score = (id) => leadsApi.post(`${base()}/companies/${id}/score
 export const POST_AssignOwner = (companyIds, ownerId) =>
   leadsApi.post(`${base()}/companies/assign/`, { company_ids: companyIds, owner_id: ownerId });
 
+// U21: the brand of the selected companies ("" = none) → { updated }.
+export const POST_CompanyBrand = (ids, brand) => leadsApi.post(`${base()}/companies/bulk-brand/`, { ids, brand });
+
 // 409 not_eligible / no_legal_basis / communicator_channel_missing.
 export const POST_Compose = (id, body) => leadsApi.post(`${base()}/companies/${id}/compose/`, body);
 

@@ -36,6 +36,7 @@
             <BasicSelect v-if="crm" :model-value="query.segment || null" :floating-label="$t('leads.companies.segment')" :options="SEGMENTS" clearable data-testid="companies-filter-segment" @update:model-value="setFilter('segment', $event)" />
             <BasicSelect v-if="crm" :model-value="query.origin || null" :floating-label="$t('leads.companies.origin')" :options="originOptions" clearable data-testid="companies-filter-origin" @update:model-value="setFilter('origin', $event)" />
             <BasicSelect :model-value="query.lead_type || null" :floating-label="$t('leads.companies.lead_type')" :options="typeOptions" clearable data-testid="companies-filter-type" @update:model-value="setFilter('lead_type', $event)" />
+            <BasicSelect v-if="crm && brands.length" :model-value="query.brand || null" :floating-label="$t('leads.companies.brand')" :options="brandFilterOptions" clearable data-testid="companies-filter-brand" @update:model-value="setFilter('brand', $event)" />
             <BasicCheckbox :model-value="query.has_reply === 'true'" data-testid="companies-filter-reply" @update:model-value="setFlag('has_reply', $event)">
               {{ $t("leads.companies.with_reply") }}
             </BasicCheckbox>
@@ -107,7 +108,7 @@
         clear-label-key="leads.approvals.clear"
         :actions="bulkActions"
         data-testid="companies-bulk"
-        @action="assign"
+        @action="onBulk"
         @clear="clearSelection"
       />
     </div>
@@ -122,7 +123,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { listBoardOptions } from "@/utils/leadsLabels";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
-import { GET_AssignableUsers, GET_Attributes, GET_Companies, GET_Funnel, GET_Stages, POST_AssignOwner } from "@/api/leads/api";
+import { GET_AssignableUsers, GET_Attributes, GET_Companies, GET_Funnel, GET_Stages, POST_AssignOwner, POST_CompanyBrand } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { usePageReadonly } from "@/composables/useReadonly";
@@ -133,10 +134,12 @@ import { useNotifyStore } from "@/stores/notify";
 import { formatRelative } from "@/utils/format";
 import { bulkAnswer } from "@/utils/leadsBulk";
 import { SEGMENT_TONES, defaultOwner, outboundOn, stageTone } from "@/utils/leadsOutbound";
+import { brandOptions, loadBrands } from "@/utils/mailBrands";
 import { fieldsFromDefinitions, formatValue } from "./customFields";
 
 // Companies (ux/screens/companies.md): the full list, every filter, the sort and the page in the URL, served by the
-// API page by page. leads >= 0.5.0 adds owner, score, origin, custom-field columns and filters, and bulk assign.
+// API page by page. leads >= 0.5.0 adds owner, score, origin, custom-field columns and filters, and bulk assign;
+// U21 the brand (column, filter, bulk "Set brand") from the brands of the channel's mailboxes.
 const PAGE_SIZE = 20;
 const OWNERS = ["me", "none", "all"];
 const OWNER_LABELS = { me: "mine", none: "unassigned", all: "all" };
@@ -164,11 +167,13 @@ const stages = ref([]);
 const origins = ref([]);
 const users = ref([]);
 const definitions = ref([]);
+const brands = ref([]);
+const NO_BRAND = "none";
 
 const query = computed(() => ({ owner: crm.value ? defaultOwner(readonly.value) : "all", ...route.query }));
 const page = computed(() => Number(query.value.page) || 1);
 const pages = computed(() => Math.max(1, Math.ceil(count.value / PAGE_SIZE)));
-const FILTER_KEYS = ["stage", "segment", "origin", "lead_type", "has_reply", "do_not_contact", "search"];
+const FILTER_KEYS = ["stage", "segment", "origin", "lead_type", "brand", "has_reply", "do_not_contact", "search"];
 const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KEYS.includes(key) || key.startsWith("attr.")) || query.value.owner !== "all");
 const activeFilters = computed(() => Object.keys(route.query).filter((key) => key !== "owner" && key !== "page" && key !== "sort" && key !== "search").length);
 
@@ -178,6 +183,11 @@ const stageOptions = computed(() => stages.value.map((stage) => ({ value: stage.
 const typeOptions = computed(() => leadTypes.active.map((type) => ({ value: type.code, label: type.label })));
 const originOptions = computed(() => origins.value.filter(Boolean).map((origin) => ({ value: origin, label: origin })));
 const viewOptions = computed(listBoardOptions);
+// `brand=none` asks for the companies without a brand; no param = any brand.
+const brandFilterOptions = computed(() => [
+  { value: NO_BRAND, label: t("leads.company.brand_none") },
+  ...brandOptions(brands.value, query.value.brand === NO_BRAND ? "" : query.value.brand),
+]);
 
 const pageActions = computed(() =>
   [
@@ -195,6 +205,7 @@ const columns = computed(() =>
     crm.value && filled((company) => company.score_segment) && { key: "score", label: t("leads.companies.col_score"), numeric: true, priority: 3, sortable: true },
     { key: "last_activity", label: t("leads.companies.col_last_activity"), priority: 2, sortable: true },
     crm.value && filled((company) => company.origin) && { key: "origin", label: t("leads.companies.origin"), priority: 3 },
+    crm.value && filled((company) => company.brand) && { key: "brand", label: t("leads.companies.brand"), width: "max-content", priority: 3 },
     { key: "lead_type", label: t("leads.companies.lead_type"), width: "max-content", truncate: false, priority: 3 },
     ...(crm.value ? listFields.value.filter((field) => filled((company) => company.attributes?.[field.key])).map((field) => ({ key: attrParam(field), label: field.label, priority: 3 })) : []),
   ].filter(Boolean)
@@ -217,7 +228,13 @@ const bulkActions = computed(() => [
     testid: "companies-assign",
     options: [{ value: "none", label: t("leads.companies.unassigned") }, ...users.value.map((user) => ({ value: String(user.id), label: ownerName(user) }))],
   },
-]);
+  brands.value.length && {
+    key: "brand",
+    labelKey: "leads.companies.set_brand",
+    testid: "companies-set-brand",
+    options: [{ value: NO_BRAND, label: t("leads.company.brand_none") }, ...brandOptions(brands.value)],
+  },
+].filter(Boolean));
 
 const knownType = (code) => Boolean(code) && code !== UNKNOWN_LEAD_TYPE;
 const ownerName = (owner) => (owner ? owner.name || owner.username : t("leads.companies.unassigned"));
@@ -260,12 +277,13 @@ async function load() {
 
 // Filter options; each one only adds to the page, a failure leaves its filter empty.
 async function loadOptions() {
-  const extras = crm.value ? [GET_Attributes("company"), GET_Funnel({}), GET_AssignableUsers()] : [];
-  const [stageRes, , attrs, funnel, people] = await Promise.allSettled([GET_Stages(), leadTypes.load(), ...extras]);
+  const extras = crm.value ? [GET_Attributes("company"), GET_Funnel({}), GET_AssignableUsers(), loadBrands()] : [];
+  const [stageRes, , attrs, funnel, people, known] = await Promise.allSettled([GET_Stages(), leadTypes.load(), ...extras]);
   if (stageRes.status === "fulfilled") stages.value = stageRes.value.data.results;
   if (attrs?.status === "fulfilled") definitions.value = attrs.value.data.results;
   if (funnel?.status === "fulfilled") origins.value = funnel.value.data.origins.map((row) => row.origin);
   if (people?.status === "fulfilled") users.value = people.value;
+  if (known?.status === "fulfilled") brands.value = known.value;
 }
 
 function clearSelection() {
@@ -273,7 +291,23 @@ function clearSelection() {
   selected.value = [];
 }
 
-async function assign(key, value) {
+const onBulk = (key, value) => (key === "brand" ? setBrand(value) : assign(value));
+
+async function setBrand(value) {
+  const brand = value === NO_BRAND ? "" : value;
+  const ids = selected.value.map((row) => row.id);
+  try {
+    const { data } = await POST_CompanyBrand(ids, brand);
+    const name = brand || t("leads.company.brand_none");
+    notify.spawnNotification(bulkAnswer({ doneKey: "leads.companies.brand_set", done: data.updated, params: { name } }));
+    clearSelection();
+    await load();
+  } catch (err) {
+    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.companies.load_error")), type: "negative" });
+  }
+}
+
+async function assign(value) {
   const owner = value === "none" ? null : Number(value);
   const ids = selected.value.map((row) => row.id);
   try {
