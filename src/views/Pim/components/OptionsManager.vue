@@ -22,7 +22,7 @@
         :placeholder="$t('pim.search_to_add')"
         :aria-label="$t('pim.options')"
         icon="search"
-        @update:model-value="onSearch"
+        @update:model-value="debouncedFetch(onSearch)"
       />
     </div>
 
@@ -171,6 +171,7 @@ import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import draggable from "vuedraggable";
 import { useReadonly } from "@/composables/useReadonly";
+import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import {
   GET_FeatureAttributes,
   GET_Attributes,
@@ -203,7 +204,8 @@ export default {
     const notify = useNotifyStore();
     const pimChannel = usePimChannelStore();
     const formErrors = useFormErrors();
-    return { loader, notify, pimChannel, formErrors, readonly: useReadonly() };
+    const { debouncedFetch } = useSearchDebounce();
+    return { loader, notify, pimChannel, formErrors, readonly: useReadonly(), debouncedFetch };
   },
   data() {
     return {
@@ -217,7 +219,6 @@ export default {
       page: 1,
       totalCount: 0,
       searchQuery: "",
-      searchTimeout: null,
     };
   },
   computed: {
@@ -238,9 +239,6 @@ export default {
   },
   mounted() {
     this.fetchOptions();
-  },
-  beforeUnmount() {
-    clearTimeout(this.searchTimeout);
   },
   methods: {
     extractErrorMessage(err) {
@@ -317,11 +315,8 @@ export default {
       }
     },
     onSearch() {
-      clearTimeout(this.searchTimeout);
-      this.searchTimeout = setTimeout(() => {
-        this.page = 1;
-        this.fetchOptions();
-      }, 300);
+      this.page = 1;
+      this.fetchOptions();
     },
     closeAddForm() {
       this.showAddForm = false;

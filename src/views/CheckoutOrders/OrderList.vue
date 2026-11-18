@@ -22,7 +22,7 @@
           icon="search"
           :placeholder="$t('checkout_orders.search_placeholder')"
           class="order-list__search"
-          @input="onSearchInput"
+          @input="debouncedFetch(onSearchInput)"
         />
         <div class="filter-chip-row" role="group" :aria-label="$t('checkout_orders.filters')">
           <FilterChip
@@ -80,6 +80,7 @@ import { GET_Orders } from "@/api/orders/api";
 import { useNotifyStore } from "@/stores/notify";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { formatDate } from "@/utils/format";
+import { useSearchDebounce } from "@/composables/useSearchDebounce";
 
 const STATUS_VARIANTS = {
   UNPAID: "warning",
@@ -96,7 +97,8 @@ export default {
   name: "OrderList",
   setup() {
     const notify = useNotifyStore();
-    return { notify };
+    const { debouncedFetch } = useSearchDebounce(400);
+    return { notify, debouncedFetch };
   },
   data() {
     return {
@@ -105,7 +107,6 @@ export default {
       loading: false,
       selectedStatus: "all",
       search: "",
-      searchTimer: null,
       pageSize: 20,
       activeChannel: process.env.VUE_APP_CHANNEL || "default-local",
       channels: [],
@@ -233,8 +234,7 @@ export default {
       }
     },
     onSearchInput() {
-      clearTimeout(this.searchTimer);
-      this.searchTimer = setTimeout(() => this.updateQuery({ page: 1 }), 400);
+      this.updateQuery({ page: 1 });
     },
     setStatusFilter(key) {
       this.selectedStatus = key;

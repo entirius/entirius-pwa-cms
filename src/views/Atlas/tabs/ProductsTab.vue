@@ -29,7 +29,7 @@
           icon="search"
           class="products-filters__search"
           data-testid="products-filter-search"
-          @input="onSearchInput"
+          @input="debouncedFetch(onSearchInput)"
         />
         <BasicInput
           v-model="filters.ean"
@@ -296,6 +296,7 @@ import FindInPimPanel from "../components/FindInPimPanel.vue";
 import { useNotifyStore } from "@/stores/notify";
 import { useMuninStore } from "@/stores/munin";
 import { useAtlasBulkActions } from "@/composables/useAtlasBulkActions";
+import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { formatCost, formatDate } from "@/utils/format";
 import {
   GET_SupplierProducts,
@@ -341,10 +342,12 @@ export default {
     kind: { type: String, default: "procurement" },
   },
   setup() {
+    const { debouncedFetch } = useSearchDebounce();
     return {
       notify: useNotifyStore(),
       munin: useMuninStore(),
       bulk: useAtlasBulkActions(),
+      debouncedFetch,
     };
   },
   data() {
@@ -363,7 +366,6 @@ export default {
         costMax: "",
         ordering: "-data_changed_at",
       },
-      searchTimer: null,
       selectedProducts: [],
       bulkBusy: false,
       rawVisible: false,
@@ -554,9 +556,6 @@ export default {
       this.fetchProducts();
     },
   },
-  beforeUnmount() {
-    clearTimeout(this.searchTimer);
-  },
   mounted() {
     this.fetchProducts();
   },
@@ -656,8 +655,7 @@ export default {
       this.fetchProducts();
     },
     onSearchInput() {
-      clearTimeout(this.searchTimer);
-      this.searchTimer = setTimeout(() => this.resetAndFetch(), 300);
+      this.resetAndFetch();
     },
     onOrderingChange(val) {
       this.filters.ordering = val;

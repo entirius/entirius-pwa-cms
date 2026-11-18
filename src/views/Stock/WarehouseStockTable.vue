@@ -29,7 +29,7 @@
           :aria-label="$t('stock.search_sku')"
           icon="search"
           class="stock-table__search"
-          @input="onSearch"
+          @input="debouncedFetch(onSearch)"
         />
         <div class="filter-chip-row" role="group" :aria-label="$t('stock.status')">
           <FilterChip
@@ -108,6 +108,7 @@ import { useLoaderStore } from "@/stores/loader"
 import { useNotifyStore } from "@/stores/notify"
 import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors"
 import { GET_WarehouseProducts, PATCH_WarehouseStock } from "@/api/stock/api"
+import { useSearchDebounce } from "@/composables/useSearchDebounce"
 import ImportCSVModal from "./ImportCSVModal.vue"
 import StockWarehousePicker from "./StockWarehousePicker.vue"
 
@@ -119,7 +120,8 @@ export default {
     const loader = useLoaderStore()
     const notify = useNotifyStore()
     const formErrors = useFormErrors()
-    return { loader, notify, formErrors }
+    const { debouncedFetch } = useSearchDebounce()
+    return { loader, notify, formErrors, debouncedFetch }
   },
   data() {
     return {
@@ -132,7 +134,6 @@ export default {
       activeFilter: "all",
       search: "",
       showImportModal: false,
-      _debounceTimer: null,
     }
   },
   computed: {
@@ -231,11 +232,8 @@ export default {
       this.fetchProducts()
     },
     onSearch() {
-      clearTimeout(this._debounceTimer)
-      this._debounceTimer = setTimeout(() => {
-        this.currentPage = 1
-        this.fetchProducts()
-      }, 300)
+      this.currentPage = 1
+      this.fetchProducts()
     },
     async saveAll() {
       if (this.dirtyCount === 0) return

@@ -97,6 +97,7 @@ import {
   PATCH_CategoryProductsReorder,
 } from "@/api/pim/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { useSearchDebounce } from "@/composables/useSearchDebounce";
 
 const props = defineProps({
   channelIdx: { type: String, required: true },
@@ -115,7 +116,7 @@ const pageSize = 24;
 const loading = ref(false);
 const searchQuery = ref("");
 
-let searchTimeout = null;
+const { debouncedFetch } = useSearchDebounce();
 
 const totalPages = computed(() =>
   Math.max(1, Math.ceil(unpositionedCount.value / pageSize))
@@ -194,11 +195,10 @@ function goToPage(page) {
 }
 
 watch(searchQuery, () => {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
+  debouncedFetch(() => {
     currentPage.value = 1;
     fetchProducts();
-  }, 300);
+  });
 });
 
 watch(
