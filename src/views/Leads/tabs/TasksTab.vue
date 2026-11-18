@@ -55,7 +55,7 @@
 import { computed, onMounted, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_Tasks, POST_TaskReopen } from "@/api/todo/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useNotifyStore } from "@/stores/notify";
 import { companySubjectRef } from "@/utils/subjectRef";
 import TaskDialog from "../TaskDialog.vue";
@@ -120,7 +120,7 @@ async function reopen(task) {
     await POST_TaskReopen(task.id);
     onSaved();
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.task.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.task.error"));
   } finally {
     reopening.value = null;
   }
@@ -142,7 +142,7 @@ async function load() {
     cancelled.value = gone.data.results || [];
     emit("count", open.data.count);
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.task.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.task.error"));
   } finally {
     loading.value = false;
   }

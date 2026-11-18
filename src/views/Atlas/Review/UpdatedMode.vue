@@ -101,7 +101,7 @@
 import { useNotifyStore } from "@/stores/notify";
 import { useAtlasBulkActions } from "@/composables/useAtlasBulkActions";
 import { formatCost, formatDate } from "@/utils/format";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { GET_SupplierProducts } from "@/api/atlas/api";
 
 const STATUS_VARIANTS = {
@@ -249,10 +249,7 @@ export default {
         const { data } = await GET_SupplierProducts(params);
         this.rows = data.results || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
         this.rows = [];
       } finally {
         this.loading = false;

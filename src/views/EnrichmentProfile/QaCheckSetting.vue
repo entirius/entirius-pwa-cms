@@ -15,7 +15,7 @@
 
 <script>
 import { GET_ProfileSettings, PUT_ProfileSettings } from "@/api/enrichment/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useNotifyStore } from "@/stores/notify";
 
 // The instance default of the automatic guidelines check: every new AI text proposal is checked against the profile's
@@ -52,7 +52,7 @@ export default {
       }
     },
     toastError(err) {
-      this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+      notifyApiError(this.notify, err, this.$t("notifications.error"));
     },
   },
 };

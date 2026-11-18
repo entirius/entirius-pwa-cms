@@ -1,7 +1,8 @@
 import { ref } from "vue";
 import { t } from "@/i18n";
 import { useNotifyStore } from "@/stores/notify";
-import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { refusedExpiryIssue } from "./tokens";
 
 // The submit of a token dialog: `submit(payload)` is the page's call (it hands a raw token straight to SecretReveal —
@@ -24,7 +25,7 @@ export function useTokenDialog(close, fields) {
     const issue = refusedExpiryIssue(err);
     if (issue) setExpiryIssue(issue);
     if (fields.some((field) => formErrors.getFieldError(field))) return;
-    notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, t("notifications.error")) });
+    notifyApiError(notify, err, t("notifications.error"));
     close();
   }
 

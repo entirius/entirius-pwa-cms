@@ -1,6 +1,6 @@
 import { ref } from "vue";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { t } from "@/i18n";
 import { POST_RejectProposal } from "@/api/enrichment/api";
 import { acceptChosen } from "./applyMode";
@@ -21,7 +21,7 @@ export function useProposalActions({ onApplied, onRejected, afterAction = () => 
       await work();
       afterAction();
     } catch (err) {
-      notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, t("notifications.error")) });
+      notifyApiError(notify, err, t("notifications.error"));
     } finally {
       busy.value = false;
     }

@@ -80,7 +80,7 @@ import { isNotFound } from "@/api/createClient";
 import { GET_Run, POST_CancelRun } from "@/api/enrichment/api";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import CostLabel from "@/views/EnrichmentReview/CostLabel.vue";
 import ProfileGate from "./ProfileGate.vue";
 import RunBrief from "./RunBrief.vue";
@@ -215,7 +215,7 @@ export default {
       }
     },
     failed(err) {
-      this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+      notifyApiError(this.notify, err, this.$t("notifications.error"));
     },
   },
 };

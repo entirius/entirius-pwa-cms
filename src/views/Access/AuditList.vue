@@ -83,7 +83,7 @@
 
 <script>
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { formatDate } from "@/utils/format";
 import { GET_AccessAudit, GET_AccessAllStaff } from "@/api/access/api";
 import { AUDIT_ACTIONS, AUDIT_PAGE_SIZE, BYPASS, auditParams, foldedCount, foldedRequestsParams } from "./audit";
@@ -194,7 +194,7 @@ export default {
         this.requests = {};
         this.count = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

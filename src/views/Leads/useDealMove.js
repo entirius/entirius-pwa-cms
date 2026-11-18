@@ -1,7 +1,7 @@
 import { ref } from "vue";
 import { t } from "@/i18n";
 import { POST_DealTransition } from "@/api/leads/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useNotifyStore } from "@/stores/notify";
 
 const MOVED_TOASTS = { won: "leads.deal.won_toast", lost: "leads.deal.lost_toast" };
@@ -23,7 +23,7 @@ export function useDealMove(stages, { moved, refused = () => {} }) {
       return true;
     } catch (err) {
       refused(deal, stageKey);
-      notify.spawnNotification({ msg: extractApiMessage(err, t("leads.deals.move_failed")), type: "negative" });
+      notifyApiError(notify, err, t("leads.deals.move_failed"));
       return false;
     }
   }

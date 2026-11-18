@@ -86,6 +86,7 @@ import { usePimChannelStore } from "@/stores/pimChannel";
 import { useNotifyStore } from "@/stores/notify";
 import { useConfigHealthStore } from "@/stores/configHealth";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { isConflict } from "@/api/createClient";
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
 import { GET_Templates, POST_SpawnTask, POST_Template } from "@/api/enrichment/api";
@@ -396,7 +397,7 @@ export default {
         this.notify.spawnNotification({ type: "positive", msg: this.$t("enrichment.templates.saved") });
         this.$emit("template-saved", data);
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }

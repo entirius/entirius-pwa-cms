@@ -261,7 +261,8 @@
       </template>
 
     <!-- Edit item modal -->
-    <EditMenuItemModal
+    <EditNavLinkModal
+      with-display-as
       :visible="editItemVisible"
       :item="editingItem"
       :languages="channelLanguages"
@@ -272,9 +273,9 @@
     />
 
     <!-- Edit link modal -->
-    <EditLinkModal
+    <EditNavLinkModal
       :visible="editLinkVisible"
-      :link="editingLink"
+      :item="editingLink"
       :languages="channelLanguages"
       :default-language="defaultLang"
       :channel-idx="pickerChannelIdx"
@@ -313,10 +314,9 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 import { usePimChannelStore } from "@/stores/pimChannel";
-import EditMenuItemModal from "@/functionals/EditMenuItemModal.vue";
-import EditLinkModal from "@/functionals/EditLinkModal.vue";
+import EditNavLinkModal from "@/functionals/EditNavLinkModal.vue";
 import EditBannerModal from "@/functionals/EditBannerModal.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { usePageReadonly } from "@/composables/useReadonly";
 
 function uuid() {
@@ -325,7 +325,7 @@ function uuid() {
 
 export default {
   name: "NavigationEditor",
-  components: { draggable, EditMenuItemModal, EditLinkModal, EditBannerModal },
+  components: { draggable, EditNavLinkModal, EditBannerModal },
   setup() {
     const loader = useLoaderStore();
     const notify = useNotifyStore();
@@ -436,10 +436,7 @@ export default {
         this.originalJson = JSON.stringify(this.navigationItems);
         this.originalChannelsJson = JSON.stringify(this.selectedChannels);
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -629,10 +626,7 @@ export default {
         this.originalChannelsJson = JSON.stringify(this.selectedChannels);
         this.notify.spawnNotification({ type: "positive", msg: this.$t("layout_extender.saved") });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -647,10 +641,7 @@ export default {
         this.originalChannelsJson = JSON.stringify(this.selectedChannels);
         this.notify.spawnNotification({ type: "positive", msg: this.$t("layout_extender.published_success") });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }

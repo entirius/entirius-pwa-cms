@@ -134,7 +134,7 @@
 <script>
 import { GET_Proposal, GET_Run, GET_Task, POST_AcceptProposal, POST_RegenerateStep } from "@/api/enrichment/api";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import CostLabel from "@/views/EnrichmentReview/CostLabel.vue";
 import ProposalCorrection from "@/views/EnrichmentReview/ProposalCorrection.vue";
 import { revisable } from "@/views/EnrichmentReview/correction";
@@ -442,7 +442,7 @@ export default {
       }
     },
     failed(err) {
-      this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+      notifyApiError(this.notify, err, this.$t("notifications.error"));
     },
   },
 };

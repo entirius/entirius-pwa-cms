@@ -120,7 +120,7 @@ import ProductCard from "./ProductCard.vue";
 import RawDataPanel from "./RawDataPanel.vue";
 import RawDataModal from "./RawDataModal.vue";
 import GalleryModal from "./GalleryModal.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useNotifyStore } from "@/stores/notify";
 import { formatCost } from "@/utils/format";
 import {
@@ -326,10 +326,7 @@ export default {
         const { data } = await GET_SupplierProducts(params);
         this.rows = data.results || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -364,10 +361,7 @@ export default {
         this.confirmVisible = false;
         this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -385,10 +379,7 @@ export default {
         });
         this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -441,10 +432,7 @@ export default {
         });
         this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.detailBusy = false;
       }

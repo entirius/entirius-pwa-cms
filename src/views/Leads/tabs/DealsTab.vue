@@ -34,7 +34,7 @@ import { computed, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_CompanyDeals } from "@/api/leads/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useNotifyStore } from "@/stores/notify";
 import DealDialog from "../DealDialog.vue";
 import { DEAL_KINDS, dealKindLabel, dealKindTone, dealValue } from "../deals";
@@ -75,7 +75,7 @@ onMounted(async () => {
   try {
     deals.value = (await GET_CompanyDeals(props.company.id)).data.results;
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.common.error"));
   } finally {
     loading.value = false;
   }

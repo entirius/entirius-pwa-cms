@@ -37,7 +37,7 @@ import { listBoardOptions } from "@/utils/leadsLabels";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_DealBoard } from "@/api/leads/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { ReadonlyOff, usePageReadonly } from "@/composables/useReadonly";
 import { defaultOwner } from "@/utils/leadsOutbound";
 import { AREAS } from "@/configs/areas";
@@ -87,7 +87,7 @@ async function load() {
     const results = (await GET_DealBoard({ owner })).data.results;
     if (run === latest) columns.value = results;
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.common.error"));
   } finally {
     if (run === latest) {
       loading.value = false;

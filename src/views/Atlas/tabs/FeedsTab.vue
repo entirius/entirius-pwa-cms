@@ -78,7 +78,7 @@
 
 <script>
 import FeedDetailDrawer from "../components/FeedDetailDrawer.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useNotifyStore } from "@/stores/notify";
 import { GET_Feeds, POST_FeedTrigger } from "@/api/atlas/api";
 
@@ -159,10 +159,7 @@ export default {
         const { data } = await GET_Feeds(this.supplier.idx, { page_size: 100 });
         this.feeds = data.results || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -196,10 +193,7 @@ export default {
         this.triggerTarget = null;
         this.fetchFeeds();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
   },

@@ -18,7 +18,7 @@
 
 <script>
 import { GET_Proposal, POST_ReviseProposal } from "@/api/enrichment/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useNotifyStore } from "@/stores/notify";
 import { pluralKey } from "@/utils/plural";
 import { revisable, valueShape } from "./correction";
@@ -68,7 +68,7 @@ export default {
       try {
         await work();
       } catch (err) {
-        notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }

@@ -39,7 +39,7 @@
 import { useLoaderStore } from '@/stores/loader'
 import { useNotifyStore } from '@/stores/notify'
 import { GET_PmChannels, POST_PmSyncChannels } from '@/api/pricemanager/api'
-import { extractApiMessage } from '@/composables/useFormErrors'
+import { notifyApiError } from '@/composables/useNotify'
 
 export default {
   name: 'PmChannelList',
@@ -89,10 +89,7 @@ export default {
         const { data } = await GET_PmChannels()
         this.channels = Array.isArray(data) ? data : data.results || []
       } catch (err) {
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loading = false
       }
@@ -111,10 +108,7 @@ export default {
         })
         await this.fetch()
       } catch (err) {
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loader.loaderFinish()
       }

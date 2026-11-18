@@ -64,7 +64,7 @@
 <script>
 import { useNotifyStore } from "@/stores/notify";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { formatDate, formatRelative } from "@/utils/format";
 import { GET_StockAlertsDemand } from "@/api/stockAlerts/api";
 
@@ -127,7 +127,7 @@ export default {
         this.totalCount = data.count || 0;
         this.totalWaiting = data.total_waiting || 0;
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

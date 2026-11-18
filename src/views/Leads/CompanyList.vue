@@ -123,7 +123,7 @@ import { listBoardOptions } from "@/utils/leadsLabels";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_AssignableUsers, GET_Attributes, GET_Companies, GET_Funnel, GET_Stages, POST_AssignOwner } from "@/api/leads/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
@@ -252,7 +252,7 @@ async function load() {
     companies.value = data.results;
     count.value = data.count ?? data.results.length;
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.companies.load_error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.companies.load_error"));
   } finally {
     loading.value = false;
   }
@@ -284,7 +284,7 @@ async function assign(key, value) {
     clearSelection();
     await load();
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.companies.load_error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.companies.load_error"));
   }
 }
 

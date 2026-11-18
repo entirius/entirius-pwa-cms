@@ -91,7 +91,7 @@
 <script>
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { withStoredOption } from "@/utils/options";
 import { isNotFound } from "@/api/createClient";
@@ -286,7 +286,7 @@ export default {
       }
     },
     failed(err) {
-      this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+      notifyApiError(this.notify, err, this.$t("notifications.error"));
     },
   },
 };

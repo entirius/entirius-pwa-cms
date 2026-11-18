@@ -117,7 +117,7 @@ import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { GET_Conversations, GET_Replies } from "@/api/communicator/api";
 import { GET_Tasks, GET_Today, POST_TaskReopen } from "@/api/todo/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { ACCESS_STORE, ReadonlyArea, isAreaReadonly } from "@/composables/useReadonly";
 import { AREAS } from "@/configs/areas";
@@ -260,7 +260,7 @@ async function load() {
   try {
     tasks.value = chip.value === "due" ? await loadDue() : await loadChip();
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.task.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.task.error"));
   } finally {
     loading.value = false;
   }
@@ -305,7 +305,7 @@ async function reopen(task) {
     // k2 (walk 4): a reopened task counts under Due now again — the counter is read with the list
     await Promise.all([load(), chip.value === "due" ? null : loadDue()]);
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.task.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.task.error"));
   } finally {
     reopening.value = null;
   }

@@ -96,7 +96,8 @@ import {
   GET_CategoryProducts,
   PATCH_CategoryProductsReorder,
 } from "@/api/pim/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
+import { useSearchDebounce } from "@/composables/useSearchDebounce";
 
 const props = defineProps({
   channelIdx: { type: String, required: true },
@@ -115,7 +116,7 @@ const pageSize = 24;
 const loading = ref(false);
 const searchQuery = ref("");
 
-let searchTimeout = null;
+const { debouncedFetch } = useSearchDebounce();
 
 const totalPages = computed(() =>
   Math.max(1, Math.ceil(unpositionedCount.value / pageSize))
@@ -140,10 +141,7 @@ async function fetchProducts() {
     unpositioned.value = data.unpositioned;
     unpositionedCount.value = data.unpositioned_count;
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   } finally {
     loading.value = false;
   }
@@ -174,10 +172,7 @@ async function savePositions() {
     }
     await fetchProducts();
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.save_error")),
-    });
+    notifyApiError(notify, err, t("notifications.save_error"));
   } finally {
     loader.loaderFinish();
   }
@@ -194,11 +189,10 @@ function goToPage(page) {
 }
 
 watch(searchQuery, () => {
-  clearTimeout(searchTimeout);
-  searchTimeout = setTimeout(() => {
+  debouncedFetch(() => {
     currentPage.value = 1;
     fetchProducts();
-  }, 300);
+  });
 });
 
 watch(

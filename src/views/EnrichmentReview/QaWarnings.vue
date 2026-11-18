@@ -21,7 +21,7 @@
 
 <script>
 import { POST_SuggestFact } from "@/api/enrichment/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useNotifyStore } from "@/stores/notify";
 import { useEnrichmentProfileStore } from "@/stores/enrichmentProfile";
 import { sentenceWith, valueText } from "./correction";
@@ -75,7 +75,7 @@ export default {
         useEnrichmentProfileStore().refresh();
         notify.spawnNotification({ type: "positive", msg: this.$t("enrichment.qa.fact_suggested_toast") });
       } catch (err) {
-        notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }

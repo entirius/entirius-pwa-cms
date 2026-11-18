@@ -54,7 +54,7 @@ import {
   GET_FeatureSetsGlobal,
   PATCH_FeatureSet,
 } from "@/api/pim/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 export default {
   name: "QualitySettings",
@@ -128,10 +128,7 @@ export default {
           msg: this.$t("pim.quality_settings_saved"),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.saving = false;
       }
@@ -154,10 +151,7 @@ export default {
           msg: this.$t("pim.quality_settings_saved"),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.saving = false;
       }

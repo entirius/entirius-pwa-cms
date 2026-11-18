@@ -38,7 +38,7 @@
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { GET_EmailTemplates } from "@/api/emails/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { emailTypeLabel } from "./emailTypes";
 import EmailCard from "./EmailCard.vue";
 
@@ -74,10 +74,11 @@ export default {
         const { data } = await GET_EmailTemplates(this.emailType);
         this.templates = data.results || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("emails.error_load_templates")),
-        });
+        notifyApiError(
+          this.notify,
+          err,
+          this.$t("emails.error_load_templates")
+        );
       } finally {
         this.loading = false;
       }

@@ -289,7 +289,8 @@ import {
   GET_AgmChannels,
   GET_ContentHistory,
 } from "@/api/agreements/api";
-import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
@@ -480,10 +481,7 @@ export default {
         const { data } = await GET_AgmChannels({ page_size: 100 });
         this.channels = data.results || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async fetchDefinition() {
@@ -497,10 +495,7 @@ export default {
       } catch (err) {
         // Only the first load fails the page; a failed refresh after a save keeps the loaded form.
         if (!this.definition.slug) this.loadFailed = true;
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -510,10 +505,7 @@ export default {
         const { data } = await GET_Versions(this.$route.params.slug);
         this.versions = data.results || data || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     resetForm(data) {
@@ -560,10 +552,7 @@ export default {
         }
       } catch (err) {
         this.formErrors.handleApiError(err);
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.save_error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.save_error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -579,10 +568,7 @@ export default {
         });
         this.$router.push("/agreements/list");
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -607,10 +593,7 @@ export default {
         this.cancelVersionForm();
         await this.fetchVersions();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.save_error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.save_error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -631,10 +614,7 @@ export default {
         this.cancelEditVersion();
         await this.fetchVersions();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.save_error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.save_error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -658,10 +638,7 @@ export default {
         });
         await this.fetchVersions();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.save_error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.save_error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -693,10 +670,7 @@ export default {
         });
         await this.fetchVersions();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }

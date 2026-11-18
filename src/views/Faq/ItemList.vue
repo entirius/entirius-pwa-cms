@@ -4,12 +4,12 @@
       <PageHeader :title="$t('faq.items')" />
     </template>
     <template #toolbar>
-      <div class="item-list__toolbar">
+      <div class="list-toolbar item-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="item-list__search"
+          class="list-search item-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <MobileFilterPanel
@@ -86,7 +86,7 @@ import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { GET_FaqItems, GET_FaqGroups } from "@/api/faq/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 export default {
   name: "FaqItemList",
@@ -221,10 +221,7 @@ export default {
         this.items = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -265,19 +262,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.item-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-
-.item-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
-
 .item-list__group-filter {
   min-width: 150px;
   max-width: 200px;

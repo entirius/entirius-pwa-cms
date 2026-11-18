@@ -46,7 +46,7 @@
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { GET_Types, POST_Import } from "@/api/deliverypoints/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import ImportChooseFile from "@/views/Stock/ImportChooseFile.vue";
 
 // The import is not routed (the service imports with `manage.py import_deliverypoints`); the dialog is kept for when
@@ -110,10 +110,7 @@ export default {
         const { data } = await GET_Types({ page_size: 100 });
         this.types = data.results || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     onFileSelect(file) {
@@ -146,10 +143,7 @@ export default {
 
         this.selectedFile = null;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.submitting = false;
         this.loader.loaderFinish();

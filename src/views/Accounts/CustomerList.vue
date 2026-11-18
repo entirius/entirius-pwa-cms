@@ -4,12 +4,12 @@
       <PageHeader :title="$t('accounts.customers')" />
     </template>
     <template #toolbar>
-      <div class="acc-list__toolbar">
+      <div class="list-toolbar acc-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="acc-list__search"
+          class="list-search acc-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
         <BasicSelect
@@ -102,7 +102,7 @@ import {
   GET_AccountsGroups,
   GET_AccountsChannels,
 } from "@/api/accounts/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 export default {
   name: "CustomerList",
@@ -184,10 +184,7 @@ export default {
         this.customers = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -261,19 +258,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.acc-list__toolbar {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: var(--space-5);
-}
-
-.acc-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
-
 .acc-list__filter-dropdown {
   min-width: 120px;
   max-width: 200px;

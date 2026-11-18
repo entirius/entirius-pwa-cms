@@ -86,6 +86,7 @@ import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
 import { DELETE_Attribute, GET_Attributes, PATCH_Attribute, POST_Attribute } from "@/api/leads/api";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { usePageReadonly } from "@/composables/useReadonly";
 import { useNotifyStore } from "@/stores/notify";
 import { FIELD_KINDS, KEY_MAX, keyFromLabel, plainCopy } from "./customFields";
@@ -223,7 +224,7 @@ async function patch(row, changes) {
     await PATCH_Attribute(row.id, changes);
     await load();
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.common.error"));
   }
 }
 
@@ -234,7 +235,7 @@ async function move(index, step) {
   try {
     await Promise.all([PATCH_Attribute(a.id, { order: index + step }), PATCH_Attribute(b.id, { order: index })]);
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.common.error"));
   }
   await load();
 }
@@ -246,7 +247,7 @@ async function remove() {
     await DELETE_Attribute(row.id);
     await load();
   } catch (err) {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.common.error"));
   }
 }
 

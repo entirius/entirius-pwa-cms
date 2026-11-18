@@ -40,7 +40,7 @@
 
 <script>
 import OverviewTab from "./tabs/OverviewTab.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import FeedsTab from "./tabs/FeedsTab.vue";
 import MappingsTab from "./tabs/MappingsTab.vue";
 import ProductsTab from "./tabs/ProductsTab.vue";
@@ -147,10 +147,7 @@ export default {
         this.supplier = data;
       } catch (err) {
         this.supplier = null;
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

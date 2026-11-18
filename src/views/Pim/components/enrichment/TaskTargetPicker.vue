@@ -51,7 +51,7 @@ import { GET_Products } from "@/api/pim/api";
 import { useCategoryOptions } from "@/composables/useRemoteOptions";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { pluralKey } from "@/utils/plural";
 import { RUN_NOW_MAX } from "./runLane";
 import { MAX_REFS, UNKNOWN_SHOWN, parseRefs } from "./taskTargets";
@@ -163,7 +163,7 @@ export default {
       } catch (err) {
         if (mine !== this.seq) return;
         this.emit({});
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     resolvePaste() {

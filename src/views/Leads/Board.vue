@@ -65,7 +65,7 @@
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_Companies, GET_Rules, GET_Stages, POST_Transition } from "@/api/leads/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useLeadTypesStore } from "@/stores/leadTypes";
 import { useNotifyStore } from "@/stores/notify";
 import BoardColumn from "./BoardColumn.vue";
@@ -140,7 +140,7 @@ async function move(company, stageKey, dragged) {
     columns[stageKey].count += 1;
   } catch (err) {
     relocate(company, stageKey, fromKey);
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.board.move_failed")), type: "negative" });
+    notifyApiError(notify, err, t("leads.board.move_failed"));
   }
 }
 

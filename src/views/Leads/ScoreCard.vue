@@ -25,7 +25,7 @@
 import { computed, ref } from "vue";
 import { t } from "@/i18n";
 import { POST_Score } from "@/api/leads/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { AREAS } from "@/configs/areas";
 import { useAccessStore } from "@/stores/access";
 import { useNotifyStore } from "@/stores/notify";
@@ -53,7 +53,7 @@ async function scoreNow() {
     result.value = (await POST_Score(props.company.id)).data;
   } catch (err) {
     if (apiErrorCode(err) === "no_scoring_profile") noProfile.value = true;
-    else notify.spawnNotification({ msg: extractApiMessage(err, t("leads.common.error")), type: "negative" });
+    else notifyApiError(notify, err, t("leads.common.error"));
   } finally {
     busy.value = false;
   }

@@ -63,7 +63,7 @@
 <script>
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { GET_Templates, PATCH_Template } from "@/api/enrichment/api";
 import { loadCatalog } from "@/views/EnrichmentReview/fieldCatalog";
 import RouteTabs from "@/components/Navigation/RouteTabs.vue";
@@ -139,7 +139,7 @@ export default {
       }
     },
     failed(err) {
-      this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+      notifyApiError(this.notify, err, this.$t("notifications.error"));
     },
     create() {
       this.$router.push({ name: "EnrichmentTemplateCreate" });

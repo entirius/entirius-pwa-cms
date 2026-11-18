@@ -153,7 +153,8 @@ import { usePageReadonly } from "@/composables/useReadonly";
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { useUnsavedChanges } from "@/composables/useUnsavedChanges";
-import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import {
   GET_FaqGroup,
   POST_FaqGroup,
@@ -284,10 +285,7 @@ export default {
         const { data } = await GET_FaqChannels({ page_size: 100 });
         this.channels = Array.isArray(data) ? data : data.results || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async fetchGroup() {
@@ -299,10 +297,7 @@ export default {
         this.snapshot(this.form);
         this.track(this.form);
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -354,10 +349,7 @@ export default {
           msg: this.$t("faq.item_added_to_group"),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async removeItemFromGroup(item) {
@@ -370,10 +362,7 @@ export default {
           msg: this.$t("faq.item_removed_from_group"),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async onReorderItems() {
@@ -388,10 +377,7 @@ export default {
           msg: this.$t("faq.reorder_saved"),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async onTranslationsSave({ values }) {
@@ -413,10 +399,7 @@ export default {
           msg: this.$t("faq.translations_saved"),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.save_error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.save_error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -457,10 +440,7 @@ export default {
         }
       } catch (err) {
         this.formErrors.handleApiError(err);
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.save_error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.save_error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -477,10 +457,7 @@ export default {
         });
         this.$router.push("/faq/groups");
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }

@@ -138,7 +138,7 @@ import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from "vu
 import { t } from "@/i18n";
 import { isConflict } from "@/api/createClient";
 import * as api from "@/api/communicator/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
 import { useLeadsChannelStore } from "@/stores/leadsChannel";
 import { useMuninStore } from "@/stores/munin";
@@ -430,7 +430,7 @@ async function act(call, after) {
 // any other conflict → the service refused the action, show its message and stay on the draft.
 async function onConflict(err) {
   if (err.error !== "ALREADY_REVIEWED") {
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.review.refused")), type: "negative" });
+    notifyApiError(notify, err, t("leads.review.refused"));
     return;
   }
   notify.spawnNotification({ msg: t("leads.review.conflict"), type: "warning" });
@@ -475,7 +475,7 @@ async function sendSkip(id) {
     reviewQueue.queueChanged();
   } catch (err) {
     if (isConflict(err) && err.error === "ALREADY_REVIEWED") return;
-    notify.spawnNotification({ msg: extractApiMessage(err, t("leads.review.error")), type: "negative" });
+    notifyApiError(notify, err, t("leads.review.error"));
   }
 }
 

@@ -154,7 +154,8 @@
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
-import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import {
   DELETE_SpawnRule,
   GET_SpawnRule,
@@ -283,10 +284,7 @@ export default {
         this.limitStr = data.limit != null ? String(data.limit) : "";
         this.cooldownStr = data.cooldown_days != null ? String(data.cooldown_days) : "";
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -364,10 +362,7 @@ export default {
           msg: this.$t(outcome.key, { id: data.task?.id ?? "" }),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async deleteRule() {
@@ -381,10 +376,7 @@ export default {
         });
         this.$router.push({ name: "EnrichmentSpawnRules" });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }

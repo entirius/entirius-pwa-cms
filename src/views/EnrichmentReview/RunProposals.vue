@@ -48,7 +48,7 @@
 import { ref } from "vue";
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { GET_Proposals } from "@/api/enrichment/api";
 import BatchCorrection from "./BatchCorrection.vue";
 import DriftModal from "./DriftModal.vue";
@@ -92,7 +92,7 @@ export default {
         this.rows = data.results || [];
         this.count = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

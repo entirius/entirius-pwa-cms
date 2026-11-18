@@ -52,7 +52,7 @@
 
 <script>
 import { DELETE_Memory, GET_Memory, PATCH_Memory, POST_PromoteMemory } from "@/api/enrichment/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { useNotifyStore } from "@/stores/notify";
 import { useEnrichmentProfileStore } from "@/stores/enrichmentProfile";
@@ -185,7 +185,7 @@ export default {
       return this.act(() => DELETE_Memory(entry.id), "enrichment.memory.deleted_toast");
     },
     toastError(err) {
-      this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+      notifyApiError(this.notify, err, this.$t("notifications.error"));
     },
   },
 };

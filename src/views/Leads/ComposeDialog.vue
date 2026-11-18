@@ -55,6 +55,7 @@ import { t } from "@/i18n";
 import { GET_WaitingMessages } from "@/api/communicator/api";
 import { GET_Mailable, POST_Compose } from "@/api/leads/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { useNotifyStore } from "@/stores/notify";
 import { blockReasonLabel, sendStateSentence } from "@/utils/leadsLabels";
 import { apiErrorCode } from "@/utils/leadsOutbound";
@@ -169,7 +170,7 @@ function refused(err) {
   if (code === "no_legal_basis") toError.value = t("leads.compose.no_legal_basis");
   else if (code === "not_eligible") toError.value = extractApiMessage(err, t("leads.compose.error"));
   if (toError.value) return;
-  notify.spawnNotification({ msg: extractApiMessage(err, t("leads.compose.error")), type: "negative" });
+  notifyApiError(notify, err, t("leads.compose.error"));
   emit("update:open", false);
 }
 </script>

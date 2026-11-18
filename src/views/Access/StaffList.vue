@@ -64,7 +64,7 @@
 <script>
 import { useNotifyStore } from "@/stores/notify";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { GET_AccessStaff, GET_AccessAllRoles, POST_AccessStaff } from "@/api/access/api";
 import SecretReveal from "@/boots/SecretReveal/index.vue";
 import StaffCreateDialog from "./StaffCreateDialog.vue";
@@ -133,7 +133,7 @@ export default {
         if (!this.roles.length) this.roles = await GET_AccessAllRoles();
         this.creating = true;
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     // The dialog's call: a refusal goes back to the dialog (its field errors). The dialog goes first (its focus trap
@@ -161,7 +161,7 @@ export default {
         this.staff = data.results || [];
         this.count = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

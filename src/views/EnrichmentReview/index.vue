@@ -78,7 +78,7 @@
             icon="search"
             class="enrichment-review__search"
             data-testid="enrichment-search-input"
-            @input="onSearchChange"
+            @input="debouncedFetch(onSearchChange)"
           />
           <BasicSelect
             :floating-label="$t('enrichment.review.col.module')"
@@ -108,7 +108,7 @@
             :aria-label="$t('enrichment.review.confidence_min')"
             class="enrichment-review__confidence"
             data-testid="enrichment-confidence-filter"
-            @input="onSearchChange"
+            @input="debouncedFetch(onSearchChange)"
           />
         </MobileFilterPanel>
       </div>
@@ -247,7 +247,7 @@ import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useAccessStore } from "@/stores/access";
 import { AREAS } from "@/configs/areas";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import RouteTabs from "@/components/Navigation/RouteTabs.vue";
 import { ENRICHMENT_REVIEW_TABS, routeTabPanel } from "@/components/Navigation/nav-routes";
 import ListMode from "./ListMode.vue";
@@ -263,6 +263,7 @@ import RunCorrections from "./RunCorrections.vue";
 import { runUidOf, subjectName } from "./reviewLogic";
 import { noteProductNames } from "./runLabel";
 import { useRunLabels } from "./useRunLabels";
+import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import {
   GET_Task,
   GET_Proposals,
@@ -294,9 +295,10 @@ export default {
   components: { ListMode, ProductMode, FocusMode, DriftModal, ImportCsvDialog, ProductPreviewDrawer, ProposalPanel, BatchCorrection, RunCorrections, RouteTabs },
   setup() {
     const { labels: runLabels, load: loadRuns } = useRunLabels();
+    const { debouncedFetch } = useSearchDebounce();
     return {
       notify: useNotifyStore(), pimChannel: usePimChannelStore(), ENRICHMENT_REVIEW_TABS,
-      tabPanel: routeTabPanel(ENRICHMENT_REVIEW_TABS, "EnrichmentReview"), runLabels, loadRuns,
+      tabPanel: routeTabPanel(ENRICHMENT_REVIEW_TABS, "EnrichmentReview"), runLabels, loadRuns, debouncedFetch,
     };
   },
   data() {
@@ -317,7 +319,6 @@ export default {
       totalCount: 0,
       loading: false,
       busy: false,
-      searchTimer: null,
       driftVisible: false,
       detail: null,
       bulkAsk: null,
@@ -510,10 +511,7 @@ export default {
         this.loadRuns([...this.rows.map((row) => row.task_id), this.filters.task]);
       } catch (err) {
         if (mine !== this.fetchSeq) return;
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
         this.rows = [];
         this.totalCount = 0;
       } finally {
@@ -542,11 +540,8 @@ export default {
       this.onFilterChange("task", "");
     },
     onSearchChange() {
-      clearTimeout(this.searchTimer);
-      this.searchTimer = setTimeout(() => {
-        this.page = 1;
-        this.fetchRows();
-      }, 300);
+      this.page = 1;
+      this.fetchRows();
     },
     onPage(page) {
       if (this.loading || this.busy) return;
@@ -619,10 +614,7 @@ export default {
         });
         await this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -641,10 +633,7 @@ export default {
           msg: this.$t("enrichment.review.toast.bulk_accepted", { count: accepted }),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -661,10 +650,7 @@ export default {
         });
         await this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -690,10 +676,7 @@ export default {
         });
         await this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -722,10 +705,7 @@ export default {
         }
         await this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -745,10 +725,7 @@ export default {
         });
         await this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -774,10 +751,7 @@ export default {
         this.closeDrift();
         await this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
