@@ -2,6 +2,7 @@
   "areas": [
     "pim.products",
     "pim.categories",
+    "pim.attribute_values",
     "pim.schema",
     "pim.quality",
     "pim.product_delete",
