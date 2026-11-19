@@ -109,7 +109,7 @@ export function importErrorText(err, fallback) {
 export const errorStatus = (err) => err?.httpStatus ?? err?.response?.status;
 
 /**
- * The name of a refused value's field in a report reason ("bad_attribute:segment_size"): the CRM field's label as the
+ * The name of a refused value's field in a report reason ("bad_attribute:segment_size", report or warning): the CRM field's label as the
  * mapping step shows it, and the file's column when the mapping says which one went there; the key itself when the
  * field is unknown.
  */

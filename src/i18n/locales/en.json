@@ -4473,7 +4473,17 @@
       "import_list": "Import a list",
       "clear_filters": "Clear filters",
       "load_error": "The companies could not be loaded",
-      "type_unknown": "Unknown"
+      "type_unknown": "Unknown",
+      "set_attribute": "Set attribute",
+      "attribute_title": "Set {name}",
+      "attribute_apply": "Apply",
+      "attribute_clear": "Clear value",
+      "attribute_set_one": "{name} set on {count} company.",
+      "attribute_set_few": "{name} set on {count} companies.",
+      "attribute_set_many": "{name} set on {count} companies.",
+      "attribute_cleared_one": "{name} cleared on {count} company.",
+      "attribute_cleared_few": "{name} cleared on {count} companies.",
+      "attribute_cleared_many": "{name} cleared on {count} companies."
     },
     "board": {
       "title": "Board",
@@ -4600,7 +4610,6 @@
       "reason_named": "{field} (file column \"{column}\")",
       "reason": {
         "invalid_legal_basis": "the legal basis is not one of consent, legitimate_interest, contract",
-        "bad_attribute": "the value of {name} does not fit its field",
         "invalid_email": "the e-mail address is not valid",
         "no_domain_no_email": "neither a domain nor an e-mail address",
         "invalid_domain": "the domain is not valid",
@@ -4716,6 +4725,9 @@
           "DUPLICATE_FIELD": "Two columns go to the same field — keep one of them.",
           "NO_COMPANY_KEY": "Choose a column for the domain, the website or the e-mail address."
         }
+      },
+      "warning": {
+        "bad_attribute": "{name}: the value does not fit the field in {count} row(s); they were imported without it"
       }
     },
     "stages": {
@@ -5021,7 +5033,8 @@
       "empty": "No mailbox yet — mail leaves through the channel's mail settings",
       "load_error": "The mailboxes could not be loaded — try again.",
       "today_of": "{sent} of {cap}",
-      "today_uncapped": "{sent} (no cap)"
+      "today_uncapped": "{sent} (no cap)",
+      "col_brand": "Brand"
     },
     "mailbox_state": {
       "active": "Active",
@@ -5040,7 +5053,7 @@
       "not_found": "Mailbox not found",
       "address": "Address",
       "display_name": "Name shown",
-      "cc": "Copy every mail to",
+      "cc": "CC (a copy the recipient sees)",
       "user": "Salesperson",
       "is_default": "Default mailbox",
       "send_enabled": "Sends mail",
@@ -5083,7 +5096,25 @@
         "unreachable": "The {part} server did not answer: check the host, the port and the security setting, save, then test again.",
         "failed": "Check the {part} settings, save, then test again.",
         "certificate": "The {part} server answered with a certificate this host does not trust: check the host name matches the certificate (or ask the mail provider for the right host), save, then test again."
-      }
+      },
+      "cc_hint": "Every mail from this mailbox also goes to these addresses; the recipient sees them. Up to 10.",
+      "bcc": "BCC (a hidden copy)",
+      "bcc_hint": "A copy of every mail the recipient does not see. Up to 10.",
+      "address_add": "Type an address and press Enter",
+      "list_error": {
+        "email": "Not a valid e-mail address",
+        "too_many": "At most 10 addresses"
+      },
+      "brand": "Brand",
+      "brand_hint": "E.g. entirius or acme.shop — lower-case letters, digits, dot and hyphen. Empty = no brand.",
+      "brand_hint_known": "Brands on the mailboxes: {brands}. Lower-case letters, digits, dot and hyphen; empty = no brand.",
+      "brand_format": "Lower-case letters, digits, dot and hyphen only (up to 32)",
+      "signature": "Signature",
+      "signature_help": "An HTML signature under the text of every mail from this mailbox, above the footer. The server keeps only safe HTML. Empty = no signature.",
+      "signature_html": "Signature HTML",
+      "signature_placeholder": "<p><strong>Anna Nowak</strong><br>Sales · Example Ltd</p>",
+      "signature_preview": "Signature preview",
+      "signature_empty": "No signature"
     },
     "health": {
       "title": "Sending health",
@@ -5820,18 +5851,23 @@
     },
     "footer": {
       "title": "Mail footer",
-      "help": "One HTML block per language under every mail — signature, logo, company data. {{ legal }} marks where the legal text of the contact's legal basis goes; it must be there exactly once.",
+      "help": "One HTML block per brand and language under every mail — logo, company data. {{ legal }} marks where the legal text of the contact's legal basis goes; it must be there exactly once. {{ unsubscribe }} (optional) puts the unsubscribe link there; without it the link goes at the bottom in small print.",
       "html": "Footer HTML ({language})",
       "placeholder": "<p>Anna Nowak · Example Ltd</p>\n{{ legal }}",
       "needs_legal": "Add {{ legal }} where the legal text goes — the footer is refused without it.",
       "preview": "Preview (sample legal text)",
       "sample_legal": "The controller of your data is Example Ltd. We write under legitimate interest.\n\nReply “no” and we will not write again.",
-      "discard_confirm": "Switching the language discards your unsaved changes to this footer.",
+      "discard_confirm": "Switching the brand or language discards your unsaved changes to this footer.",
       "remove": "Remove footer",
       "remove_title": "Remove the {language} footer?",
       "remove_message": "Mail in this language then uses the default language's footer, else the legal text alone.",
       "removed": "Footer removed",
-      "load_error": "Could not load the saved footers — reload the page before editing"
+      "load_error": "Could not load the saved footers — reload the page before editing",
+      "brand": "Brand",
+      "all_brands": "All brands",
+      "unsubscribe_label": "Unsubscribe link text",
+      "unsubscribe_hint": "Empty = the default text of the footer's language.",
+      "remove_message_brand": "Mail of this brand in this language then uses the footer for all brands."
     }
   },
   "ai_usage": {

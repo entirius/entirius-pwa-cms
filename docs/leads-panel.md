@@ -54,6 +54,25 @@ else it says due / daily cap reached / waiting for the window with its hours; a 
 a closed window (policy `windows`, channel time zone) never shows a clock. `next_slot` (outbox endpoint, `GET_WaitingMessages`)
 is the one slot the Inbox rows, the Review confirmation (looked up after accept), the thread bubbles and this table all read, so no two screens disagree. The waiting table (DataTable, the recipient under the company) keeps Send now inside the card at 1280 px with the sidebar open; `scheduled-row` + `data-message` sit on the row through DataTable `rowAttrs`. Sequences: create (no step edit API) + the text pool: add, edit in place through the row's edit square (future follow-ups only), remove — a text a thread already got is deactivated, not deleted (DELETE answers 200 with the row instead of 204), listed dimmed with Restore (`TextPool.vue`).
 
+## Sender settings (U20–U25)
+
+A user may have several mailboxes. The mailbox form (`MailboxEdit.vue`) carries `brand` (a slug, lower-cased before
+the save, checked against `[a-z0-9.-]{0,32}`; the hint lists the brands already on the mailboxes), CC and BCC as two address lists (`AddressList.vue`: Enter or leaving the field adds, several at once split by commas / spaces,
+lower-cased, no duplicates, at most 10; a wrong address stays in the field and holds the Save) and the signature HTML
+with a sandboxed preview (`MailPreview.vue`, shared with the footer). `cc_address` is gone. The list shows a Brand
+column once a mailbox has one. The footer card (`SettingsFooter.vue`) is one
+footer per brand and language: a brand select (blank = "All brands"; brands = the mailboxes' plus the footers',
+shown only when there is one) beside the language switch, both behind the discard confirmation; `PUT_Footer(language,
+{ html, unsubscribe_label }, brand)` / `DELETE_Footer(language, brand)` send `?brand=` only for a brand. The
+unsubscribe link text (blank = the mail language's default, as the placeholder) previews at `{{ unsubscribe }}`, else
+in 11 px grey under the footer, as the server builds it. Brands come from `src/utils/mailBrands.js` (`GET mailboxes/`; unreadable = no brands) for the mailbox form hint and
+the footer selector. A company's sender brand is no CMS field: it is the company attribute `sender_brand` (a select the
+operator defines under Settings → Attributes, option values = mailbox brand slugs) and shows in the card, the list
+filter and column (when the definition has "show in list") and the import mapping like any other attribute. The
+Companies bulk bar has a generic "Set attribute" (`CompanyAttributeDialog.vue`): pick a company attribute, then its value in the input of its kind
+(`CustomFields.vue`) or "Clear value" (`POST companies/bulk-attribute/ {company_ids, key, value}`, null clears, at
+most 200); hidden without company attributes.
+
 ## Outbound screens (django-communicator / django-leads 0.5.0)
 
 Every one is dormant on an older backend: the nav entry, the hub section and the route (`meta.moduleVersion`, checked

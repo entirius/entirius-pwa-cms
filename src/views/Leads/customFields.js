@@ -32,6 +32,9 @@ const normalise = (field, value) => {
   return field.kind === "number" ? String(value).replace(",", ".") : value;
 };
 
+/** The value of one field as the API takes it: an empty one is `null`, a number keeps a dot. */
+export const apiValue = normalise;
+
 // Only the changed keys; an emptied value is `null` (the API removes the key).
 export function changedValues(fields, values, before = {}) {
   const changed = fields.filter((field) => JSON.stringify(normalise(field, values[field.key])) !== JSON.stringify(normalise(field, before[field.key])));

@@ -10,6 +10,7 @@ const leads = vi.hoisted(() => ({
   GET_Funnel: vi.fn(() => Promise.resolve({ data: { origins: [{ origin: "fair", companies: 2 }] } })),
   GET_AssignableUsers: vi.fn(() => Promise.resolve([{ id: 7, username: "anna", name: "Anna" }])),
   POST_AssignOwner: vi.fn(() => Promise.resolve({ data: { updated: 2 } })),
+  POST_CompaniesAttribute: vi.fn(() => Promise.resolve({ data: { updated: 2 } })),
 }));
 const crm = vi.hoisted(() => ({ on: true }));
 vi.mock("@/api/leads/api", () => leads);
@@ -96,6 +97,53 @@ describe("Leads → Companies", () => {
     wrapper.findComponent('[data-testid="companies-bulk"]').vm.$emit("action", "assign", "7");
     await flushPromises();
     expect(leads.POST_AssignOwner).toHaveBeenCalledWith([1, 2], 7);
+  });
+
+  // The generic bulk action: one attribute definition of the company, its value in the input of its kind, or clear.
+  it("sets one attribute on the selected companies in bulk, or clears it", async () => {
+    const wrapper = await mounted();
+    wrapper.findComponent('[data-testid="companies-table"]').vm.$emit("select", [company(1), company(2)]);
+    await flushPromises();
+    const bar = wrapper.findComponent('[data-testid="companies-bulk"]');
+    const action = bar.props("actions").find((entry) => entry.key === "attribute");
+    expect(action.options).toEqual([{ value: "platform", label: "Platform" }]);
+    bar.vm.$emit("action", "attribute", "platform");
+    await flushPromises();
+    const modal = wrapper.findComponent({ name: "CompanyAttributeDialog" }).findComponent({ name: "BasicModal" });
+    expect(modal.props("open")).toBe(true);
+    wrapper.findComponent({ name: "CustomFields" }).vm.$emit("update:modelValue", { platform: "m2" });
+    await flushPromises();
+    modal.props("actions").find((entry) => entry.key === "apply").onClick();
+    await flushPromises();
+    expect(leads.POST_CompaniesAttribute).toHaveBeenCalledWith([1, 2], "platform", "m2");
+    expect(leads.POST_AssignOwner).not.toHaveBeenCalled();
+    wrapper.findComponent('[data-testid="companies-table"]').vm.$emit("select", [company(1)]);
+    await flushPromises();
+    wrapper.findComponent('[data-testid="companies-bulk"]').vm.$emit("action", "attribute", "platform");
+    await flushPromises();
+    wrapper.findComponent({ name: "CompanyAttributeDialog" }).findComponent({ name: "BasicModal" }).props("actions").find((entry) => entry.key === "clear").onClick();
+    await flushPromises();
+    expect(leads.POST_CompaniesAttribute).toHaveBeenLastCalledWith([1], "platform", null);
+  });
+
+  it("Apply without a value asks for one and calls nothing", async () => {
+    const wrapper = await mounted();
+    wrapper.findComponent('[data-testid="companies-table"]').vm.$emit("select", [company(1)]);
+    await flushPromises();
+    wrapper.findComponent('[data-testid="companies-bulk"]').vm.$emit("action", "attribute", "platform");
+    await flushPromises();
+    wrapper.findComponent({ name: "CompanyAttributeDialog" }).findComponent({ name: "BasicModal" }).props("actions").find((entry) => entry.key === "apply").onClick();
+    await flushPromises();
+    expect(leads.POST_CompaniesAttribute).not.toHaveBeenCalled();
+    expect(wrapper.findComponent({ name: "CustomFields" }).props("errors").platform).toBeTruthy();
+  });
+
+  it("a channel without company attributes has no Set attribute", async () => {
+    leads.GET_Attributes.mockResolvedValueOnce({ data: { results: [] } });
+    const wrapper = await mounted();
+    wrapper.findComponent('[data-testid="companies-table"]').vm.$emit("select", [company(1)]);
+    await flushPromises();
+    expect(wrapper.findComponent('[data-testid="companies-bulk"]').props("actions").map((action) => action.key)).toEqual(["assign"]);
   });
 
   it("filters with no match offer Clear filters", async () => {

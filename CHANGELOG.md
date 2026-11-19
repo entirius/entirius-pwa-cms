@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- CRM, sender settings (U20–U25): a salesperson may have several mailboxes, each with a brand, CC and BCC lists (up to 10
+  addresses each, replacing the single CC address) and an HTML signature with a preview; the mail footer is set per
+  brand and language, with the text of its unsubscribe link and a preview of the link at `{{ unsubscribe }}` or under
+  the footer.
+- CRM, Companies: bulk "Set attribute" next to the bulk owner assignment: pick a company attribute, then its value in
+  the input of its kind, or clear it, for the selected companies. A company's sender brand is the `sender_brand`
+  attribute, edited, filtered and imported like any other.
+- CRM, Import: a value that does not fit its attribute no longer skips the row; the result lists one line per field with the number of rows imported without that value (the batch `warnings`).
+
 ### Fixed
 
 - CRM, Review: Skip or Send pressed before the draft queue is read waits for it and opens the next draft, instead of saying the queue is empty.

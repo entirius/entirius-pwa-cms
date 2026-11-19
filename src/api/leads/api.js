@@ -118,6 +118,10 @@ export const POST_Score = (id) => leadsApi.post(`${base()}/companies/${id}/score
 export const POST_AssignOwner = (companyIds, ownerId) =>
   leadsApi.post(`${base()}/companies/assign/`, { company_ids: companyIds, owner_id: ownerId });
 
+// One attribute value on the selected companies (null clears it; at most 200 ids) → { updated }.
+export const POST_CompaniesAttribute = (companyIds, key, value) =>
+  leadsApi.post(`${base()}/companies/bulk-attribute/`, { company_ids: companyIds, key, value });
+
 // 409 not_eligible / no_legal_basis / communicator_channel_missing.
 export const POST_Compose = (id, body) => leadsApi.post(`${base()}/companies/${id}/compose/`, body);
 

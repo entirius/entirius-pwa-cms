@@ -57,6 +57,7 @@
           <p class="m-0" data-testid="import-counts">
             {{ $t("leads.import.counts", { created: batch.created_count, matched: batch.matched_count, skipped: batch.skipped_count }) }}
           </p>
+          <p v-for="line in warningLines" :key="line" class="m-0 t-muted" data-testid="import-warning">{{ line }}</p>
           <p v-if="batch.ignored_columns?.length && !went.length" class="m-0" data-testid="import-ignored">
             {{ $t("leads.import.ignored", { list: batch.ignored_columns.join(", ") }) }}
           </p>
@@ -96,7 +97,7 @@ import { GET_AssignableUsers, GET_Attributes, GET_Import, POST_Import, POST_Impo
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useAccessStore } from "@/stores/access";
 import { useMuninStore } from "@/stores/munin";
-import { importReasonLabel, importStatusLabel } from "@/utils/leadsLabels";
+import { importReasonLabel, importStatusLabel, importWarningLabel } from "@/utils/leadsLabels";
 import { outboundOn } from "@/utils/leadsOutbound";
 import ImportMapping from "./ImportMapping.vue";
 import { conflicts, errorStatus, hasIdentity, nameConflict, importErrorText, reasonFieldName, mappingPayload, proposedMapping, wentLines } from "./columnMapping";
@@ -153,6 +154,7 @@ const applied = computed(() =>
 const went = computed(() => (preview.value && batch.value ? wentLines(applied.value, preview.value.fields || []) : []));
 // Ignored columns are one sentence above; an older backend also lists them as rows (`ignored_column:<name>`).
 const reasonName = (key) => reasonFieldName(key, preview.value?.fields, applied.value);
+const warningLines = computed(() => Object.entries(batch.value?.warnings || {}).map(([reason, count]) => importWarningLabel(reason, count, reasonName)));
 const rowReasons = computed(() => (batch.value?.report || []).filter((entry) => !String(entry.reason).startsWith("ignored_column:")));
 
 // R5: the secondary ways in, then the one primary rightmost: Check the columns, then Import once they are checked.

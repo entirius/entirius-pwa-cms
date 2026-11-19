@@ -107,10 +107,11 @@
         clear-label-key="leads.approvals.clear"
         :actions="bulkActions"
         data-testid="companies-bulk"
-        @action="assign"
+        @action="onBulk"
         @clear="clearSelection"
       />
     </div>
+    <CompanyAttributeDialog :field="attributeField" @close="attributeField = null" @apply="setAttribute" />
     <template #footer>
       <Pagination :page="page" :pages="pages" :disabled="loading" @update:page="setFilter('page', String($event))" />
     </template>
@@ -122,7 +123,7 @@ import { computed, onMounted, ref, watch } from "vue";
 import { listBoardOptions } from "@/utils/leadsLabels";
 import { useRoute, useRouter } from "vue-router";
 import { t } from "@/i18n";
-import { GET_AssignableUsers, GET_Attributes, GET_Companies, GET_Funnel, GET_Stages, POST_AssignOwner } from "@/api/leads/api";
+import { GET_AssignableUsers, GET_Attributes, GET_Companies, GET_Funnel, GET_Stages, POST_AssignOwner, POST_CompaniesAttribute } from "@/api/leads/api";
 import { notifyApiError } from "@/composables/useNotify";
 import { useIsDesktop } from "@/composables/useIsDesktop";
 import { usePageReadonly } from "@/composables/useReadonly";
@@ -133,10 +134,12 @@ import { useNotifyStore } from "@/stores/notify";
 import { formatRelative } from "@/utils/format";
 import { bulkAnswer } from "@/utils/leadsBulk";
 import { SEGMENT_TONES, defaultOwner, outboundOn, stageTone } from "@/utils/leadsOutbound";
+import CompanyAttributeDialog from "./CompanyAttributeDialog.vue";
 import { fieldsFromDefinitions, formatValue } from "./customFields";
 
 // Companies (ux/screens/companies.md): the full list, every filter, the sort and the page in the URL, served by the
-// API page by page. leads >= 0.5.0 adds owner, score, origin, custom-field columns and filters, and bulk assign.
+// API page by page. leads >= 0.5.0 adds owner, score, origin, custom-field columns and filters, and bulk assign
+// and bulk "Set attribute".
 const PAGE_SIZE = 20;
 const OWNERS = ["me", "none", "all"];
 const OWNER_LABELS = { me: "mine", none: "unassigned", all: "all" };
@@ -164,6 +167,7 @@ const stages = ref([]);
 const origins = ref([]);
 const users = ref([]);
 const definitions = ref([]);
+const attributeField = ref(null);
 
 const query = computed(() => ({ owner: crm.value ? defaultOwner(readonly.value) : "all", ...route.query }));
 const page = computed(() => Number(query.value.page) || 1);
@@ -173,6 +177,7 @@ const filtered = computed(() => Object.keys(route.query).some((key) => FILTER_KE
 const activeFilters = computed(() => Object.keys(route.query).filter((key) => key !== "owner" && key !== "page" && key !== "sort" && key !== "search").length);
 
 const attrParam = (field) => `attr.${field.key}`;
+const attributeFields = computed(() => fieldsFromDefinitions(definitions.value));
 const listFields = computed(() => fieldsFromDefinitions(definitions.value.filter((definition) => definition.show_in_list)));
 const stageOptions = computed(() => stages.value.map((stage) => ({ value: stage.key, label: stage.label })));
 const typeOptions = computed(() => leadTypes.active.map((type) => ({ value: type.code, label: type.label })));
@@ -217,7 +222,13 @@ const bulkActions = computed(() => [
     testid: "companies-assign",
     options: [{ value: "none", label: t("leads.companies.unassigned") }, ...users.value.map((user) => ({ value: String(user.id), label: ownerName(user) }))],
   },
-]);
+  attributeFields.value.length && {
+    key: "attribute",
+    labelKey: "leads.companies.set_attribute",
+    testid: "companies-set-attribute",
+    options: attributeFields.value.map((field) => ({ value: field.key, label: field.label })),
+  },
+].filter(Boolean));
 
 const knownType = (code) => Boolean(code) && code !== UNKNOWN_LEAD_TYPE;
 const ownerName = (owner) => (owner ? owner.name || owner.username : t("leads.companies.unassigned"));
@@ -273,7 +284,25 @@ function clearSelection() {
   selected.value = [];
 }
 
-async function assign(key, value) {
+const onBulk = (key, value) => (key === "attribute" ? (attributeField.value = attributeFields.value.find((field) => field.key === value)) : assign(value));
+
+// "Set attribute": the dialog hands the value up (null clears it); one call for the whole selection.
+async function setAttribute(value) {
+  const field = attributeField.value;
+  const ids = selected.value.map((row) => row.id);
+  try {
+    const { data } = await POST_CompaniesAttribute(ids, field.key, value);
+    const doneKey = value === null ? "leads.companies.attribute_cleared" : "leads.companies.attribute_set";
+    notify.spawnNotification(bulkAnswer({ doneKey, done: data.updated, params: { name: field.label } }));
+    attributeField.value = null;
+    clearSelection();
+    await load();
+  } catch (err) {
+    notifyApiError(notify, err, t("leads.companies.load_error"));
+  }
+}
+
+async function assign(value) {
   const owner = value === "none" ? null : Number(value);
   const ids = selected.value.map((row) => row.id);
   try {

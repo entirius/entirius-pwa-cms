@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
-import { mount, flushPromises } from "@vue/test-utils";
+import { enableAutoUnmount, mount, flushPromises } from "@vue/test-utils";
 import { createPinia, setActivePinia } from "pinia";
 import { ref } from "vue";
 
@@ -60,6 +60,8 @@ beforeEach(() => {
   api.GET_Attributes.mockResolvedValue({ data: { results: [] } });
 });
 afterEach(() => vi.useRealTimers());
+// A test that changes the mapping on real timers leaves a refresh due in 400 ms; unmounted, it cannot hit the next test.
+enableAutoUnmount(afterEach);
 
 describe("Leads Import — column mapping (U17)", () => {
   it("offers .xlsx and .csv in the file picker", () => {
@@ -221,14 +223,15 @@ describe("Leads Import — column mapping (U17)", () => {
     expect(api.POST_Import).toHaveBeenCalled();
   });
 
-  it("a refused row names the CRM field and the file's column", async () => {
+  it("an import warning names the CRM field and the file's column, with its row count", async () => {
     const batch = {
       id: 42,
       status: "done",
       created_count: 0,
       matched_count: 0,
-      skipped_count: 1,
-      report: [{ row: 3, reason: "bad_attribute:segment_size" }],
+      skipped_count: 0,
+      report: [],
+      warnings: { "bad_attribute:segment_size": 2 },
       column_mapping: [{ column: "Wielkość", field: "attr.segment_size" }],
     };
     api.POST_ImportPreview.mockResolvedValue({ data: { ...PREVIEW, fields: [...FIELDS, { key: "attr.segment_size", label: "Company size", entity: "company", custom: true }] } });
@@ -237,9 +240,11 @@ describe("Leads Import — column mapping (U17)", () => {
     const wrapper = await mountChecked();
     await wrapper.find(sel("import-upload")).trigger("click");
     await flushPromises();
-    const text = wrapper.get(sel("import-rows")).text();
+    const text = wrapper.get(sel("import-warning")).text();
     expect(text).toContain('Company size (file column "Wielkość")');
+    expect(text).toContain("2 row(s)");
     expect(text).not.toContain("segment_size");
+    expect(wrapper.find(sel("import-rows")).exists()).toBe(false);
   });
 
   it("another file starts over: the mapping of the first one is gone", async () => {

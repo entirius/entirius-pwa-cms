@@ -43,6 +43,13 @@ export function importReasonLabel(reason, nameOf = (key) => key) {
   return t(key) === key ? String(reason) : t(key, { name: name && nameOf(name) });
 }
 
+// An import warning ("bad_attribute:sender_brand" → rows): the row was imported, one line per reason with its row count.
+export function importWarningLabel(reason, count, nameOf = (key) => key) {
+  const [code, name = ""] = String(reason).split(":");
+  const key = `leads.import.warning.${code}`;
+  return t(key) === key ? `${reason}: ${count}` : t(key, { name: name && nameOf(name), count });
+}
+
 export const healthTriggerLabel = (value) => label(`leads.health.trigger.${value}`, value);
 
 // One wording for a waiting mail's departure: Review, the Inbox summary, the waiting table and the thread say the same.
