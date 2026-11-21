@@ -8,35 +8,55 @@
       </PageHeader>
     </template>
     <template #toolbar>
-      <div class="flex ai-ct flex-wrap gap-5">
-        <BasicSelect
-          :model-value="filters.worker"
-          :options="workerOptions"
-          :floating-label="$t('enrichment.checks.worker')"
-          class="comfy-results__select"
-          data-testid="checks-worker"
-          @update:model-value="(value) => setFilter({ worker: value })"
-        />
-        <BasicInput
-          v-model="skuInput"
-          :placeholder="$t('enrichment.checks.sku')"
-          icon="search"
-          class="comfy-results__search"
-          data-testid="checks-sku"
-          @input="debouncedFetch(applySku)"
-        />
-        <MobileFilterPanel :active-count="panelFilterCount" :trigger-label="$t('pim.filters')">
+      <div class="flex-column gap-5">
+        <div class="flex ai-ct gap-5">
+          <div class="filter-chip-row" role="group" :aria-label="$t('enrichment.checks.verdict')">
+            <FilterChip
+              v-if="filters.task"
+              :label="$t('enrichment.checks.task_chip', { id: filters.task })"
+              active
+              data-testid="checks-task-chip"
+              @click="setFilter({ task: '' })"
+            />
+            <FilterChip
+              v-for="chip in chips"
+              :key="chip.value || 'all'"
+              :label="`${chipLabel(chip.value)} (${chip.count})`"
+              :active="filters.verdict === chip.value"
+              :data-testid="`checks-verdict-${chip.value || 'all'}`"
+              @click="setFilter({ verdict: chip.value })"
+            />
+          </div>
+          <span class="comfy-results__count fs-200 t-muted ml-auto">{{ $t("enrichment.tasks.matching", { count }) }}</span>
+        </div>
+        <MobileFilterPanel :active-count="panelFilterCount" :trigger-label="$t('pim.filters')" data-testid="checks-filters-row">
+          <BasicSelect
+            :model-value="filters.worker"
+            :options="workerOptions"
+            :floating-label="$t('enrichment.checks.worker')"
+            data-testid="checks-worker"
+            @update:model-value="(value) => setFilter({ worker: value })"
+          />
+          <BasicInput
+            v-model="skuInput"
+            :placeholder="$t('enrichment.checks.sku')"
+            :aria-label="$t('enrichment.checks.sku')"
+            icon="search"
+            class="comfy-results__search"
+            data-testid="checks-sku"
+            @input="debouncedFetch(applySku)"
+          />
           <BasicSelect
             :model-value="filters.source"
             :options="sourceOptions"
             :floating-label="$t('enrichment.checks.source')"
-            class="comfy-results__select"
             data-testid="checks-source"
             @update:model-value="(value) => setFilter({ source: value })"
           />
           <BasicInput
             v-model="reasonInput"
             :placeholder="$t('enrichment.checks.reason')"
+            :aria-label="$t('enrichment.checks.reason')"
             class="comfy-results__search"
             data-testid="checks-reason"
             @input="debouncedFetch(applyReason)"
@@ -45,29 +65,10 @@
             :model-value="effectiveSort(filters)"
             :options="sortOptions"
             :floating-label="$t('enrichment.checks.sort')"
-            class="comfy-results__select"
             data-testid="checks-sort"
             @update:model-value="(value) => setFilter({ sort: value })"
           />
         </MobileFilterPanel>
-        <span class="fs-200 t-muted ml-auto">{{ $t("enrichment.tasks.matching", { count }) }}</span>
-      </div>
-      <div class="filter-chip-row" role="group" :aria-label="$t('enrichment.checks.verdict')">
-        <FilterChip
-          v-if="filters.task"
-          :label="$t('enrichment.checks.task_chip', { id: filters.task })"
-          active
-          data-testid="checks-task-chip"
-          @click="setFilter({ task: '' })"
-        />
-        <FilterChip
-          v-for="chip in chips"
-          :key="chip.value || 'all'"
-          :label="`${chipLabel(chip.value)} (${chip.count})`"
-          :active="filters.verdict === chip.value"
-          :data-testid="`checks-verdict-${chip.value || 'all'}`"
-          @click="setFilter({ verdict: chip.value })"
-        />
       </div>
     </template>
 
@@ -164,7 +165,9 @@ let seq = 0;
 
 const chips = computed(() => verdictChips(totals.value));
 const hasFilters = computed(() => !!(filters.value.verdict || filters.value.source || filters.value.reason || filters.value.sku || filters.value.task));
-const panelFilterCount = computed(() => [filters.value.source, filters.value.reason, filters.value.sort !== DEFAULT_SORT].filter(Boolean).length);
+const panelFilterCount = computed(() =>
+  [filters.value.worker, filters.value.sku, filters.value.source, filters.value.reason, filters.value.sort !== DEFAULT_SORT].filter(Boolean).length
+);
 const workerOptions = computed(() => [
   { value: "", label: t("enrichment.checks.all_workers") },
   ...workers.value.map((w) => ({ value: w.key, label: w.label || w.key })),
@@ -263,13 +266,13 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
 }
-.comfy-results__select {
-  flex: 0 1 220px;
-  min-width: 150px;
+.comfy-results__count {
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 .comfy-results__search {
-  flex: 0 1 240px;
-  min-width: 150px;
+  min-width: 180px;
+  max-width: 260px;
 }
 .comfy-results__thumb {
   width: 40px;
