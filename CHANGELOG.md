@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.8.0] (2026-11-21)
+
 ### Added
 
 - Enricher, picture checks (backend enrichment 2.5.0, comfy workers): a "Picture checks" tab under Review lists the verdicts a
