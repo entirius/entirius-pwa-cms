@@ -181,3 +181,57 @@ describe("MediaGallery AI menu on a picture", () => {
     expect(wrapper.findAllComponents({ name: "BasicMenu" })).toHaveLength(0);
   });
 });
+
+describe("MediaGallery focusSha1", () => {
+  const pictures = [
+    picture({ pk: 7, position: 0, picture: { sha1: "aaa", image_url: "/media/a.png" } }),
+    picture({ pk: 8, position: 1, picture_role: "GENERAL", picture: { sha1: "bbb", image_url: "/media/b.png" } }),
+  ];
+
+  beforeEach(() => {
+    spawnNotification.mockReset();
+    mockGetPictures.mockResolvedValue({ data: { results: pictures } });
+    mockGetVideos.mockResolvedValue({ data: { results: [] } });
+  });
+
+  const mountFocused = (focusSha1) =>
+    mount(MediaGallery, {
+      props: { channelIdx: "ch-main", sku: "SKU-1", focusSha1 },
+      global: { stubs: { draggable: true, ConfirmationModal: true, TranslationsDrawer: true } },
+    });
+
+  it("opens on the picture with that sha1", async () => {
+    const wrapper = mountFocused("bbb");
+    await flushPromises();
+    expect(wrapper.vm.selectedItem.pk).toBe(8);
+    expect(spawnNotification).not.toHaveBeenCalled();
+  });
+
+  it("one file linked twice: the main link wins", async () => {
+    mockGetPictures.mockResolvedValue({
+      data: {
+        results: [
+          picture({ pk: 7, position: 0, picture_role: "general", picture: { sha1: "bbb", image_url: "/media/b.png" } }),
+          picture({ pk: 8, position: 1, picture_role: "main", picture: { sha1: "bbb", image_url: "/media/b.png" } }),
+        ],
+      },
+    });
+    const wrapper = mountFocused("bbb");
+    await flushPromises();
+    expect(wrapper.vm.selectedItem.pk).toBe(8);
+  });
+
+  it("a file no longer on the product: first picture and a warning", async () => {
+    const wrapper = mountFocused("zzz");
+    await flushPromises();
+    expect(wrapper.vm.selectedItem.pk).toBe(7);
+    expect(spawnNotification).toHaveBeenCalledWith(expect.objectContaining({ type: "warning" }));
+  });
+
+  it("no sha1: first picture, no warning", async () => {
+    const wrapper = mountFocused("");
+    await flushPromises();
+    expect(wrapper.vm.selectedItem.pk).toBe(7);
+    expect(spawnNotification).not.toHaveBeenCalled();
+  });
+});

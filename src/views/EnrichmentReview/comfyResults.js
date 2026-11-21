@@ -100,6 +100,11 @@ export function exportParams(filters) {
   return params;
 }
 
+/** The product card opened on the checked file: the gallery selects it and scrolls to it. */
+export function productLink(row) {
+  return { name: "PimProductDetail", params: { sku: row.subject_ref }, query: { picture: row.input_sha1 } };
+}
+
 /** The Review (Proposals) query for one result row: that product and that worker version's source, every status
  * (applied ones included, to find and undo them). */
 export function proposalsQuery(row) {

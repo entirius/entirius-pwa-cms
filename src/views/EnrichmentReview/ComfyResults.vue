@@ -127,7 +127,7 @@
           </div>
         </template>
         <template #cell-subject_ref="{ row }">
-          <router-link :to="{ name: 'PimProductDetail', params: { sku: row.subject_ref } }" class="t-accent fw-600">
+          <router-link :to="productLink(row)" class="t-accent fw-600">
             {{ row.subject_ref }}
           </router-link>
         </template>
@@ -184,7 +184,7 @@ import { resolveMediaUrl } from "@/utils/resolveMediaUrl";
 import { withStoredOption } from "@/utils/options";
 import { t } from "@/i18n";
 import {
-  DEFAULT_SORT, PAGE_SIZE, SOURCES, VERDICTS, effectiveSort, exportParams, filtersToQuery, inputsPatch, formatMetrics, proposalsQuery, queryToFilters,
+  DEFAULT_SORT, PAGE_SIZE, SOURCES, VERDICTS, effectiveSort, exportParams, filtersToQuery, inputsPatch, formatMetrics, productLink, proposalsQuery, queryToFilters,
   resultsParams, syncInputs, totalsParams, verdictChips, verdictTone,
 } from "./comfyResults";
 

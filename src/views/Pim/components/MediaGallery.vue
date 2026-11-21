@@ -25,6 +25,9 @@ const props = defineProps({
   // AI actions on one picture ([{ key, label }], the product page's image templates): a tile menu that emits
   // `ai-run` with the action's key and the picture's ref (its product-picture pk). Empty = no menu.
   aiActions: { type: Array, default: () => [] },
+  // sha1 of a picture file to open the gallery on (a link from Enricher → Picture checks): selected and scrolled
+  // into view once the media load; blank = the first item.
+  focusSha1: { type: String, default: "" },
 });
 
 const emit = defineEmits(["media-changed", "ai-run"]);
@@ -61,6 +64,7 @@ const pictures = ref([]);
 const videos = ref([]);
 const loading = ref(false);
 const selectedIndex = ref(0);
+const thumbStrip = ref(null);
 const editingItem = ref(null);
 
 const isDraggingOver = ref(false);
@@ -460,6 +464,31 @@ async function deleteItem(item) {
   }
 }
 
+// --- Focus on one picture ---
+// The tile of the focused picture is selected and scrolled to the middle of the strip; a file no longer linked to
+// the product says so, otherwise the page looks like the wrong product. One file can be linked more than once: the
+// main link wins (a picture check reads the main picture), else the first.
+function focusIndex(sha1) {
+  const isFile = (item) => item.type === "picture" && item.raw.picture?.sha1 === sha1;
+  const main = mediaItems.value.findIndex((item) => isFile(item) && String(item.role).toUpperCase() === "MAIN");
+  return main >= 0 ? main : mediaItems.value.findIndex(isFile);
+}
+
+async function focusPicture(sha1) {
+  if (!sha1) return;
+  const index = focusIndex(sha1);
+  if (index < 0) {
+    notify.spawnNotification({ type: "warning", msg: t("pim.focus_picture_missing") });
+    return;
+  }
+  selectedIndex.value = index;
+  // The tiles of vuedraggable are in the DOM only a frame after the list: wait for the frame, not only the tick.
+  await nextTick();
+  await new Promise((resolve) => requestAnimationFrame(resolve));
+  const tile = thumbStrip.value?.querySelector(`[data-media-key="${itemKey(mediaItems.value[index])}"]`);
+  tile?.scrollIntoView?.({ block: "nearest", inline: "center" });
+}
+
 // --- Lifecycle ---
 // Fetch only once a real SKU is available. The parent mounts MediaGallery
 // before the product GET resolves, so `sku` is briefly undefined — without
@@ -472,6 +501,7 @@ watch(
     if (!sku) return;
     await fetchAll();
     fetchVimeoThumbnails();
+    await focusPicture(props.focusSha1);
   },
   { immediate: true }
 );
@@ -621,7 +651,7 @@ watch(
       </div>
 
       <!-- Thumbnail grid -->
-      <div class="media-gallery__thumb-strip">
+      <div ref="thumbStrip" class="media-gallery__thumb-strip">
         <draggable
           :model-value="orderedItems"
           ghost-class="media-gallery__ghost"
@@ -634,6 +664,7 @@ watch(
         >
           <template #item="{ element, index }">
             <MediaTile
+              :data-media-key="itemKey(element)"
               :src="tileSrc(element)"
               :alt="element.altText || ''"
               :caption="tileCaption(element)"

@@ -1019,6 +1019,7 @@
     "video_url": "URL wideo",
     "video_url_placeholder": "Wklej link YouTube lub Vimeo",
     "no_media": "Brak mediów",
+    "focus_picture_missing": "Tego zdjęcia nie ma już przy produkcie; galeria pokazuje pierwsze.",
     "no_videos": "Brak wideo",
     "no_files": "Brak plików",
     "videos": "Wideo",
