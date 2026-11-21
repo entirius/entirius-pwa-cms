@@ -62,6 +62,7 @@
             :key="mediaKey"
             :channel-idx="channelIdx"
             :sku="product.sku"
+            :focus-sha1="focusSha1"
             :ai-actions="aiPictureActions"
             @ai-run="openAiOnPicture"
           />
@@ -568,6 +569,11 @@ export default {
     },
     activeTabLabel() {
       return this.tabs.find((t) => t.value === this.activeTab)?.label || "";
+    },
+    // `?picture=<sha1>`: the gallery opens on that file (links from Enricher → Picture checks).
+    focusSha1() {
+      const value = this.$route.query.picture;
+      return typeof value === "string" ? value : "";
     },
     // Secondary actions and the channel inheritance flags (B-29: Save keeps its label, the rest sits in "more").
     // The image templates as a gallery tile's AI menu: one action on that very picture.
