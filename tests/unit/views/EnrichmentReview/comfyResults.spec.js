@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
-  effectiveSort, exportParams, filtersToQuery, inputsPatch, proposalsQuery, runResultsQuery, syncInputs, formatMetrics, queryToFilters, resultsParams, totalsParams, verdictChips,
+  effectiveSort, exportParams, filtersToQuery, inputsPatch, productLink, proposalsQuery, runResultsQuery, syncInputs, formatMetrics, queryToFilters, resultsParams, totalsParams, verdictChips,
 } from "@/views/EnrichmentReview/comfyResults";
 
 describe("queryToFilters / filtersToQuery", () => {
@@ -102,5 +102,15 @@ describe("typed fields", () => {
 describe("runResultsQuery", () => {
   it("opens the run's results with history, so a product rechecked later stays in", () => {
     expect(runResultsQuery({ id: 9, type: "pim.packshot" })).toEqual({ task: "9", worker: "pim.packshot", history: "1" });
+  });
+});
+
+describe("productLink", () => {
+  it("opens the product card on the checked file", () => {
+    expect(productLink({ subject_ref: "SKU-1", input_sha1: "abc" })).toEqual({
+      name: "PimProductDetail",
+      params: { sku: "SKU-1" },
+      query: { picture: "abc" },
+    });
   });
 });

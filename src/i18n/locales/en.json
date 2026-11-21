@@ -1020,6 +1020,7 @@
     "video_url": "Video URL",
     "video_url_placeholder": "Paste YouTube or Vimeo URL",
     "no_media": "No media attached",
+    "focus_picture_missing": "This picture is no longer on the product; the gallery opens on the first one.",
     "no_videos": "No videos",
     "no_files": "No files",
     "videos": "Videos",

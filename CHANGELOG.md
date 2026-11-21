@@ -4,6 +4,19 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.8.1] (2026-11-21)
+
+### Fixed
+
+- Enricher, picture checks: the SKU of a result opens the product card on the checked picture (`?picture=<sha1>`): the
+  gallery selects it and scrolls its strip to it, the main link first when one file is linked more than once; a file no
+  longer on the product says so instead of looking like the wrong product.
+
+### Added
+
+- Docs captures: guide `picture-checks` (Picture checks, a comfy run, the product card on the checked picture, a run on all
+  matching products, a derived picture in Review), from the test package's comfy demo seed.
+
 ## [3.8.0] (2026-11-21)
 
 ### Added
