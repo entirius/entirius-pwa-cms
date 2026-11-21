@@ -154,6 +154,7 @@ import { MAX_TABLET_QUERY } from "@/utils/breakpoints";
  * - `truncate`: one line with an ellipsis and a `title` with the full value: `title(row)`, else the row value
  *   (default cell) or the rendered text (slot cell). On by default for cells without a slot; a slot opts in with
  *   `truncate: true`. Never on a status column: a badge column is `width: "max-content"`, sized by its longest label.
+ *   A `max-content` column never truncates by default (it would shrink to its header): it fits its longest value.
  *   A truncated `fr` column is at least max(120 px, its header) wide.
  * - `numeric`: right-aligned, tabular figures, no wrap.
  * - `actions`: right-aligned buttons that never shrink; the track is `max-content` unless `width` is given.
@@ -229,8 +230,9 @@ function alignStyle(col) {
 
 const hasSlot = (col) => Boolean(slots[`cell-${col.key}`]);
 
+// A `max-content` column is sized by its content: truncated, it would shrink to its header ("Do…", "13/1…").
 function isTruncated(col) {
-  return col.truncate ?? (!hasSlot(col) && !col.numeric && !col.actions);
+  return col.truncate ?? (!hasSlot(col) && !col.numeric && !col.actions && col.width !== "max-content");
 }
 
 function cellClass(col) {

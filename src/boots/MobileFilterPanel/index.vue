@@ -116,6 +116,13 @@ onBeforeUnmount(() => {
     border: 1px solid var(--border-subtle);
     border-radius: var(--radius-base);
   }
+
+  // A select's floating label hangs above it without layout height: the scrolling panel gives it room, or the
+  // first row's label is cut at the top edge (k3, walk 4).
+  .mobile-filter-panel__dropdown:has(.basic-select--floating) {
+    row-gap: var(--space-6);
+    padding-top: var(--space-6);
+  }
 }
 
 .mfp-slide-enter-active,

@@ -24,11 +24,11 @@ export const leadsFrame = {
     // Open, it shows its title and message and the two actions (the confirm under the caller's `confirmTestid`).
     ConfirmDialog: {
       name: "ConfirmDialog",
-      props: ["open", "title", "message", "confirmLabel", "cancelLabel", "tone", "confirmTestid"],
+      props: ["open", "title", "message", "confirmLabel", "cancelLabel", "tone", "confirmTestid", "confirmDisabled"],
       emits: ["confirm", "cancel"],
       template: `<div v-if="open">{{ title }} {{ message }}
         <button data-testid="confirm-dialog-cancel" @click="$emit('cancel')" />
-        <button :data-testid="confirmTestid || 'confirm-dialog-confirm'" @click="$emit('confirm')" />
+        <button :data-testid="confirmTestid || 'confirm-dialog-confirm'" :disabled="confirmDisabled" @click="$emit('confirm')" />
       </div>`,
     },
     CountBadge: stub("CountBadge", ["count"]),

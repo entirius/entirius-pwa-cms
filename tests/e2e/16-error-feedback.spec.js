@@ -204,6 +204,8 @@ test.describe('Scenario C — response shapes (mocked)', () => {
   test('ProductCreate: every backend error shape produces a concrete message', async ({ page }) => {
     await login(page);
     const collector = createErrorCollector(page);
+    // Required attributes of the set would stop the second Save in the browser, before the mocked answer.
+    await page.route('**/feature-sets/*/required-features/', (route) => route.fulfill({ json: [] }));
 
     await page.goto('/pim/products/create');
     await page.waitForLoadState('networkidle');

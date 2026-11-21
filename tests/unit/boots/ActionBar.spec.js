@@ -48,6 +48,13 @@ describe("ActionBar", () => {
     expect(save.attributes("aria-expanded")).toBeUndefined();
   });
 
+  it("pressed: aria-pressed on the button only when the action sets it", () => {
+    const wrapper = mountBar([action("secondary", "Archived", { pressed: true }), action("primary", "Open deal")]);
+    const [toggle, open] = wrapper.findAll(".stub-basic");
+    expect(toggle.attributes("aria-pressed")).toBe("true");
+    expect(open.attributes("aria-pressed")).toBeUndefined();
+  });
+
   it("a utility is an IconButton, the others BasicButtons of their role", () => {
     const wrapper = mountBar([action("utility", "Ustawienia", { icon: "settings" }), action("danger", "Usuń")]);
     expect(wrapper.find(".stub-icon").attributes("data-icon")).toBe("settings");

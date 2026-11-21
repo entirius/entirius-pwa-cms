@@ -93,10 +93,10 @@ test.describe('Access read-only gaps (desktop)', () => {
     expect(pimListCalls, 'the PIM list never renders for norole').toBe(0);
   });
 
-  test('viewer: lead type switches and labels, stage labels and both drag lists are disabled', async ({ page }) => {
+  test('viewer: lead type switches and labels, stage labels and controls and the FAQ drag list are disabled', async ({ page }) => {
     await login(page, ...USERS.viewer);
 
-    await openPage(page, '/leads/settings/lead-types');
+    await openPage(page, '/crm/settings/company-types');
     await expect(page.locator('[data-testid="readonly-notice"]')).toBeVisible();
     const switches = page.getByRole('switch');
     await expect(switches.first()).toBeVisible();
@@ -105,10 +105,11 @@ test.describe('Access read-only gaps (desktop)', () => {
       await expect(label).toBeDisabled();
     }
 
-    await openPage(page, '/leads/settings/stages');
+    await openPage(page, '/crm/settings/stages');
     const stage = page.locator('[data-testid="stage-row"]').first();
     await expect(stage).toBeVisible();
-    expect(await sortableDisabled(stage), 'stage drag').toBe(true);
+    // Stages are ordered with arrows; a read-only page does not render them, nor Delete.
+    await expect(stage.locator('.stage__controls button')).toHaveCount(0);
     for (const label of await page.locator('[data-testid="stage-row"] input').all()) await expect(label).toBeDisabled();
 
     await openPage(page, '/faq/groups');

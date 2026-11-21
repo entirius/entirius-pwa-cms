@@ -13,6 +13,7 @@ import {
   POST_FilesCategory,
 } from "@/api/pim/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 const props = defineProps({
   channelIdx: { type: String, required: true },
@@ -88,10 +89,7 @@ async function fetchFiles() {
     }
     editingStates.value = states;
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   } finally {
     loading.value = false;
   }
@@ -203,10 +201,7 @@ async function confirmUpload() {
     cancelUpload();
     await fetchFiles();
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   } finally {
     uploadingFile.value = false;
   }
@@ -221,10 +216,7 @@ async function patchFile(filePk, payload) {
     notify.spawnNotification({ type: "positive", msg: t("pim.file_updated") });
     await fetchFiles();
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   } finally {
     savingFilePk.value = null;
   }
@@ -283,10 +275,7 @@ async function createCategory() {
     newCategoryCode.value = "";
     newCategoryNameT9n.value = {};
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   } finally {
     creatingCategory.value = false;
   }
@@ -308,10 +297,7 @@ async function deleteFile(pk) {
     notify.spawnNotification({ type: "positive", msg: t("pim.file_deleted") });
     await fetchFiles();
   } catch (err) {
-    notify.spawnNotification({
-      type: "negative",
-      msg: extractApiMessage(err, t("notifications.error")),
-    });
+    notifyApiError(notify, err, t("notifications.error"));
   } finally {
     deletingFilePk.value = null;
   }

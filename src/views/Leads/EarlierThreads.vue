@@ -20,7 +20,10 @@
         :pending="pendingThreads.has(thread.id)"
         :holds-reply="thread.id === openThreadId"
         :waiting="waitingOf(waiting, thread.id)"
+        :company="company"
+        :composed="composed"
         @changed="$emit('changed')"
+        @sent="$emit('sent')"
       />
       <BasicButton v-if="hasMore" class="as-s" :disabled="loading" data-testid="earlier-more" @click="loadMore">
         {{ $t("leads.thread.earlier_more") }}
@@ -35,7 +38,9 @@ import { GET_Threads } from "@/api/communicator/api";
 import { waitingOf } from "@/utils/leadsThread";
 import ThreadGroup from "./ThreadGroup.vue";
 
-// Every thread older than the newest one, behind one expander; further pages load like the list.
+// Every thread older than the newest one under "Earlier conversations (N−1)": the list is open from the start, so the
+// card shows every conversation the Inbox row counts (both read the threads of one `subject_ref`), each row opening in
+// place; the heading still folds the list. Further pages load like the list.
 const props = defineProps({
   subjectRef: { type: String, required: true },
   threads: { type: Array, default: () => [] }, // older threads of the first list page
@@ -45,10 +50,12 @@ const props = defineProps({
   pendingThreads: { type: Set, default: () => new Set() }, // thread ids with an undecided opt-out
   waiting: { type: Array, default: () => [] },
   openThreadId: { type: Number, default: null }, // the thread holding a reply — expanded and opened on arrival
+  company: { type: Object, default: null }, // set: Reply is offered in the threads
+  composed: { type: Array, default: () => [] },
 });
-defineEmits(["changed"]);
+defineEmits(["changed", "sent"]);
 
-const open = ref(false);
+const open = ref(true);
 const loading = ref(false);
 const extra = ref([]);
 const page = ref(1);
@@ -58,8 +65,8 @@ const allThreads = computed(() => [...props.threads, ...extra.value]);
 const hasMore = computed(() => (extraNext.value === null ? props.next : extraNext.value));
 const pendingCount = computed(() => allThreads.value.filter((thread) => props.pendingThreads.has(thread.id)).length);
 
-// The list arrives after this component is created — a reply thread expands the section whenever it shows up.
-watch(() => props.openThreadId, (id) => id && (open.value = true), { immediate: true });
+// The list starts open; a reload that brings a reply thread opens it again after the user folded it.
+watch(() => props.openThreadId, (id) => id && (open.value = true));
 
 async function loadMore() {
   loading.value = true;

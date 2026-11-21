@@ -75,6 +75,12 @@ const TABS = [
 const tabs = (modelValue = "desc") => mount(BasicTabs, { props: { options: TABS, modelValue }, attachTo: document.body });
 
 describe("BasicTabs", () => {
+  it("wraps onto a second line only when asked", () => {
+    expect(tabs().find(".basic-tabs").classes()).not.toContain("basic-tabs--wrap");
+    const wrapped = mount(BasicTabs, { props: { options: TABS, modelValue: "desc", wrap: true } });
+    expect(wrapped.find(".basic-tabs").classes()).toContain("basic-tabs--wrap");
+  });
+
   it("names each tab's panel and renders nothing without options", () => {
     const wrapper = mount(BasicTabs, { props: { options: TABS, modelValue: "desc", idPrefix: "p" } });
     const first = wrapper.find('[role="tab"]');

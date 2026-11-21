@@ -6,7 +6,7 @@ import { useMuninStore } from "@/stores/munin";
 import BottomTabBar from "@/boots/BottomTabBar/index.vue";
 
 vi.mock("vue-router", () => ({
-  useRoute: () => ({ path: "/leads/inbox", meta: { panel: "leads" }, params: {}, query: {} }),
+  useRoute: () => ({ path: "/crm/inbox", meta: { panel: "leads" }, params: {}, query: {} }),
   useRouter: () => null,
 }));
 
@@ -37,39 +37,36 @@ describe("Leads nav (UX-002d: one panel, Settings instead of four entries)", () 
   });
   afterEach(() => vi.unstubAllGlobals());
 
-  // UX-010: Companies is the other side of the Inbox toggle, not an entry of its own
-  it("desktop: Inbox · Board · Import · Settings; there is no Communicator panel nav", () => {
-    expect(routesFor("leads", true)).toEqual([
-      "/leads/inbox",
-      "/leads/board",
-      "/leads/import",
-      "/leads/settings",
-    ]);
+  // Leads CRM: Today · Inbox · Companies always; Approvals and Reports need 0.5.0; Settings is desk work
+  it("desktop: Today · Inbox · Companies · Settings; there is no Communicator panel nav", () => {
+    expect(routesFor("leads", true)).toEqual(["/crm/today", "/crm/inbox", "/crm/companies", "/crm/settings"]);
     expect(routesFor("communicator", true)).toEqual([]);
   });
 
-  it("phone: Inbox · Settings — Settings is reachable from the bottom tab bar", () => {
-    expect(routesFor("leads", false)).toEqual(["/leads/inbox", "/leads/settings"]);
+  it("phone: Today · Inbox · Companies in the bottom tab bar, Settings is not there", () => {
+    expect(routesFor("leads", false)).toEqual(["/crm/today", "/crm/inbox", "/crm/companies"]);
     setViewport(false);
     const links = mountTabBar().findAll("a").map((a) => a.attributes("data-to"));
-    expect(links).toEqual(["/leads/inbox", "/leads/settings"]);
+    expect(links).toEqual(["/crm/today", "/crm/inbox", "/crm/companies"]);
   });
 
-  it("desktop: Board and Import join the entries (the tab bar itself is the phone's)", () => {
+  it("desktop: Settings joins the entries; Board and Import are Companies' page actions, not entries", () => {
     setViewport(true);
     const links = mountTabBar().findAll("a").map((a) => a.attributes("data-to"));
-    expect(links).toEqual(["/leads/inbox", "/leads/board", "/leads/import", "/leads/settings"]);
+    expect(links).toEqual(["/crm/today", "/crm/inbox", "/crm/companies", "/crm/settings"]);
   });
 
-  it("an entry whose backend module is off is not listed; without communicator Companies is the entry", () => {
-    expect(routesFor("leads", true, new Set(["leads"]))).toEqual([
-      "/leads/companies",
-      "/leads/board",
-      "/leads/import",
-      "/leads/settings",
-    ]);
-    expect(routesFor("leads", false, new Set(["leads"]))).toEqual(["/leads/companies", "/leads/settings"]);
-    expect(routesFor("leads", false, new Set(["communicator"]))).toEqual(["/leads/inbox", "/leads/settings"]);
+  it("Leads CRM 0.5.0: Deals is the fourth entry, also in the phone bar; Approvals, Reports and History are desk only", () => {
+    const crm = (isDesktop) =>
+      filterNavRoutes(buildNavRoutes(), { panel: "leads", isDesktop, isModuleEnabled: () => true, isModuleAtLeast: () => true }).map((r) => r.route);
+    expect(crm(false)).toEqual(["/crm/today", "/crm/inbox", "/crm/companies", "/crm/deals"]);
+    expect(crm(true)).toEqual(["/crm/today", "/crm/inbox", "/crm/companies", "/crm/deals", "/crm/approvals", "/crm/reports", "/crm/history", "/crm/settings"]);
+  });
+
+  it("an entry whose backend module is off is not listed", () => {
+    expect(routesFor("leads", true, new Set(["leads"]))).toEqual(["/crm/today", "/crm/companies", "/crm/settings"]);
+    expect(routesFor("leads", false, new Set(["leads"]))).toEqual(["/crm/today", "/crm/companies"]);
+    expect(routesFor("leads", false, new Set(["communicator"]))).toEqual(["/crm/today", "/crm/inbox"]);
   });
 });
 
@@ -78,5 +75,20 @@ describe("Enricher nav", () => {
     const entries = ["/enrichment", "/enrichment/studio", "/enrichment/settings"];
     expect(routesFor("enricher", false)).toEqual(entries);
     expect(routesFor("enricher", true)).toEqual(entries);
+  });
+
+  // Plan 14: Approvals (desktop) needs communicator 0.5.0; an older backend never sees the entry.
+  it("Approvals shows on a desktop with communicator >= 0.5.0 and carries the approvals badge", () => {
+    const filter = (atLeast, isDesktop = true) =>
+      filterNavRoutes(buildNavRoutes(), {
+        panel: "leads",
+        isDesktop,
+        isModuleEnabled: (key) => LEADS_MODULES.has(key),
+        isModuleAtLeast: () => atLeast,
+      });
+    const approvals = filter(true).find((entry) => entry.route === "/crm/approvals");
+    expect(approvals).toMatchObject({ badge: "approvals", desktopOnly: true });
+    expect(filter(false).map((entry) => entry.route)).not.toContain("/crm/approvals");
+    expect(filter(true, false).map((entry) => entry.route)).not.toContain("/crm/approvals");
   });
 });

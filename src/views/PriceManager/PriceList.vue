@@ -273,7 +273,7 @@ import {
   DELETE_PmPrice,
   POST_PmFlushSpecial,
 } from '@/api/pricemanager/api'
-import { extractApiMessage } from '@/composables/useFormErrors'
+import { notifyApiError } from '@/composables/useNotify'
 import { formatError } from '@/utils/formats'
 import PmChannelSelect from './PmChannelSelect.vue'
 
@@ -451,10 +451,7 @@ export default {
         this.prices = data.results || []
         this.totalCount = data.count || 0
       } catch (err) {
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       }
     },
     async fetchProducts() {
@@ -677,10 +674,7 @@ export default {
         })
         await this.fetchPrices()
       } catch (err) {
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.save_error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.save_error'))
       } finally {
         this.saving = false
         this.loader.loaderFinish()
@@ -701,10 +695,7 @@ export default {
         this.notify.spawnNotification({ type: 'positive', msg: this.$t('notifications.success') })
         await this.fetchPrices()
       } catch (err) {
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loader.loaderFinish()
       }
@@ -718,10 +709,7 @@ export default {
         this.notify.spawnNotification({ type: 'positive', msg: this.$t('notifications.success') })
         await this.fetchAll()
       } catch (err) {
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loader.loaderFinish()
       }

@@ -17,7 +17,7 @@ const either = (pick) => escapedEither(pick(en), pick(pl));
 const h1 = (page) => page.getByRole('heading', { level: 1 });
 
 async function openInbox(page, filter) {
-  await page.goto('/leads/inbox');
+  await page.goto('/crm/inbox');
   await expect(page.getByTestId('inbox-summary').or(page.getByTestId('inbox-empty')).first()).toBeVisible();
   await page.getByTestId(`inbox-filter-${filter}`).click();
   await page.waitForLoadState('networkidle');
@@ -44,7 +44,7 @@ async function openFirstDraft(page) {
     test.skip(true, 'no draft on the stack — runs at the W5 close after `bdd @funnel`');
   }
   await page.getByTestId('inbox-item').first().getByRole('link').click();
-  await page.waitForURL(/\/leads\/inbox\/\d+/);
+  await page.waitForURL(/\/crm\/inbox\/\d+/);
 }
 
 test.describe('P5 Leads inbox (desktop)', () => {
@@ -64,11 +64,11 @@ test.describe('P5 Leads inbox (desktop)', () => {
       await expect(page.getByTestId('inbox-empty')).toBeVisible();
     } else {
       await rows.first().getByRole('link').click();
-      await page.waitForURL(/\/leads\/(inbox|conversations|companies)\/\d+/);
-      if (/\/leads\/inbox\//.test(page.url())) {
+      await page.waitForURL(/\/crm\/(inbox|conversations|companies)\/\d+/);
+      if (/\/crm\/inbox\//.test(page.url())) {
         await checkReview(page);
       } else {
-        if (/\/leads\/companies\//.test(page.url())) await page.getByTestId('company-tab-timeline').click();
+        if (/\/crm\/companies\//.test(page.url())) await page.getByTestId('company-tab-timeline').click();
         await expect(page.getByTestId('thread-timeline').first()).toBeVisible();
         await expect(h1(page)).toBeVisible();
       }

@@ -760,6 +760,36 @@
       "note": "a fresh seed has no checkout order"
     },
     {
+      "id": "stock-alerts-demand",
+      "route": "/stock-alerts",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "stock-alerts-demand__{vp}__{theme}.png"
+    },
+    {
+      "id": "stock-alerts-subscriptions",
+      "route": "/stock-alerts/subscriptions",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "stock-alerts-subscriptions__{vp}__{theme}.png"
+    },
+    {
       "id": "agreements-list",
       "route": "/agreements/list",
       "resolver": "fixed",
@@ -902,6 +932,44 @@
       ],
       "readySelector": ".ProseMirror",
       "file": "emails-template-edit__{vp}__{theme}.png"
+    },
+    {
+      "id": "emails-order-confirmation-edit",
+      "route": "/emails/templates/checkout-order-confirmation",
+      "resolver": "first-link",
+      "links": [
+        "[data-testid=\"emails-template-card\"]"
+      ],
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "readySelector": "[data-testid=\"email-preview-frame\"]",
+      "file": "emails-order-confirmation-edit__{vp}__{theme}.png"
+    },
+    {
+      "id": "emails-order-canceled-edit",
+      "route": "/emails/templates/checkout-order-canceled",
+      "resolver": "first-link",
+      "links": [
+        "[data-testid=\"emails-template-card\"]"
+      ],
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "readySelector": "[data-testid=\"email-preview-frame\"]",
+      "file": "emails-order-canceled-edit__{vp}__{theme}.png"
     },
     {
       "id": "emails-lang-config",
@@ -1420,8 +1488,23 @@
       "file": "pf-history__{vp}__{theme}.png"
     },
     {
+      "id": "leads-today",
+      "route": "/crm/today",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-today__{vp}__{theme}.png"
+    },
+    {
       "id": "leads-inbox",
-      "route": "/leads/inbox",
+      "route": "/crm/inbox",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1441,10 +1524,10 @@
     },
     {
       "id": "leads-conversation",
-      "route": "/leads/inbox",
+      "route": "/crm/inbox",
       "resolver": "first-link",
       "links": [
-        "a[href^=\"/leads/conversations/\"]"
+        "a[href^=\"/crm/conversations/\"]"
       ],
       "state": "default",
       "viewports": [
@@ -1467,10 +1550,10 @@
     },
     {
       "id": "leads-review",
-      "route": "/leads/inbox",
+      "route": "/crm/inbox",
       "resolver": "first-link",
       "links": [
-        "a[href^=\"/leads/inbox/\"]"
+        "a[href^=\"/crm/inbox/\"]"
       ],
       "state": "default",
       "viewports": [
@@ -1487,7 +1570,7 @@
     },
     {
       "id": "leads-companies",
-      "route": "/leads/companies",
+      "route": "/crm/companies",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1502,10 +1585,10 @@
     },
     {
       "id": "leads-company",
-      "route": "/leads/companies",
+      "route": "/crm/companies",
       "resolver": "first-link",
       "links": [
-        "a[href^=\"/leads/companies/\"]:not([href=\"/leads/companies/new\"])"
+        "a[href^=\"/crm/companies/\"]:not([href=\"/crm/companies/new\"])"
       ],
       "state": "default",
       "viewports": [
@@ -1520,7 +1603,7 @@
     },
     {
       "id": "leads-company-new",
-      "route": "/leads/companies/new",
+      "route": "/crm/companies/new",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1540,7 +1623,7 @@
     },
     {
       "id": "leads-board",
-      "route": "/leads/board",
+      "route": "/crm/board",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1554,7 +1637,7 @@
     },
     {
       "id": "leads-import",
-      "route": "/leads/import",
+      "route": "/crm/import",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1568,7 +1651,7 @@
     },
     {
       "id": "leads-settings",
-      "route": "/leads/settings",
+      "route": "/crm/settings",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1582,8 +1665,120 @@
       "file": "leads-settings__{vp}__{theme}.png"
     },
     {
+      "id": "leads-approvals",
+      "route": "/crm/approvals",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-approvals__{vp}__{theme}.png",
+      "note": "Leads CRM plan 14; needs communicator / leads >= 0.5.0"
+    },
+    {
+      "id": "leads-mailboxes",
+      "route": "/crm/settings/mailboxes",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-mailboxes__{vp}__{theme}.png",
+      "note": "Leads CRM plan 14; needs communicator / leads >= 0.5.0"
+    },
+    {
+      "id": "leads-mailbox-new",
+      "route": "/crm/settings/mailboxes/new",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-mailbox-new__{vp}__{theme}.png",
+      "note": "Leads CRM plan 14; needs communicator / leads >= 0.5.0"
+    },
+    {
+      "id": "leads-sending-health",
+      "route": "/crm/settings/sending-health",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-sending-health__{vp}__{theme}.png",
+      "note": "Leads CRM plan 14; needs communicator / leads >= 0.5.0"
+    },
+    {
+      "id": "leads-automatic-moves",
+      "route": "/crm/settings/automatic-moves",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-automatic-moves__{vp}__{theme}.png",
+      "note": "Leads CRM plan 14; needs communicator / leads >= 0.5.0"
+    },
+    {
+      "id": "leads-reply-classification",
+      "route": "/crm/settings/reply-classification",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-reply-classification__{vp}__{theme}.png",
+      "note": "Leads CRM plan 14; needs communicator / leads >= 0.5.0"
+    },
+    {
+      "id": "leads-do-not-contact",
+      "route": "/crm/settings/do-not-contact",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-do-not-contact__{vp}__{theme}.png",
+      "note": "Leads CRM plan 14; needs communicator / leads >= 0.5.0"
+    },
+    {
       "id": "leads-stages",
-      "route": "/leads/settings/stages",
+      "route": "/crm/settings/stages",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1598,7 +1793,7 @@
     },
     {
       "id": "leads-lead-types",
-      "route": "/leads/settings/lead-types",
+      "route": "/crm/settings/company-types",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1613,7 +1808,7 @@
     },
     {
       "id": "leads-templates",
-      "route": "/leads/settings/templates",
+      "route": "/crm/settings/templates",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1628,10 +1823,10 @@
     },
     {
       "id": "leads-template-edit",
-      "route": "/leads/settings/templates",
+      "route": "/crm/settings/templates",
       "resolver": "first-link",
       "links": [
-        "a[href^=\"/leads/settings/templates/\"]"
+        "a[href^=\"/crm/settings/templates/\"]"
       ],
       "fallbackRow": true,
       "state": "default",
@@ -1647,7 +1842,7 @@
     },
     {
       "id": "leads-sequences",
-      "route": "/leads/settings/sequences",
+      "route": "/crm/settings/sequences",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1662,7 +1857,7 @@
     },
     {
       "id": "leads-sending",
-      "route": "/leads/settings/sending",
+      "route": "/crm/settings/sending",
       "resolver": "fixed",
       "state": "default",
       "viewports": [
@@ -1674,6 +1869,131 @@
         "light"
       ],
       "file": "leads-sending__{vp}__{theme}.png"
+    },
+    {
+      "id": "leads-custom-fields",
+      "route": "/crm/settings/custom-fields",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-custom-fields__{vp}__{theme}.png"
+    },
+    {
+      "id": "leads-scoring",
+      "route": "/crm/settings/scoring",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-scoring__{vp}__{theme}.png"
+    },
+    {
+      "id": "leads-rules",
+      "route": "/crm/settings/rules",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-rules__{vp}__{theme}.png"
+    },
+    {
+      "id": "leads-reports",
+      "route": "/crm/reports",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-reports__{vp}__{theme}.png"
+    },
+    {
+      "id": "leads-deals",
+      "route": "/crm/deals",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-deals__{vp}__{theme}.png",
+      "note": "Leads CRM plan 16; needs leads >= 0.5.0"
+    },
+    {
+      "id": "leads-deals-board",
+      "route": "/crm/deals/board",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-deals-board__{vp}__{theme}.png",
+      "note": "Leads CRM plan 16; needs leads >= 0.5.0"
+    },
+    {
+      "id": "leads-deal",
+      "route": "/crm/deals",
+      "resolver": "first-link",
+      "links": [
+        "a[href^=\"/crm/deals/\"]:not([href=\"/crm/deals/board\"])"
+      ],
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-deal__{vp}__{theme}.png",
+      "note": "Leads CRM plan 16; needs leads >= 0.5.0"
+    },
+    {
+      "id": "leads-deal-stages",
+      "route": "/crm/settings/deal-stages",
+      "resolver": "fixed",
+      "state": "default",
+      "viewports": [
+        "desktop",
+        "mobile"
+      ],
+      "themes": [
+        "dark",
+        "light"
+      ],
+      "file": "leads-deal-stages__{vp}__{theme}.png",
+      "note": "Leads CRM plan 16; needs leads >= 0.5.0"
     },
     {
       "id": "access-roles-list",

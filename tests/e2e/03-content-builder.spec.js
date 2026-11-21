@@ -25,14 +25,11 @@ test.describe('Content Builder Workflow', () => {
     await editButton.click();
     await page.waitForLoadState('networkidle');
 
-    // Builder should show sections with core_type labels
-    const sectionHeader = page.locator('.fs-600.fw-600').first();
-    await expect(sectionHeader).toBeVisible({ timeout: 10000 });
-    const headerText = await sectionHeader.textContent();
-    expect(headerText.length).toBeGreaterThan(0);
-
-    // Section should have control buttons (pen, copy, trash); the eye is a display-only config summary
-    const sectionBtns = page.getByTestId('builder-section-actions').first().getByRole('button');
+    // A section's heading is optional; every section has its action bar: pen, copy, trash (the eye is a
+    // display-only config summary)
+    const sectionActions = page.getByTestId('builder-section-actions').first();
+    await expect(sectionActions).toBeVisible({ timeout: 10000 });
+    const sectionBtns = sectionActions.getByRole('button');
     const btnCount = await sectionBtns.count();
     expect(btnCount).toBeGreaterThanOrEqual(3);
     await expect(page.getByTestId('builder-section-config').first()).toBeVisible();

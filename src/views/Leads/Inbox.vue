@@ -25,14 +25,15 @@
     >
       <BasicButton data-testid="inbox-refresh" @click="reload">{{ $t("leads.inbox.refresh") }}</BasicButton>
     </EmptyState>
-    <p v-else-if="!loading && !rows.length" class="t-muted m-0" data-testid="inbox-empty">{{ emptySentence }}</p>
+    <p v-else-if="!loading && !shownRows.length" class="t-muted m-0" data-testid="inbox-empty">{{ emptySentence }}</p>
 
     <InboxRow
-      v-for="row in rows"
+      v-for="row in shownRows"
       :key="row.id"
       :row="row"
       :filter="filter"
       :active="isActive(row)"
+      :reply="replyOf(row)"
       @send-now="sendNow"
     />
     <BasicButton v-if="next" class="as-s" :disabled="loading" data-testid="inbox-more" @click="loadPage(page + 1)">
@@ -46,11 +47,14 @@
 import { computed, onBeforeUnmount, onMounted, ref, watch } from "vue";
 import { useRoute } from "vue-router";
 import { t } from "@/i18n";
-import { GET_Conversations, GET_WaitingMessages, POST_SendNow } from "@/api/communicator/api";
+import { GET_Conversations, GET_Replies, GET_WaitingMessages, POST_SendNow } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
 import { useLeadsThreadStore } from "@/stores/leadsThread";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
+import { useMuninStore } from "@/stores/munin";
+import { outboundOn } from "@/utils/leadsOutbound";
 import { sendStateSentence } from "@/utils/leadsLabels";
+import { companyIdFromSubjectRef } from "@/utils/subjectRef";
 import { sendState } from "@/utils/leadsTime";
 import InboxRow from "./InboxRow.vue";
 
@@ -64,10 +68,17 @@ const POLL_MS = 30000; // the bell's cadence: a new reply shows up under Replies
 
 const route = useRoute();
 const reviewQueue = useLeadsReviewStore();
-const shownThread = useLeadsThreadStore();
+const column = useLeadsThreadStore();
 const root = ref(null);
-const filter = ref(null); // null until the first answer picks Drafts (when any wait) or All
+// null until the first answer picks Drafts (when any wait) or All; Today's counters open it on a chip (`?filter=`);
+// a remounted column comes back on the chip it had.
+const filter = ref(FILTERS.includes(route.query?.filter) ? route.query.filter : column.inboxFilter);
+watch(filter, (key) => (column.inboxFilter = key));
 const rows = ref([]);
+// Today's "N replies need review" opens Replies with `?review=1`: only the conversations whose newest reply is flagged.
+// Picking another chip (or Replies again) lifts it.
+const reviewOnly = ref(route.query?.review === "1");
+const shownRows = computed(() => (reviewOnly.value && filter.value === "replied" ? rows.value.filter((row) => replyOf(row)?.needs_review) : rows.value));
 const counts = ref({ all: 0, draft: 0, waiting: 0, replied: 0 });
 const page = ref(1);
 const next = ref(false);
@@ -94,12 +105,15 @@ function isActive(row) {
   const id = String(route.params.id);
   if (route.name === "LeadsReview") return String(row.draft?.id) === id;
   if (route.name === "LeadsConversation") return String(row.id) === id;
-  // A company card shows its newest thread — the thread a company's row stands for.
-  return route.name === "LeadsThread" && row.id === shownThread.shownId;
+  // One row per company: the open company card marks its row.
+  return route.name === "LeadsThread" && String(companyIdFromSubjectRef(row.subject_ref)) === id;
 }
 
+// "N replies need review" asks the API for the flagged conversations (`needs_review`); the page filter below stays only
+// for an older backend that ignores the parameter.
 async function fetchPage(state, number) {
-  const params = { page: number, page_size: PAGE_SIZE, ...(state === "all" ? {} : { state }) };
+  const review = reviewOnly.value && state === "replied" ? { needs_review: true } : {};
+  const params = { page: number, page_size: PAGE_SIZE, ...(state === "all" ? {} : { state }), ...review };
   return (await GET_Conversations(params)).data;
 }
 
@@ -138,6 +152,7 @@ async function loadPage(number, count = 1) {
     error.value = "";
     reviewQueue.setCount(data.counts.draft);
     if (state === "draft" && !data.counts.draft) waiting.value = await GET_WaitingMessages();
+    loadReplyTypes();
   } catch (err) {
     if (request !== latest) return;
     filter.value = filter.value || "all";
@@ -147,11 +162,33 @@ async function loadPage(number, count = 1) {
   }
 }
 
+// The reply type of a row (communicator >= 0.5.0): the row's own class fields, else the newest classified reply of its
+// thread from one `replies/` page (rows of an older backend build carry no class fields; a conversation whose newest
+// classified reply is older than that page shows no type — accepted until the rows carry the fields).
+const munin = useMuninStore();
+const replyTypes = ref(new Map());
+const replyOf = (row) => ("intent" in row ? row : replyTypes.value.get(row.id)) || null;
+
+async function loadReplyTypes() {
+  if (!outboundOn(munin, "communicator") || rows.value.every((row) => "intent" in row)) return;
+  try {
+    const { data } = await GET_Replies({ page_size: 100 });
+    const map = new Map();
+    for (const reply of data.results || []) if (reply.intent && !map.has(reply.thread_id)) map.set(reply.thread_id, reply);
+    replyTypes.value = map;
+  } catch {
+    replyTypes.value = new Map(); // the rows stay as today
+  }
+}
+
 const reload = () => loadPage(1);
 const refresh = () => loadPage(1, page.value); // the list as far as it is open, scroll untouched
 
+// Replies again lifts "need review" too: the list is read again without the flag.
 function setFilter(key) {
-  if (key === filter.value) return;
+  const lifted = reviewOnly.value;
+  reviewOnly.value = false;
+  if (key === filter.value && !lifted) return;
   filter.value = key;
   rows.value = [];
   reload();

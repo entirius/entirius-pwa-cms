@@ -5,6 +5,9 @@
         <template #cell-market="{ row }">
           <MarketCell :channel="row.channel_idx" :country="row.country" :currency="row.currency" />
         </template>
+        <template #cell-current_price="{ row }">
+          {{ pfFormat(row.current_price) }}
+        </template>
         <template #cell-suggested_price="{ row }">
           <span class="fw-600">{{ row.suggested_price }}</span>
         </template>
@@ -43,6 +46,7 @@
 import MarketCell from './MarketCell.vue'
 import { POST_PfApply } from '@/api/pricefighter/api'
 import { extractApiMessage } from '@/composables/useFormErrors'
+import { pfFormat } from '../constants'
 
 export default {
   name: 'ApplyPreviewModal',
@@ -72,6 +76,7 @@ export default {
     },
   },
   methods: {
+    pfFormat,
     onCancel() {
       if (this.loading) return
       this.$emit('cancelled')

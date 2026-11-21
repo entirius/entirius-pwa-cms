@@ -49,19 +49,20 @@ const lit = (modules, path) =>
 
 describe("isNavActive — pages without an entry of their own", () => {
   it.each([
-    ["/leads/conversations/23", "/leads/inbox"],
-    ["/leads/inbox/51", "/leads/inbox"],
-    ["/leads/companies", "/leads/inbox"],
-    ["/leads/companies/new", "/leads/inbox"],
-    ["/leads/companies/100", "/leads/inbox"],
-    ["/leads/settings/sending", "/leads/settings"],
+    ["/crm/conversations/23", "/crm/inbox"],
+    ["/crm/inbox/51", "/crm/inbox"],
+    ["/crm/companies/new", "/crm/companies"],
+    ["/crm/companies/100", "/crm/companies"],
+    ["/crm/board", "/crm/companies"],
+    ["/crm/import", "/crm/companies"],
+    ["/crm/settings/sending", "/crm/settings"],
   ])("leads + communicator: %s lights %s only", (path, entry) => {
     expect(lit(["leads", "communicator"], path)).toEqual([entry]);
   });
 
   it("leads without communicator: a company card lights the Companies entry", () => {
-    expect(lit(["leads"], "/leads/companies/100")).toEqual([
-      "/leads/companies",
+    expect(lit(["leads"], "/crm/companies/100")).toEqual([
+      "/crm/companies",
     ]);
   });
 });

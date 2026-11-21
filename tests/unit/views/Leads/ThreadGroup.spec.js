@@ -1,5 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { mount, flushPromises } from "@vue/test-utils";
+import { createPinia, setActivePinia } from "pinia";
 
 const api = vi.hoisted(() => ({ GET_ThreadWithOptouts: vi.fn(), POST_ConfirmOptout: vi.fn() }));
 vi.mock("@/api/communicator/api", () => api);
@@ -7,7 +8,7 @@ vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification: 
 
 import ThreadGroup from "@/views/Leads/ThreadGroup.vue";
 
-const thread = { id: 8, status: "replied", recipient_name: "Anna", recipient_email: "anna@shop.test", last_message_at: "2026-09-22T08:00:00Z" };
+const thread = { id: 8, status: "replied", subject: "Your shop audit", recipient_name: "Anna", recipient_email: "anna@shop.test", last_message_at: "2026-09-22T08:00:00Z" };
 const timeline = [
   { at: "2026-09-21T08:00:00Z", direction: "out", status: "sent", subject: "Your shop audit", body_text: "Hi" },
   { at: "2026-09-22T08:00:00Z", direction: "in", body_text: "Yes, call me" },
@@ -17,13 +18,16 @@ const scrolled = [];
 const scrollIntoView = Element.prototype.scrollIntoView;
 
 // FIX-17b item 2 / FIX-17c items 5 + 7: the thread holding the reply the bell announced.
+// The views read the munin store (the outbound guards): an empty one = an older backend.
+beforeEach(() => setActivePinia(createPinia()));
+
 describe("Leads ThreadGroup", () => {
   beforeEach(() => {
     scrolled.length = 0;
     Element.prototype.scrollIntoView = function () {
       scrolled.push(this);
     };
-    api.GET_ThreadWithOptouts.mockResolvedValue({ id: 8, timeline, optouts: [] });
+    api.GET_ThreadWithOptouts.mockReset().mockResolvedValue({ id: 8, timeline, optouts: [] });
   });
   afterEach(() => {
     Element.prototype.scrollIntoView = scrollIntoView;
@@ -44,6 +48,7 @@ describe("Leads ThreadGroup", () => {
     expect(wrapper.find('[data-testid="earlier-thread-reply"]').exists()).toBe(false);
     expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(false);
     expect(wrapper.get('[data-testid="earlier-thread-subject"]').text()).toBe("Your shop audit");
+    expect(api.GET_ThreadWithOptouts).not.toHaveBeenCalled();
   });
 
   // Plan 56b: a phone tap on the subject opens the thread; the IconButton keeps its state for the keyboard.
@@ -52,6 +57,7 @@ describe("Leads ThreadGroup", () => {
     const wrapper = mount(ThreadGroup, { props: { thread }, global: { stubs: { Loader: true, IconButton } } });
     await flushPromises();
     await wrapper.get('[data-testid="earlier-thread-subject"]').trigger("click");
+    await flushPromises();
     expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(true);
     expect(wrapper.get('[data-testid="earlier-thread-toggle"]').attributes("aria-expanded")).toBe("true");
     await wrapper.get('[data-testid="earlier-thread-toggle"]').trigger("click");

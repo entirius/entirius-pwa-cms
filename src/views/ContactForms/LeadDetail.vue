@@ -204,7 +204,8 @@
 <script>
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
-import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import {
   GET_Lead,
   PATCH_Lead,
@@ -331,10 +332,7 @@ export default {
         this.snapshotForm();
         this.fetchIntegrations();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -384,10 +382,7 @@ export default {
         });
       } catch (err) {
         this.formErrors.handleApiError(err);
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("cf.save_error")),
-        });
+        notifyApiError(this.notify, err, this.$t("cf.save_error"));
       } finally {
         this.saving = false;
         this.loader.loaderFinish();

@@ -1,10 +1,13 @@
 // Task progress: the counts a worker keeps on the task (`proposed`, `failed`, anything else it adds).
-const FIRST = ["proposed", "failed"];
+// proposed and failed first, a picture check's `checked` and its verdicts next, then how it was judged (stored result,
+// prefilter); any other count follows in its own order.
+const ORDER = ["proposed", "failed", "checked", "set", "review", "pass", "escalate", "propose_picture", "cached", "prefiltered"];
+const LAST_RANK = ORDER.length;
 
-/** [[key, value]] with proposed and failed first, the other counts after them in their own order. */
+/** [[key, value]] in the ORDER above, the counts it does not name after them in their own order. */
 export function orderedCounts(counts) {
   const entries = Object.entries(counts || {});
-  const rank = ([key]) => (FIRST.includes(key) ? FIRST.indexOf(key) : FIRST.length);
+  const rank = ([key]) => (ORDER.includes(key) ? ORDER.indexOf(key) : LAST_RANK);
   return entries.sort((a, b) => rank(a) - rank(b));
 }
 

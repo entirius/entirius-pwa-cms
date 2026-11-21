@@ -1,6 +1,6 @@
 <template>
   <BasicCard :title="$t('communicator.policy.title')" data-testid="settings-policy">
-    <form class="flex-column gap-4" @submit.prevent="save">
+    <div class="flex-column gap-4">
       <p class="t-muted m-0">{{ $t("communicator.policy.zone", { timezone: meta.timezone, country: meta.country }) }}</p>
       <BasicCheckbox v-model="form.business_days_only">{{ $t("communicator.policy.business_days") }}</BasicCheckbox>
       <BasicCheckbox v-model="form.spread">{{ $t("communicator.policy.spread") }}</BasicCheckbox>
@@ -14,29 +14,29 @@
         <FormField :label="$t('communicator.policy.window_end')" :error="timeError(window.end_time)" required>
           <BasicInput v-model="window.end_time" :placeholder="$t('communicator.policy.time_format')" data-testid="policy-window-end" />
         </FormField>
-        <IconButton icon="delete" variant="danger" :label="$t('communicator.policy.remove_window')" @click="form.windows.splice(i, 1)" />
+        <IconButton mutates icon="delete" variant="danger" :label="$t('communicator.policy.remove_window')" @click="form.windows.splice(i, 1)" />
       </div>
       <p v-if="error" class="t-negative m-0" role="alert" data-testid="policy-error">{{ error }}</p>
       <div class="flex jc-fe flex-wrap gap-3">
-        <BasicButton @click="form.windows.push({ start_time: '08:00', end_time: '17:00' })">
+        <BasicButton mutates data-testid="policy-add-window" @click="form.windows.push({ start_time: '08:00', end_time: '17:00' })">
           {{ $t("communicator.policy.add_window") }}
         </BasicButton>
-        <BasicButton variant="primary" type="submit" data-testid="policy-save">{{ $t("communicator.template.save") }}</BasicButton>
       </div>
-    </form>
+    </div>
   </BasicCard>
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from "vue";
+import { computed, onMounted, reactive, ref } from "vue";
 import { t } from "@/i18n";
 import { GET_Policy, PUT_Policy } from "@/api/communicator/api";
 import { extractApiMessage } from "@/composables/useFormErrors";
-import { useNotifyStore } from "@/stores/notify";
 
 // Send policy: weekday/holiday skip, daily cap, hour windows in the channel timezone (read-only zone + country).
-const notify = useNotifyStore();
+// The page's one Save (N27) runs `save` when `dirty`; it answers whether the card saved.
 const form = reactive({ business_days_only: true, spread: true, daily_cap: 10, windows: [] });
+const stored = ref(JSON.stringify(form));
+const dirty = computed(() => JSON.stringify(form) !== stored.value);
 const meta = reactive({ timezone: "", country: "" });
 const error = ref("");
 // Set by a save the hours refused: from then on every failing start/end field carries its own error.
@@ -58,26 +58,31 @@ function apply(data) {
     windows: data.windows.map((w) => ({ start_time: hhmm(w.start_time), end_time: hhmm(w.end_time) })),
   });
   Object.assign(meta, { timezone: data.timezone, country: data.country });
+  stored.value = JSON.stringify(form);
 }
 
 async function save() {
   error.value = "";
   timesChecked.value = form.windows.some(badWindow);
-  if (timesChecked.value) return;
+  if (timesChecked.value) return false;
   try {
     const windows = form.windows.map((w, order) => ({ ...w, order }));
     apply((await PUT_Policy({ ...form, windows })).data);
-    notify.spawnNotification({ msg: t("communicator.template.saved") });
+    return true;
   } catch (err) {
     error.value = extractApiMessage(err, t("leads.review.error"));
+    return false;
   }
 }
+
+defineExpose({ dirty, save });
 
 onMounted(async () => {
   try {
     apply((await GET_Policy()).data);
   } catch {
-    // 404: the channel has no policy yet — the defaults above create one on save.
+    // 404: the channel has no policy yet — the defaults above create one on save, so they count as a change.
+    stored.value = "";
   }
 });
 </script>

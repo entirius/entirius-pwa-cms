@@ -4,12 +4,13 @@ import { mount, flushPromises } from "@vue/test-utils";
 
 // Three threads of the company, newest first (the list order of the API).
 const summaries = [
-  { id: 9, status: "open", recipient_name: "Anna", recipient_email: "anna@shop.test", last_message_at: "2026-09-23T08:00:00Z" },
-  { id: 8, status: "closed", recipient_name: "Anna", recipient_email: "jan@shop.test", last_message_at: "2026-09-22T08:00:00Z" },
-  { id: 7, status: "closed", recipient_name: "Anna", recipient_email: "jan@shop.test", last_message_at: "2026-09-21T08:00:00Z" },
+  { id: 9, status: "open", subject: "Subject 9", recipient_name: "Anna", recipient_email: "anna@shop.test", last_message_at: "2026-09-23T08:00:00Z" },
+  { id: 8, status: "closed", subject: "Subject 8", recipient_name: "Anna", recipient_email: "jan@shop.test", last_message_at: "2026-09-22T08:00:00Z" },
+  { id: 7, status: "closed", subject: "Subject 7", recipient_name: "Anna", recipient_email: "jan@shop.test", last_message_at: "2026-09-21T08:00:00Z" },
 ];
 const detail = (id) => ({
   id,
+  recipient_name: "Anna",
   // Threads from the next list page are not in `summaries` — they are closed like every older thread.
   status: (summaries.find((s) => s.id === id) || { status: "closed" }).status,
   timeline: [{ at: "2026-09-21T08:00:00Z", direction: "out", status: "sent", subject: `Subject ${id}`, body_text: "Hi" }],
@@ -22,15 +23,20 @@ const api = vi.hoisted(() => ({
   GET_Replies: vi.fn(),
   GET_WaitingMessages: vi.fn(),
   POST_ConfirmOptout: vi.fn(),
+  POST_DismissOptout: vi.fn(),
 }));
 vi.mock("@/api/communicator/api", () => api);
-const leadsApi = vi.hoisted(() => ({ GET_Company: vi.fn() }));
+const stageActivity = { id: 1, kind: "stage", created_at: "2026-09-21T08:00:00Z", message: "stage new -> contacted", data: {} };
+const leadsApi = vi.hoisted(() => ({ GET_Company: vi.fn(), activities: [], GET_CompanyActivities: vi.fn() }));
 vi.mock("@/api/leads/api", () => ({
   GET_Company: leadsApi.GET_Company,
-  GET_CompanyActivities: () => Promise.resolve({ data: { results: [{ id: 1, created_at: "2026-09-21T08:00:00Z", message: "stage new -> contacted" }] } }),
+  GET_CompanyActivities: (...args) => {
+    leadsApi.GET_CompanyActivities(...args);
+    return Promise.resolve({ data: { results: leadsApi.activities } });
+  },
 }));
 const modules = vi.hoisted(() => new Set());
-vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key) }) }));
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key), isModuleAtLeast: () => false }) }));
 const spawnNotification = vi.hoisted(() => vi.fn());
 vi.mock("@/stores/notify", () => ({ useNotifyStore: () => ({ spawnNotification }) }));
 vi.mock("vue-router", () => ({ useRoute: () => ({ params: { id: "42" } }), useRouter: () => ({}) }));
@@ -38,8 +44,9 @@ vi.mock("vue-router", () => ({ useRoute: () => ({ params: { id: "42" } }), useRo
 import Thread from "@/views/Leads/Thread.vue";
 import { useConfigHealthStore } from "@/stores/configHealth";
 import BasicButton from "@/boots/BasicButton/index.vue";
+import { leadsFrame } from "./leadsFrame";
 
-const stubs = { Loader: true, ConfigBanner: true, BasicButton };
+const stubs = { Loader: true, ConfigBanner: true, BasicButton, ConfirmDialog: leadsFrame.stubs.ConfirmDialog, ComposeDialog: true };
 const mountThread = (props = {}) => mount(Thread, { props, global: { stubs } });
 
 beforeEach(() => {
@@ -47,6 +54,7 @@ beforeEach(() => {
   vi.clearAllMocks();
   modules.clear();
   modules.add("leads").add("communicator");
+  leadsApi.activities = [stageActivity];
   leadsApi.GET_Company.mockResolvedValue({ data: { id: 42, name: "Example Shop 5" } });
   api.GET_Threads.mockResolvedValue({ data: { count: 3, next: null, results: summaries } });
   api.GET_ThreadWithOptouts.mockImplementation((id) => Promise.resolve(detail(id)));
@@ -68,28 +76,40 @@ describe("Leads Thread", () => {
     const wrapper = mountThread();
     await flushPromises();
     expect(api.GET_Threads).toHaveBeenCalledWith({ subject_ref: "leads.Company:42", page_size: 20 });
-    expect(api.GET_ThreadWithOptouts).toHaveBeenCalledTimes(1);
-    expect(api.GET_ThreadWithOptouts).toHaveBeenCalledWith(9);
+    expect(api.GET_ThreadWithOptouts.mock.calls[0]).toEqual([9]);
     expect(wrapper.get('[data-testid="thread-subject"]').text()).toContain("Subject 9");
     expect(wrapper.findAll('[data-testid="timeline-out"]')).toHaveLength(1);
     expect(wrapper.get('[data-testid="earlier-toggle"]').text()).toContain('leads.thread.earlier::{"count":2}');
-    expect(wrapper.find('[data-testid="earlier-thread"]').exists()).toBe(false);
+  });
+
+  // Plan 33: the card shows every conversation the Inbox row counts — the newest open, the other N−1 listed under
+  // "Earlier conversations (N−1)" from the start, each closed until opened in place; the heading folds the list.
+  it("lists every earlier conversation from the start, each closed, the count of the threads list minus the newest", async () => {
+    const wrapper = mountThread();
+    await flushPromises();
+    expect(wrapper.get('[data-testid="earlier-toggle"]').attributes("aria-expanded")).toBe("true");
+    const groups = wrapper.findAll('[data-testid="earlier-thread"]');
+    expect(groups).toHaveLength(2);
+    groups.forEach((group) => expect(group.find('[data-testid="thread-timeline"]').exists()).toBe(false));
+    await wrapper.get('[data-testid="earlier-toggle"]').trigger("click");
+    expect(wrapper.findAll('[data-testid="earlier-thread"]')).toHaveLength(0);
   });
 
   // FIX-17 item 2: a collapsed row is told apart by its subject and recipient, without opening it.
   it("the expander lists older threads by subject and recipient; opening one shows its conversation", async () => {
     const wrapper = mountThread();
     await flushPromises();
-    await wrapper.get('[data-testid="earlier-toggle"]').trigger("click");
-    await flushPromises();
     const groups = wrapper.findAll('[data-testid="earlier-thread"]');
     expect(groups).toHaveLength(2);
-    expect(api.GET_ThreadWithOptouts.mock.calls.map(([id]) => id)).toEqual([9, 8, 7]);
+    // the rows say their subject from the list; a conversation is read when its row first opens
+    expect(api.GET_ThreadWithOptouts.mock.calls.map(([id]) => id)).toEqual([9]);
     expect(groups[1].get('[data-testid="earlier-thread-subject"]').text()).toBe("Subject 7");
     expect(groups[1].get('[data-testid="earlier-thread-to"]').text()).toContain("jan@shop.test");
     expect(groups[1].find('[data-testid="thread-timeline"]').exists()).toBe(false);
 
     await groups[1].get('[data-testid="earlier-thread-toggle"]').trigger("click");
+    await flushPromises();
+    expect(api.GET_ThreadWithOptouts.mock.calls.map(([id]) => id)).toEqual([9, 7]);
     expect(groups[1].findAll('[data-testid="timeline-out"]')).toHaveLength(1);
     expect(groups[0].find('[data-testid="thread-timeline"]').exists()).toBe(false);
   });
@@ -116,7 +136,7 @@ describe("Leads Thread", () => {
     expect(wrapper.get('[data-testid="thread-reply-below"]').exists()).toBe(true);
   });
 
-  it("the older threads stay collapsed when the newest one holds the reply itself", async () => {
+  it("the older threads stay closed when the newest one holds the reply itself", async () => {
     const replied = summaries.map((thread) => (thread.id === 8 ? { ...thread, status: "replied" } : thread));
     api.GET_Threads.mockResolvedValue({ data: { count: 3, next: null, results: replied } });
     api.GET_ThreadWithOptouts.mockImplementation((id) =>
@@ -124,7 +144,7 @@ describe("Leads Thread", () => {
     );
     const wrapper = mountThread();
     await flushPromises();
-    expect(wrapper.findAll('[data-testid="earlier-thread"]')).toHaveLength(0);
+    expect(wrapper.findAll('[data-testid="earlier-thread"] [data-testid="thread-timeline"]')).toHaveLength(0);
     expect(wrapper.find('[data-testid="thread-reply-below"]').exists()).toBe(false);
   });
 
@@ -137,12 +157,34 @@ describe("Leads Thread", () => {
     expect(wrapper.find('[data-testid="thread-timeline"]').exists()).toBe(true);
   });
 
+  // N2: no "No messages" above earlier conversations that hold them; with nothing at all, one empty state
+  it("shows one empty state, and only when no conversation holds a mail", async () => {
+    api.GET_ThreadWithOptouts.mockImplementation((id) => Promise.resolve({ ...detail(id), timeline: [] }));
+    const withOlder = mountThread();
+    await flushPromises();
+    expect(withOlder.find('[data-testid="thread-empty"]').exists()).toBe(false);
+    api.GET_Threads.mockResolvedValue({ data: { count: 0, next: null, results: [] } });
+    const none = mountThread();
+    await flushPromises();
+    expect(none.findAll('[data-testid="thread-empty"]')).toHaveLength(1);
+    expect(none.text()).not.toContain("leads.thread.no_thread");
+  });
+
+  // plan 23: entries that say `composed` themselves — the desktop tab reads no activities for it
+  it("the desktop tab reads no activities when the timeline says composed itself", async () => {
+    api.GET_ThreadWithOptouts.mockImplementation((id) =>
+      Promise.resolve({ ...detail(id), timeline: [{ at: "2026-09-23T08:00:00Z", direction: "out", status: "sent", body_text: "hi", composed: true }] })
+    );
+    mountThread();
+    await flushPromises();
+    expect(leadsApi.GET_CompanyActivities).not.toHaveBeenCalled();
+  });
+
   it("further older threads load with one request for the next list page", async () => {
     api.GET_Threads.mockResolvedValueOnce({ data: { count: 23, next: "page2", results: summaries } });
     api.GET_Threads.mockResolvedValueOnce({ data: { count: 23, next: null, results: [{ ...summaries[2], id: 30 }] } });
     const wrapper = mountThread();
     await flushPromises();
-    await wrapper.get('[data-testid="earlier-toggle"]').trigger("click");
     await wrapper.get('[data-testid="earlier-more"]').trigger("click");
     await flushPromises();
     expect(api.GET_Threads).toHaveBeenCalledTimes(2);
@@ -211,11 +253,65 @@ describe("Leads Thread", () => {
     await flushPromises();
     const button = wrapper.get('[data-testid="confirm-optout"]');
     await button.trigger("click");
-    await button.trigger("click");
+    const yes = wrapper.get('[data-testid="confirm-optout-yes"]');
+    await yes.trigger("click");
+    await yes.trigger("click");
     expect(api.POST_ConfirmOptout).toHaveBeenCalledTimes(1);
     expect(button.attributes("disabled")).toBeDefined();
     resolve({ data: {} });
     await flushPromises();
     expect(wrapper.get('[data-testid="confirm-optout"]').attributes("disabled")).toBeUndefined();
+    expect(spawnNotification).toHaveBeenCalledWith({ msg: "Opt-out confirmed — Anna will not be mailed" });
+    // P6 (walk 3): the card reloads its contacts, History and tasks — no tab shows what was true before
+    expect(wrapper.emitted("changed")).toHaveLength(1);
+  });
+
+  // Plan 34: Not an opt-out posts the dismissal, then the thread and the card read again; the mark is gone
+  it("Not an opt-out dismisses the reply and reloads the conversation and the card", async () => {
+    api.POST_DismissOptout.mockResolvedValue({ data: {} });
+    const optout = { id: 3, received_at: "2026-09-22T08:00:00Z", optout_confirmed_at: null };
+    const timeline = [{ at: "2026-09-22T08:00:00Z", direction: "in", body_text: "stop", reply_kind: "suspected_optout" }];
+    api.GET_ThreadWithOptouts.mockImplementation((id) => Promise.resolve({ ...detail(id), timeline, optouts: [optout] }));
+    const wrapper = mountThread();
+    await flushPromises();
+    const reads = api.GET_ThreadWithOptouts.mock.calls.length;
+    api.GET_ThreadWithOptouts.mockImplementation((id) => Promise.resolve({ ...detail(id), timeline: [{ ...timeline[0], reply_kind: "reply" }], optouts: [] }));
+    await wrapper.get('[data-testid="dismiss-optout"]').trigger("click");
+    await flushPromises();
+    expect(api.POST_DismissOptout).toHaveBeenCalledWith(3);
+    expect(api.POST_ConfirmOptout).not.toHaveBeenCalled();
+    expect(api.GET_ThreadWithOptouts.mock.calls.length).toBeGreaterThan(reads);
+    expect(wrapper.emitted("changed")).toHaveLength(1);
+    expect(spawnNotification).toHaveBeenCalledWith({ msg: "Marked as not an opt-out" });
+    expect(wrapper.find('[data-testid="dismiss-optout"]').exists()).toBe(false);
+    expect(wrapper.find('[data-testid="reply-next"]').exists()).toBe(false);
+  });
+
+  // M13: the card reloaded (a mail sent, a call logged) — the thread reads again, no page reload
+  it("reads the thread again when the card's company is replaced", async () => {
+    const wrapper = mountThread({ refresh: { id: 42 } });
+    await flushPromises();
+    const calls = api.GET_Threads.mock.calls.length;
+    await wrapper.setProps({ refresh: { id: 42, activities: [] } });
+    await flushPromises();
+    expect(api.GET_Threads.mock.calls.length).toBe(calls + 1);
+  });
+
+  // M14: the message a `composed` activity names is told to the timeline as written by hand
+  it("hands the ids of hand-written mails to the timeline", async () => {
+    leadsApi.activities = [{ id: 2, kind: "note", message: "composed", created_at: "2026-09-21T08:00:00Z", data: { event: "composed", message_id: 31 } }];
+    const wrapper = mountThread();
+    await flushPromises();
+    expect(wrapper.getComponent({ name: "ThreadTimeline" }).props("composed")).toEqual([31]);
+  });
+
+  it("a mail sent from a reply reloads the thread and tells the card", async () => {
+    const wrapper = mountThread();
+    await flushPromises();
+    const calls = api.GET_Threads.mock.calls.length;
+    wrapper.getComponent({ name: "ThreadTimeline" }).vm.$emit("sent");
+    await flushPromises();
+    expect(api.GET_Threads.mock.calls.length).toBe(calls + 1);
+    expect(wrapper.emitted("changed")).toHaveLength(1);
   });
 });

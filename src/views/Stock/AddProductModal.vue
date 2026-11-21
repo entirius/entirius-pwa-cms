@@ -13,7 +13,7 @@
         :aria-label="$t('stock.search_sku')"
         icon="search"
         class="add-product__search"
-        @input="debouncedSearch"
+        @input="debouncedFetch(onSearch)"
       />
       <FilterChip
         :label="$t('stock.filter_without_stock')"
@@ -64,6 +64,7 @@
 
 <script>
 import { GET_WarehouseProducts } from "@/api/stock/api"
+import { useSearchDebounce } from "@/composables/useSearchDebounce"
 
 export default {
   name: "AddProductModal",
@@ -71,6 +72,10 @@ export default {
     warehouseCode: { type: String, required: true },
   },
   emits: ["close", "add"],
+  setup() {
+    const { debouncedFetch } = useSearchDebounce()
+    return { debouncedFetch }
+  },
   data() {
     return {
       products: [],
@@ -81,7 +86,6 @@ export default {
       onlyMissing: true,
       loading: false,
       selectedSkus: new Set(),
-      _debounceTimer: null,
     }
   },
   computed: {
@@ -117,12 +121,9 @@ export default {
         this.loading = false
       }
     },
-    debouncedSearch() {
-      clearTimeout(this._debounceTimer)
-      this._debounceTimer = setTimeout(() => {
-        this.currentPage = 1
-        this.fetchProducts()
-      }, 300)
+    onSearch() {
+      this.currentPage = 1
+      this.fetchProducts()
     },
     toggleSku(sku) {
       const next = new Set(this.selectedSkus)

@@ -5,7 +5,7 @@
       :placeholder="$t('common.start_typing')"
       icon="search"
       class="mb-8"
-      @input="debouncedFetch"
+      @input="debouncedFetch(onSearch)"
     />
 
     <div class="flex ai-ct jc-sb mb-5">
@@ -70,7 +70,8 @@ import { GET_Features } from "@/api/pim/api";
 import { featureTypeLabel, featureTypeTone } from "../helpers/pimEnums";
 import draggable from "vuedraggable";
 import { useReadonly } from "@/composables/useReadonly";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
+import { useSearchDebounce } from "@/composables/useSearchDebounce";
 
 export default {
   name: "AttributeLibrary",
@@ -89,7 +90,8 @@ export default {
   setup() {
     const notify = useNotifyStore();
     const pimChannel = usePimChannelStore();
-    return { notify, pimChannel, readonly: useReadonly() };
+    const { debouncedFetch } = useSearchDebounce();
+    return { notify, pimChannel, readonly: useReadonly(), debouncedFetch };
   },
   data() {
     return {
@@ -100,7 +102,6 @@ export default {
       pageSize: 20,
       search: "",
       loading: false,
-      debounceTimer: null,
     };
   },
   computed: {
@@ -148,10 +149,7 @@ export default {
           _from_library: true,
         }));
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -162,12 +160,9 @@ export default {
         this.$emit("remove-feature", el.feature_idx);
       }
     },
-    debouncedFetch() {
-      clearTimeout(this.debounceTimer);
-      this.debounceTimer = setTimeout(() => {
-        this.currentPage = 1;
-        this.fetchFeatures();
-      }, 300);
+    onSearch() {
+      this.currentPage = 1;
+      this.fetchFeatures();
     },
     onPageChange(page) {
       this.currentPage = page;

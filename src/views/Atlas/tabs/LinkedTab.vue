@@ -224,7 +224,8 @@
 <script>
 import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
-import { useFormErrors, extractApiMessage } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import {
   GET_ProductLinks,
   POST_ProductLink,
@@ -380,10 +381,7 @@ export default {
         );
         this.previewProduct = data;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
         this.previewVisible = false;
       } finally {
         this.previewLoading = false;
@@ -399,10 +397,7 @@ export default {
         });
         this.links = data.results || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -451,10 +446,7 @@ export default {
       } catch (err) {
         this.handleApiError(err);
         if (Object.keys(this.errors).length === 0) {
-          this.notify.spawnNotification({
-            type: "negative",
-            msg: extractApiMessage(err, this.$t("notifications.error")),
-          });
+          notifyApiError(this.notify, err, this.$t("notifications.error"));
         }
       } finally {
         this.formBusy = false;
@@ -469,10 +461,7 @@ export default {
         });
         this.fetchLinks();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async unsetPrimary(row) {
@@ -484,10 +473,7 @@ export default {
         });
         this.fetchLinks();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     confirmDelete(row) {
@@ -506,10 +492,7 @@ export default {
         this.deleteTarget = null;
         this.fetchLinks();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
   },

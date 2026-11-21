@@ -29,7 +29,7 @@
           icon="search"
           class="products-filters__search"
           data-testid="products-filter-search"
-          @input="onSearchInput"
+          @input="debouncedFetch(onSearchInput)"
         />
         <BasicInput
           v-model="filters.ean"
@@ -286,7 +286,7 @@
 
 <script>
 import RawDataModal from "../Review/RawDataModal.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import GalleryModal from "../Review/GalleryModal.vue";
 import ProductCard from "../Review/ProductCard.vue";
 import RawDataPanel from "../Review/RawDataPanel.vue";
@@ -296,6 +296,7 @@ import FindInPimPanel from "../components/FindInPimPanel.vue";
 import { useNotifyStore } from "@/stores/notify";
 import { useMuninStore } from "@/stores/munin";
 import { useAtlasBulkActions } from "@/composables/useAtlasBulkActions";
+import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { formatCost, formatDate } from "@/utils/format";
 import {
   GET_SupplierProducts,
@@ -341,10 +342,12 @@ export default {
     kind: { type: String, default: "procurement" },
   },
   setup() {
+    const { debouncedFetch } = useSearchDebounce();
     return {
       notify: useNotifyStore(),
       munin: useMuninStore(),
       bulk: useAtlasBulkActions(),
+      debouncedFetch,
     };
   },
   data() {
@@ -363,7 +366,6 @@ export default {
         costMax: "",
         ordering: "-data_changed_at",
       },
-      searchTimer: null,
       selectedProducts: [],
       bulkBusy: false,
       rawVisible: false,
@@ -554,9 +556,6 @@ export default {
       this.fetchProducts();
     },
   },
-  beforeUnmount() {
-    clearTimeout(this.searchTimer);
-  },
   mounted() {
     this.fetchProducts();
   },
@@ -656,8 +655,7 @@ export default {
       this.fetchProducts();
     },
     onSearchInput() {
-      clearTimeout(this.searchTimer);
-      this.searchTimer = setTimeout(() => this.resetAndFetch(), 300);
+      this.resetAndFetch();
     },
     onOrderingChange(val) {
       this.filters.ordering = val;
@@ -700,10 +698,7 @@ export default {
         this.products = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -781,10 +776,7 @@ export default {
         });
         this.fetchProducts();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.detailBusy = false;
       }
@@ -802,10 +794,7 @@ export default {
         this.closeDetail();
         this.fetchProducts();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.detailBusy = false;
       }
@@ -840,10 +829,7 @@ export default {
         });
         this.fetchProducts();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async pushProduct(row) {
@@ -856,10 +842,7 @@ export default {
         this._emitPushEventToasts(resp?.data?.events);
         this.fetchProducts();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     confirmForceRepush(row) {
@@ -879,10 +862,7 @@ export default {
         this.repushTarget = null;
         this.fetchProducts();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     /**

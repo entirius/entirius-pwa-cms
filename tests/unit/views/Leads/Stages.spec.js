@@ -17,7 +17,7 @@ vi.mock("@/stores/notify", () => ({ useNotifyStore: () => notify }));
 import Stages from "@/views/Leads/Stages.vue";
 import { fieldError, leadsFrame, setControl } from "./leadsFrame";
 
-const stubs = { ...leadsFrame.stubs, draggable: { props: ["list"], template: "<div><slot v-for='(el, i) in list' name='item' :element='el' :index='i' /></div>" } };
+const stubs = leadsFrame.stubs;
 const stages = () => [{ id: 1, key: "new", label: "New", order: 0, kind: "open" }, { id: 2, key: "won", label: "Won", order: 10, kind: "won" }];
 
 describe("Leads Stages", () => {
@@ -91,11 +91,19 @@ describe("Leads Stages", () => {
     expect(tag.attributes("label")).toBe("won · won");
   });
 
+  // N27: moves and renames wait for the header's one Save
+  const save = async (wrapper) => {
+    await wrapper.get('[data-testid="stages-save"]').trigger("click");
+    await flushPromises();
+  };
+
   async function moveFirstDown() {
     const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });
     await flushPromises();
     await wrapper.findAll('[data-testid="stage-row"]')[0].findAll("button")[1].trigger("click");
     await flushPromises();
+    expect(api.PATCH_Stage).not.toHaveBeenCalled();
+    await save(wrapper);
     return wrapper;
   }
 
@@ -132,19 +140,30 @@ describe("Leads Stages", () => {
     expect(api.POST_Stage).toHaveBeenCalledWith({ key: "lost", label: "Lost", order: 20 });
   });
 
-  // Plan 53: the label field (BasicInput) commits on blur and Enter like the native change did — only when it changed.
-  it("a blur renames only a changed label", async () => {
+  it("Save is greyed until a label changed, then sends only the changed label", async () => {
     api.PATCH_Stage.mockResolvedValue({ data: {} });
     const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });
     await flushPromises();
-    const label = () => wrapper.findAllComponents('[data-testid="stage-label"]')[0];
-    label().vm.$emit("onFocusout");
-    expect(api.PATCH_Stage).not.toHaveBeenCalled();
-    label().vm.$emit("update:modelValue", "Fresh");
-    label().vm.$emit("onKeyDown");
-    label().vm.$emit("onFocusout");
+    expect(wrapper.get('[data-testid="stages-save"]').attributes("disabled")).toBeDefined();
+    wrapper.findAllComponents('[data-testid="stage-label"]')[0].vm.$emit("update:modelValue", "Fresh");
     await flushPromises();
+    expect(api.PATCH_Stage).not.toHaveBeenCalled();
+    await save(wrapper);
     expect(api.PATCH_Stage.mock.calls).toEqual([[1, { label: "Fresh" }]]);
+  });
+
+  it("adding a stage keeps a rename not saved yet", async () => {
+    api.POST_Stage.mockResolvedValue({ data: {} });
+    const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });
+    await flushPromises();
+    wrapper.findAllComponents('[data-testid="stage-label"]')[0].vm.$emit("update:modelValue", "Fresh");
+    await setControl(wrapper, "stage-new-key", "lost");
+    await setControl(wrapper, "stage-new-label", "Lost");
+    await wrapper.find('[data-testid="stage-add"]').trigger("submit");
+    await flushPromises();
+    api.PATCH_Stage.mockResolvedValue({ data: {} });
+    await save(wrapper);
+    expect(api.PATCH_Stage).toHaveBeenCalledWith(1, { label: "Fresh" });
   });
 
   it("a key outside letters, digits, - and _ is refused before the request", async () => {
@@ -155,42 +174,22 @@ describe("Leads Stages", () => {
     await wrapper.find('[data-testid="stage-add"]').trigger("submit");
     await flushPromises();
     expect(api.POST_Stage).not.toHaveBeenCalled();
-    expect(wrapper.get('[data-testid="stage-add-error"]').text()).toBe(t("leads.stages.key_invalid"));
+    // T7 (walk 4): on the Key field, not under the form
+    expect(fieldError(wrapper, "leads.stages.key")).toBe(t("leads.stages.key_invalid"));
   });
 
-  // Plan 56b: a refused rename is not remembered as saved — the next blur or Enter sends it again.
-  it("a failed rename is retried by the next blur", async () => {
+  // A refused rename stays on its row with what was typed; the next Save sends it again.
+  it("a refused rename keeps the typed label and the next Save retries it", async () => {
     api.PATCH_Stage.mockRejectedValueOnce({ response: { data: { detail: "Busy" } } }).mockResolvedValueOnce({ data: {} });
     const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });
     await flushPromises();
-    const label = () => wrapper.findAllComponents('[data-testid="stage-label"]')[0];
-    label().vm.$emit("update:modelValue", "Fresh");
-    label().vm.$emit("onFocusout");
-    await flushPromises();
+    wrapper.findAllComponents('[data-testid="stage-label"]')[0].vm.$emit("update:modelValue", "Fresh");
+    await save(wrapper);
     expect(wrapper.get('[data-testid="stage-error"]').text()).toBe("Busy");
-    label().vm.$emit("onKeyDown");
-    await flushPromises();
+    expect(api.GET_Stages).toHaveBeenCalledTimes(1);
+    await save(wrapper);
     expect(api.PATCH_Stage.mock.calls).toEqual([[1, { label: "Fresh" }], [1, { label: "Fresh" }]]);
     expect(wrapper.find('[data-testid="stage-error"]').exists()).toBe(false);
-  });
-
-  // Plan 61c: a rename that fails after a newer one was committed does not bring its old label back as saved.
-  it("a failed rename keeps a label committed while it ran", async () => {
-    let failFirst;
-    api.PATCH_Stage.mockReturnValueOnce(new Promise((_, reject) => (failFirst = reject))).mockResolvedValue({ data: {} });
-    const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });
-    await flushPromises();
-    const label = () => wrapper.findAllComponents('[data-testid="stage-label"]')[0];
-    label().vm.$emit("update:modelValue", "Fresh");
-    label().vm.$emit("onFocusout");
-    label().vm.$emit("update:modelValue", "Newer");
-    label().vm.$emit("onKeyDown");
-    await flushPromises();
-    failFirst({ response: { data: { detail: "Busy" } } });
-    await flushPromises();
-    label().vm.$emit("onFocusout");
-    await flushPromises();
-    expect(api.PATCH_Stage.mock.calls).toEqual([[1, { label: "Fresh" }], [1, { label: "Newer" }]]);
   });
 
   it("an empty label is a field error before the request", async () => {
@@ -201,6 +200,14 @@ describe("Leads Stages", () => {
     await wrapper.find('[data-testid="stage-add"]').trigger("submit");
     await flushPromises();
     expect(api.POST_Stage).not.toHaveBeenCalled();
-    expect(fieldError(wrapper, "leads.stages.label")).toBe(t("leads.stages.label_required"));
+    expect(fieldError(wrapper, "leads.stages.label")).toBe("Give the label");
+  });
+
+  // m7 (walk 3): Stages orders by the arrows only, as Deal stages do — no drag handle
+  it("has no drag handle", async () => {
+    const wrapper = mount(Stages, { global: { components: leadsFrame.components, stubs } });
+    await flushPromises();
+    expect(wrapper.find(".stage__handle").exists()).toBe(false);
+    expect(wrapper.findAll('[data-testid="stage-row"]').length).toBeGreaterThan(0);
   });
 });

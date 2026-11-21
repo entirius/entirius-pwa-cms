@@ -23,7 +23,7 @@ vi.mock("@/api/communicator/api", () => ({ GET_Conversations, GET_WaitingMessage
 const GET_Company = vi.hoisted(() => vi.fn((id) => Promise.resolve({ data: { id, name: `Example Shop ${id}` } })));
 vi.mock("@/api/leads/api", () => ({ GET_Company }));
 const modules = vi.hoisted(() => new Set());
-vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key) }) }));
+vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isModuleEnabled: (key) => modules.has(key), isModuleAtLeast: () => false }) }));
 
 import Inbox from "@/views/Leads/Inbox.vue";
 import { useLeadsReviewStore } from "@/stores/leadsReview";
@@ -118,13 +118,26 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     expect(draft.get('[data-testid="inbox-item-subject"]').text()).toBe("Draft for shop 5");
     expect(draft.get('[data-testid="inbox-item-to"]').text()).toContain("anna@example-shop-5.test");
     expect(JSON.parse(draft.get("a").attributes("data-to"))).toEqual({ name: "LeadsReview", params: { id: 51 } });
-    expect(waiting.get('[data-testid="inbox-marker-waiting"]').text()).toContain(`goes out at ${formatTime(waitingAt)}`);
+    // N10: a badge like every other state, the departure as its tooltip
+    const badge = waiting.get('[data-testid="inbox-marker-waiting"]');
+    expect(badge.attributes("label")).toBe("Scheduled");
+    expect(badge.attributes("title")).toContain(`goes out at ${formatTime(waitingAt)}`);
     expect(JSON.parse(waiting.get("a").attributes("data-to"))).toEqual({ name: "LeadsThread", params: { id: 6 }, query: { tab: "timeline" } });
     expect(replied.get('[data-testid="inbox-item-state"]').text()).toContain("Yes, call me");
     expect(replied.text()).not.toContain("> Hi");
     expect(replied.get('[data-testid="inbox-item-name"]').text()).toBe("Jan");
     expect(JSON.parse(replied.get("a").attributes("data-to"))).toEqual({ name: "LeadsConversation", params: { id: 7 } });
     expect(wrapper.get('[data-thread="6"] [data-testid="inbox-item-name"]').text()).toBe("Example Shop 6");
+  });
+
+  // M14: the latest text belongs to the newest mail (maybe one written by hand and sent), not to the draft
+  it("a draft row never shows the conversation's latest text as the draft's", async () => {
+    const wrapper = mountInbox();
+    await flushPromises();
+    await chip(wrapper, "all").trigger("click");
+    await flushPromises();
+    const [draft] = wrapper.findAll('[data-testid="inbox-item"]');
+    expect(draft.get('[data-testid="inbox-item-state"]').text()).not.toContain("Hello");
   });
 
   it("a waiting mail says why it waits and offers Send now only while it can still move", async () => {
@@ -134,7 +147,7 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     const wrapper = mountInbox();
     await flushPromises();
     const rows = wrapper.findAll('[data-testid="inbox-item"]');
-    expect(rows[0].text()).toContain("daily cap reached");
+    expect(rows[0].get('[data-testid="inbox-marker-waiting"]').attributes("title")).toContain("daily cap reached");
     expect(rows[1].find('[data-testid="inbox-item-send-now"]').exists()).toBe(false);
     await rows[0].get('[data-testid="inbox-item-send-now"]').trigger("click");
     await flushPromises();
@@ -193,16 +206,29 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     server.counts = { all: 2, draft: 0, waiting: 0, replied: 2 };
     route.name = "LeadsThread";
     route.params = { id: "9" };
-    useLeadsThreadStore().shownId = 21; // the card shows the company's newest thread — the row's thread
     const wrapper = mountInbox();
     await flushPromises();
     expect(ids(wrapper)).toEqual([21, 7]);
     const row = wrapper.get('[data-thread="21"]');
     expect(row.classes()).toContain("inbox-row--active");
-    expect(row.get('[data-testid="inbox-item-threads"]').text()).toBe("3 threads ·");
+    expect(row.get('[data-testid="inbox-item-threads"]').text()).toBe("3 conversations ·");
     expect(row.find('[data-testid="inbox-marker-replied"]').exists()).toBe(true); // a reply in an older thread counts
     expect(JSON.parse(row.get("a").attributes("data-to"))).toEqual({ name: "LeadsThread", params: { id: 9 }, query: { tab: "timeline" } });
     expect(wrapper.find('[data-thread="7"] [data-testid="inbox-item-threads"]').exists()).toBe(false);
+  });
+
+  // N21: Today (a page) in between remounts the column — it comes back on the chip it had, not on Drafts
+  it("a remounted column keeps its chip", async () => {
+    const first = mountInbox();
+    await flushPromises();
+    await chip(first, "replied").trigger("click");
+    await flushPromises();
+    first.unmount();
+    expect(useLeadsThreadStore().inboxFilter).toBe("replied");
+    GET_Conversations.mockClear();
+    mountInbox();
+    await flushPromises();
+    expect(GET_Conversations.mock.calls.every(([params]) => params.state === "replied")).toBe(true);
   });
 
   it("a draft that sits in an older thread opens Review with that draft and names its own recipient", async () => {
@@ -270,5 +296,22 @@ describe("Leads Inbox (one list: drafts, waiting mails, conversations)", () => {
     await flushPromises();
     expect(chip(wrapper, "all").classes()).toContain("on");
     expect(wrapper.get('[role="alert"]').text()).toBe("Could not load the inbox — it tries again on the next refresh");
+  });
+
+  // Acceptance M6: Today's "N replies need review" opens Replies with only the flagged conversations; a chip lifts it.
+  it("?review=1 on Replies lists only the conversations whose reply needs review", async () => {
+    const flagged = base(8, { status: "replied", replied: true, intent: "interested", needs_review: true });
+    server.rows = [repliedRow, flagged];
+    server.counts = { all: 2, draft: 0, waiting: 0, replied: 2 };
+    route.query = { filter: "replied", review: "1" };
+    const wrapper = mountInbox();
+    await flushPromises();
+    expect(ids(wrapper)).toEqual([8]);
+    expect(GET_Conversations).toHaveBeenCalledWith(expect.objectContaining({ state: "replied", needs_review: true }));
+    await chip(wrapper, "replied").trigger("click"); // Replies again lifts the flag: the list is read again without it
+    await flushPromises();
+    expect(ids(wrapper)).toEqual([7, 8]);
+    expect(GET_Conversations.mock.lastCall[0]).not.toHaveProperty("needs_review");
+    route.query = {};
   });
 });

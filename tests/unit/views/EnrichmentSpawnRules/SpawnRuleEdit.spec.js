@@ -6,9 +6,11 @@ const mockPost = vi.fn();
 const mockPatch = vi.fn();
 const mockGetDefs = vi.fn();
 const mockNotify = vi.fn();
+const mockGetWorkers = vi.fn();
 
 vi.mock("@/api/enrichment/api", () => ({
   GET_SpawnRule: (...a) => mockGetRule(...a),
+  GET_Workers: (...a) => mockGetWorkers(...a),
   POST_SpawnRule: (...a) => mockPost(...a),
   PATCH_SpawnRule: (...a) => mockPatch(...a),
   DELETE_SpawnRule: vi.fn(),
@@ -59,11 +61,29 @@ describe("SpawnRuleEdit", () => {
     mockPatch.mockReset();
     mockGetDefs.mockReset();
     mockNotify.mockReset();
+    mockGetWorkers.mockReset();
+    mockGetWorkers.mockRejectedValue(new Error("down"));
     mockStore.channels = CHANNELS;
     mockStore.allLanguages = ["pl", "en", "de"];
     mockGetDefs.mockResolvedValue({
       data: { results: [{ key: "pl-description" }] },
     });
+  });
+
+  it("task types are the workers of the module, a new rule starts on the first", async () => {
+    mockGetWorkers.mockResolvedValue({ data: [{ key: "pim.packshot_quality", label: "Packshot check" }, { key: "translate", label: "Translate" }] });
+    const wrapper = mountEdit();
+    await flushPromises();
+    expect(mockGetWorkers).toHaveBeenCalledWith({ target_module: "pim" });
+    expect(wrapper.vm.taskTypeOptions.map((o) => o.value)).toEqual(["pim.packshot_quality", "translate"]);
+    expect(wrapper.vm.taskTypeOptions[0].label).toBe("Packshot check");
+    expect(wrapper.vm.form.task_type).toBe("pim.packshot_quality");
+  });
+
+  it("a failed workers call leaves the old three task types", async () => {
+    const wrapper = mountEdit();
+    await flushPromises();
+    expect(wrapper.vm.taskTypeOptions.map((o) => o.value)).toEqual(["fix-attribute", "fill-attribute", "translate"]);
   });
 
   it("create mode posts the full payload with key", async () => {

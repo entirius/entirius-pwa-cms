@@ -67,7 +67,8 @@
 import { useLoaderStore } from '@/stores/loader'
 import { toggledValue } from '@/utils/toggled-value'
 import { useNotifyStore } from '@/stores/notify'
-import { useFormErrors, extractApiMessage } from '@/composables/useFormErrors'
+import { useFormErrors } from '@/composables/useFormErrors'
+import { notifyApiError } from '@/composables/useNotify'
 import {
   GET_PmChannel,
   POST_PmChannel,
@@ -196,10 +197,7 @@ export default {
           default_country_code: data.default_country || null,
         }
       } catch (err) {
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loading = false
       }
@@ -231,10 +229,7 @@ export default {
         }
       } catch (err) {
         this.formErrors.handleApiError(err)
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.save_error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.save_error'))
       } finally {
         this.loader.loaderFinish()
       }
@@ -247,10 +242,7 @@ export default {
         this.notify.spawnNotification({ type: 'positive', msg: this.$t('notifications.deleted') })
         this.$router.push('/pricing/channels')
       } catch (err) {
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loader.loaderFinish()
       }

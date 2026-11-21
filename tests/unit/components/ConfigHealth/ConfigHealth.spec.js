@@ -354,8 +354,8 @@ describe("configuration health", () => {
   });
 
   it("an internal fix url of the hint is a router link", async () => {
-    api.GET_ConfigHealth.mockReturnValue(health([{ ...toolboxRow("unconfigured"), fix_url: "/leads/settings" }]));
+    api.GET_ConfigHealth.mockReturnValue(health([{ ...toolboxRow("unconfigured"), fix_url: "/crm/settings" }]));
     await useConfigHealthStore().poll();
-    expect(mountHint().get(".ai-hint__fix").attributes("data-to")).toBe("/leads/settings");
+    expect(mountHint().get(".ai-hint__fix").attributes("data-to")).toBe("/crm/settings");
   });
 });

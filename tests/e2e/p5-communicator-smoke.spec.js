@@ -52,14 +52,14 @@ test.describe('P5 Communicator settings', () => {
 
   test('settings hub lists the sections and opens the templates', async ({ page }) => {
     const collector = createErrorCollector(page, { whitelist: SRCDOC_NOTE });
-    await openPage(page, '/leads/settings');
+    await openPage(page, '/crm/settings');
 
     await expect(h1(page)).toHaveText(either((t) => t.nav.leads_settings));
     for (const section of ['stages', 'lead-types', 'templates', 'sequences', 'sending']) {
       await expect(page.getByTestId(`settings-${section}`)).toBeVisible();
     }
     await page.getByTestId('settings-templates').click();
-    await page.waitForURL(/\/leads\/settings\/templates$/);
+    await page.waitForURL(/\/crm\/settings\/templates$/);
     await expect(h1(page)).toHaveText(either((t) => t.communicator.templates.title));
 
     collector.assertNoErrors(expect, 'Settings hub');
@@ -67,13 +67,13 @@ test.describe('P5 Communicator settings', () => {
 
   test('template list opens the first template with its drawers', async ({ page }) => {
     const collector = createErrorCollector(page, { whitelist: SRCDOC_NOTE });
-    await openPage(page, '/leads/settings/templates');
+    await openPage(page, '/crm/settings/templates');
 
     await expect(page.getByRole('button', { name: either((t) => t.common.back) }).first()).toBeVisible();
     const rows = page.getByTestId('template-row');
     await expect(rows.first()).toBeVisible();
     await rows.first().click();
-    await page.waitForURL(/\/leads\/settings\/templates\/\d+/);
+    await page.waitForURL(/\/crm\/settings\/templates\/\d+/);
 
     await expect(h1(page)).not.toBeEmpty();
     await expect(page.getByTestId('template-save')).toBeVisible();
@@ -97,7 +97,7 @@ test.describe('P5 Communicator settings', () => {
 
   test('sequences: steps, the text pool and a remove that asks first', async ({ page }) => {
     const collector = createErrorCollector(page, { whitelist: SRCDOC_NOTE });
-    await openPage(page, '/leads/settings/sequences');
+    await openPage(page, '/crm/settings/sequences');
 
     await expect(h1(page)).toHaveText(either((t) => t.communicator.sequences.title));
     await expect(page.getByTestId('sequence-add')).toBeVisible();
@@ -119,13 +119,14 @@ test.describe('P5 Communicator settings', () => {
   test('sending settings: every section, and Send now stays on screen (C-31)', async ({ page }) => {
     const collector = createErrorCollector(page, { whitelist: SRCDOC_NOTE });
     await stubWaitingMails(page);
-    await openPage(page, '/leads/settings/sending');
+    await openPage(page, '/crm/settings/sending');
 
     await expect(h1(page)).toHaveText(either((t) => t.communicator.settings.title));
-    for (const section of ['policy', 'channel', 'footer', 'scheduled', 'suppressions']) {
+    // The suppression list lives under Settings → Do not contact since communicator 0.5.0.
+    for (const section of ['policy', 'channel', 'footer', 'scheduled']) {
       await expect(page.getByTestId(`settings-${section}`)).toBeVisible();
     }
-    await expect(page.getByTestId('policy-save')).toBeVisible();
+    await expect(page.getByTestId('settings-save')).toBeVisible();
     await expect(page.getByTestId('footer-preview')).toBeVisible();
 
     // The sidebar is open (300 px) and the row's Send now ends inside the viewport, unscrolled.

@@ -174,7 +174,7 @@
 import { useLoaderStore } from "@/stores/loader";
 import { useNotifyStore } from "@/stores/notify";
 import { GET_PersonDetail, GET_ConsentText } from "@/api/agreements/api";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { isNotFound } from "@/api/createClient";
 import { sanitizeHtml } from "@/utils/sanitizeHtml";
 
@@ -291,10 +291,7 @@ export default {
         if (isNotFound(err)) {
           this.consentTextModal.data = { text_html: "" };
         } else {
-          this.notify.spawnNotification({
-            type: "negative",
-            msg: extractApiMessage(err, this.$t("notifications.error")),
-          });
+          notifyApiError(this.notify, err, this.$t("notifications.error"));
           this.consentTextModal.visible = false;
         }
       } finally {
@@ -316,10 +313,7 @@ export default {
         );
         this.history = data.history || [];
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

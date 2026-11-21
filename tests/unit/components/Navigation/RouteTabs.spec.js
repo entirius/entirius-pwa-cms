@@ -3,7 +3,15 @@ import { mount, flushPromises } from "@vue/test-utils";
 import { createRouter, createMemoryHistory } from "vue-router";
 
 vi.mock("@/stores/access", () => ({ useAccessStore: () => ({ can: (area) => area !== "rules" }) }));
+const mockVersion = vi.hoisted(() => ({ value: "2.4.0" }));
+vi.mock("@/stores/munin", () => ({
+  useMuninStore: () => ({
+    isModuleEnabled: (key) => key === "enrichment",
+    isModuleAtLeast: (key, min) => key === "enrichment" && mockVersion.value.localeCompare(min, undefined, { numeric: true }) >= 0,
+  }),
+}));
 vi.mock("@/stores/enrichmentProfile", () => ({ useEnrichmentProfileStore: () => ({ pendingSuggestions: 3 }) }));
+vi.mock("@/stores/approvals", () => ({ useApprovalsStore: () => ({ total: 0 }) }));
 
 import RouteTabs from "@/components/Navigation/RouteTabs.vue";
 import { routeTabPanel } from "@/components/Navigation/nav-routes";
@@ -15,6 +23,7 @@ const TABS = {
     { route: "Profile", labelKey: "nav.enrichment_profile", testid: "tab-profile" },
     { route: "Memory", labelKey: "nav.enrichment_memory", badge: "memorySuggestions", testid: "tab-memory" },
     { route: "Rules", labelKey: "nav.enrichment_spawn_rules", testid: "tab-rules" },
+    { route: "Checks", labelKey: "enrichment.review.tabs.checks", testid: "tab-checks", requiresModule: "enrichment", minVersion: "2.5.0" },
   ],
 };
 
@@ -24,6 +33,7 @@ async function mountTabs(path = "/profile") {
     routes: [
       { path: "/profile", name: "Profile", component: Page, meta: { area: "profile" } },
       { path: "/memory", name: "Memory", component: Page, meta: { area: "profile" } },
+      { path: "/checks", name: "Checks", component: Page, meta: { area: "profile" } },
       { path: "/rules", name: "Rules", component: Page, meta: { area: "rules" } },
     ],
   });
@@ -41,6 +51,13 @@ describe("RouteTabs", () => {
     expect(tabs.map((tab) => tab.attributes("aria-selected"))).toEqual(["false", "true"]);
     expect(tabs[1].attributes("id")).toBe("settings-tab-Memory");
     expect(wrapper.find("[data-testid='tab-rules']").exists()).toBe(false);
+  });
+
+  it("a section that needs a newer module version waits for it", async () => {
+    mockVersion.value = "2.4.0";
+    expect((await mountTabs()).wrapper.find("[data-testid='tab-checks']").exists()).toBe(false);
+    mockVersion.value = "2.5.0";
+    expect((await mountTabs()).wrapper.find("[data-testid='tab-checks']").exists()).toBe(true);
   });
 
   it("picking a tab opens its route", async () => {

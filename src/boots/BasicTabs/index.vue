@@ -1,5 +1,5 @@
 <template>
-  <div v-if="options.length" ref="listRef" class="basic-tabs" role="tablist" @keydown="onKeydown">
+  <div v-if="options.length" ref="listRef" class="basic-tabs" :class="{ 'basic-tabs--wrap': wrap }" role="tablist" @keydown="onKeydown">
     <button
       v-for="option in options"
       :key="option.value"
@@ -24,7 +24,8 @@
 <script setup>
 // Tabs of one screen (docs/ui-components.md § P3 display): `options` [{ label, value, count?, testid?, disabled? }], a `tablist` with one Tab stop (the active tab); arrow
 // keys, Home and End move to a tab and select it, skipping disabled ones. Counts are CountBadges. Tab ids are `<idPrefix>-tab-<value>`; each
-// tab controls `<idPrefix>-panel-<value>`, the call site's `role="tabpanel"` element. No options, no tablist.
+// tab controls `<idPrefix>-panel-<value>`, the call site's `role="tabpanel"` element. No options, no tablist. `wrap`
+// breaks a row wider than its box onto a second line instead of scrolling it (every tab stays in sight).
 import { computed, ref, useId } from "vue";
 import CountBadge from "@/boots/CountBadge/index.vue";
 
@@ -32,6 +33,7 @@ const props = defineProps({
   options: { type: Array, required: true },
   modelValue: { type: [String, Number], default: null },
   idPrefix: { type: String, default: null },
+  wrap: { type: Boolean, default: false },
 });
 const autoId = useId();
 const prefix = computed(() => props.idPrefix ?? autoId);
@@ -76,6 +78,11 @@ function onKeydown(event) {
   overflow-x: auto;
   scrollbar-width: thin;
   border-bottom: 1px solid var(--border-subtle);
+
+  &--wrap {
+    flex-wrap: wrap;
+    overflow-x: visible;
+  }
 
   &__tab {
     display: inline-flex;

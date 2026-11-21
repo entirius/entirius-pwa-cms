@@ -17,7 +17,7 @@
           class="bulk-bar__dropdown"
           @update:model-value="(val) => $emit('action', action.key, val)"
         />
-        <BasicButton v-else :variant="action.variant ?? 'secondary'" @click="$emit('action', action.key)">
+        <BasicButton v-else :variant="action.variant ?? 'secondary'" :data-testid="action.testid" @click="$emit('action', action.key)">
           {{ $t(action.labelKey) }}
         </BasicButton>
       </template>
@@ -29,7 +29,7 @@
 </template>
 
 <script setup>
-// actions = [{ key, labelKey, variant?, options? }]: `variant` is a BasicButton variant (default secondary); an action
+// actions = [{ key, labelKey, variant?, options?, testid? }]: `variant` is a BasicButton variant (default secondary); an action
 // with `options` is an action picker (BasicSelect without a value of its own, `options` = [{ label, value }]). Not
 // rendered on a read-only page (useReadonly, plan 19). The row wraps: the count, the actions and "Clear selection"
 // stay reachable at any width (the count on one line, the clear action at the row's end).

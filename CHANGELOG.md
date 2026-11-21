@@ -4,6 +4,232 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.8.0] (2026-11-21)
+
+### Added
+
+- Enricher, picture checks (backend enrichment 2.5.0, comfy workers): a "Picture checks" tab under Review lists the verdicts a
+  comfy worker stored (thumbnail, SKU, verdict, reason, score, metrics, source, run), with verdict totals as chips, worker,
+  source, reason, part-of-SKU, score range and run filters (`?task=<id>`), a "Show history" switch (older checks of a product), a
+  score sort and the filters in the URL; "Export CSV" downloads the filtered list; a row's Proposals action opens the Review
+  filtered to that product and worker version, every status (`?subject_ref=`, `?source=` chips); a comfy run has a "Results"
+  action in Runs; the Runs list shows the new counts (checked, the verdicts, from stored results, no GPU).
+- Enricher, spawn rules: the task type is picked from the active workers of the rule's module (the old three stay only when
+  the workers cannot be read).
+- PIM, products: with filters set the grid offers "Run AI on all N matching", a run on every product matching the grid's
+  filters (attribute, category, search, status, visibility, type, no media), not only the selected ones.
+- CRM, sender settings (U20–U25): a salesperson may have several mailboxes, each with a brand, CC and BCC lists (up to 10
+  addresses each, replacing the single CC address) and an HTML signature with a preview; the mail footer is set per
+  brand and language, with the text of its unsubscribe link and a preview of the link at `{{ unsubscribe }}` or under
+  the footer.
+- CRM, Companies: bulk "Set attribute" next to the bulk owner assignment: pick a company attribute, then its value in
+  the input of its kind, or clear it, for the selected companies. A company's sender brand is the `sender_brand`
+  attribute, edited, filtered and imported like any other.
+- CRM, Import: a value that does not fit its attribute no longer skips the row; the result lists one line per field with the number of rows imported without that value (the batch `warnings`).
+
+### Fixed
+
+- CRM, Review: Skip or Send pressed before the draft queue is read waits for it and opens the next draft, instead of saying the queue is empty.
+- Access: the `pim.attribute_values` area has its label in English and Polish.
+- CRM, Import: a refused file or column count (`TOO_MANY_COLUMNS`, `TOO_MANY_ROWS`, `TOO_LARGE`, `UNREADABLE`, ...) shows its own message instead of "Request validation failed." (the screen read an axios-shaped error the API client never rejects with), and an older backend without the preview (404/405) falls back to the plain upload again; the same wrong read is gone from the new-company and contact forms; the column mapping table scrolls inside its card at 1024 px instead of widening the page; a refused row names the CRM field by its label (with the file's column) instead of the internal key.
+- CRM, Review: Skip or Send pressed while the previous skip is still being sent no longer acts on the next draft, which nobody has read.
+- CRM, Import: another file cannot be picked while the import is on its way to the server; a late preview no longer clears an import error; row, column and size limits have texts in English and Polish.
+- CRM: old `/leads/...` addresses keep encoded characters; an empty Archived tab under a search says nothing matches; Reopen on a task ignores a second click; History does not load when the screen is being left.
+- CRM, Import column mapping: picking another file while a batch is polled no longer leaves Check disabled or shows
+  the old file's report; a preview answer for a file that was replaced is dropped; a full name chosen together with a
+  first or last name keeps Import disabled with its own message (the server refuses the pair); the preview table scrolls
+  sideways inside its card when many fields are mapped; a proposal the user skipped reads "Skipped" and a column CRM has
+  no field for (NIP, REGON) reads "Check it" instead of "Not recognised"; `region`, `revenue` and `linkedin` have their
+  words; Polish wording of the step made consistent ("trafia"). `ConfirmDialog` `confirmDisabled` is in
+  `docs/ui-components.md`.
+- CRM, U19: write buttons outside a page's read-only reach now follow the role's write right like the page
+  buttons do. A read-only role (viewer) no longer sees "Add company" in the Companies side panel of a company card
+  (companies area), "Send now" on a waiting Inbox row (conversations area), or Skip, Send and the more menu on Review
+  (review area); Review also stops taking swipes and hides the swipe hint for that role.
+
+
+- CRM, Review: Undo after Skip no longer returns to the skipped draft (a skipped draft is never the next one
+  and is not counted in "Draft n of m"); a second Skip before the next draft opens is ignored.
+- CRM, History: filters and page are in the address (Back from a company card keeps them), and a slower older
+  answer no longer replaces a newer one.
+- Polish: transaction / szkic everywhere in the CRM (no "deal", "draft", "Szansa sprzedaży").
+
+
+- CRM: the "Give the reason" error of a reason dialog (Approvals Skip, mailbox pause / resume, lost deal) goes as soon as a reason is typed instead of staying on screen until the next submit (U12).
+- PriceFighter: the Gap Table shows the product name in its own Product column (it was a small grey line under the
+  SKU that wrapped); the row detail names the decision reason, the strategy and the mode in words instead of the
+  engine codes (`in_band`, `compete / suggestion`; an unknown code stays raw); Strategies shows the mode in words;
+  the history's date column reads Applied at (it read Observed at); the apply preview prints our price with two
+  decimals.
+
+### Changed
+
+- The Leads panel is called "CRM" wherever people read it (menu, phone bar, headings, breadcrumbs, module list,
+  import texts; en + pl), and its screens live at `/crm/...`: every old `/leads/...` address redirects, with the rest
+  of the path and the query. The `leads` panel id, the route names, the i18n keys and the API stay; the contact-form
+  leads (Forms → Leads) keep their name.
+- CRM, deals: the list has Active and Archived tabs under its header instead of the "Archived" toggle
+- CRM, Settings → Sending health (U15): every count says its period — "Sent (last 24 h)" / "Sent (last 7
+  days)" rolls back from now, "Sent today (since 00:00)" is the channel's calendar day, with a note naming the channel
+  timezone (communicator's `timezone` in `GET health/`; an older backend: the note without it). The pause log loads
+  the newest 10 entries, "Show more" adds 10 (was 20).
+- CRM, U18: a role that cannot write the screen's area (viewer) opens Companies, Deals (list and board) and
+  Today on the owner filter "All" instead of an empty "Mine"; an owner chosen in the address or the select still
+  wins, as before. Other roles keep "Mine".
+- CRM, Settings → Custom fields, U16: Add field fills the key from the label as it is typed ("Pole testowe" →
+  `pole_testowe`: Polish letters spelled plain, lower case, `_` between words, `field_` in front of a leading digit,
+  48 characters at most). The key stays editable; a key typed by hand is never overwritten (emptying it hands it back
+  to the label). The key of a saved field stays fixed; the key check and the "Give the key" message are unchanged.
+  The key hint says so (en + pl).
+
+- CRM, deals: the list has Active and Archived tabs under its header instead of the "Archived" toggle
+  button; a won or lost deal shows Archive beside Reopen instead of under the more menu; Back on the deal card and on
+  Add company returns to where the person came from (the list with its tab and filters), as the company card does.
+- CRM, one shape for one thing: a single actor label ("System", "Import") for History, the company card and
+  cancelled tasks; cancelled tasks are the same row on Today and on the
+  company card (struck title, who / when / why, Reopen); Back on the company card, Add company and the deal card is
+  `goBackTo`.
+- Tests: the Deals list suite moves to `tests/unit/views/Leads/DealsList.spec.js` — `Deals.spec.js` and `deals.spec.js`
+  were one file on a case-insensitive file system (macOS).
+- CRM, Approvals (U13): the Mailbox filter shows each mailbox by its address and owner ("sales1@shop.test
+  (Anna Nowak)") instead of its number, from communicator's `counts.mailboxes` (django-communicator with
+  `feature/mailbox-filter-labels`); an older communicator keeps the numbers.
+- CRM, Approvals (U14): the Approve dialog says up front which selected drafts will not go out because their
+  mailbox is paused, switched off or needs a login ("The mailbox sales1@shop.test is paused: 1 selected draft will not
+  go out. The other 1 goes out at once.", en + pl); when none of them could go out, Approve is off. Reads
+  `mailbox_id` and `counts.mailboxes[].hold` of communicator's approvals list (`feature/mailbox-filter-labels`).
+  `ConfirmDialog` takes `confirmDisabled`.
+
+
+- CRM: the Deals list always shows the "Archived" button, also over an empty list. The button that leaves a
+  dialog with an action of its own reads "Cancel" (Log call, task dialogs, Open deal, the lost reason, Write mail,
+  Check an address); "Close" stays on dialogs with nothing to do. Confirm opt-out is hidden for a read-only role.
+- CRM, the owner's decisions after the fourth walk: every mail bubble says "From <address>" (the sender of a
+  reply, the mailbox our mail leaves from; also beside the recipient in Review; an older communicator shows no line);
+  Log call asks only for the Outcome; Do not contact's "Add to the list" offers Reach (This channel / All channels,
+  sent as `scope`; an older communicator that refuses the field gets the entry without it); the company card lists
+  every earlier conversation from the start, each opening in place, so it shows as many conversations as its Inbox row
+  counts.
+- CRM, acceptance fixes of the fourth walk: a reply's "Next:" line says what happens to the mail — no more
+  mail after a confirmed opt-out, nothing sent until a possible opt-out is decided, the sequence stopped, resuming on
+  a date, or paused until resumed; Review confirms Skip and Send with one line above the next draft (no toast, no
+  full-screen panel, the next draft opens at once) and counts its queue in the Inbox's order; Approvals puts a bulk
+  refusal in the Problem cell, says Skip's consequence and reads the age as today / 1 day / 3 days; the forms of the
+  Leads settings name an empty required field before the request and show an API field error on its field in words;
+  deleting a deal stage says up front how many deals stand in it; Templates says why there is no Add; smaller
+  wording and layout fixes (Today's Done chip, the Inbox's empty pane, Why no mail?, the company Overview, a
+  conversation without a company, Polish "wiadomość"). `MobileFilterPanel` gives a select's floating label room.
+- CRM, acceptance fixes of the third walk: Skip names the action that leaves a draft unsent (Review and
+  Approvals) and a skipped or withdrawn draft is one closed line in the conversation; every bulk action says how many
+  rows it changed and did not, refused rows keep their reason and their tick; a recipient who may not be mailed and a
+  refused server certificate read in words; one not-found page for every unknown address, inside the shell of its
+  panel, and Company types at `/crm/settings/company-types` (the old address redirects); a confirmed opt-out
+  reloads the company card; one phrase per date of a pause; History in one language; a waiting mail's badge reads
+  Scheduled; row switches read Active / Off; the date picker's Escape closes only the calendar and its week starts on
+  Monday; Today's rows open their company on a phone; smaller fixes on Inbox, Contacts, Stages, Rules, Deals,
+  Mailboxes and Sending health.
+- CRM, acceptance fixes of the second walk: a company card and a conversation take the full width below 1440 px
+  and the Inbox column keeps its chip; a contact's mail badge, Today's replies that need review, Reply, the
+  hand-written tag, the rule runs and the import report read the new leads and communicator fields; the deal board
+  takes every drop (also after a closed reason dialog), a card moves by "Move to…"; every date picker opens its
+  calendar inside the viewport; one Save in the header on every Leads settings page, greyed until something changed;
+  Review goes on to the next draft in the Inbox order and says what happened to a draft that left the queue; the words
+  Conversation, Company type and Later; tasks stacked on a phone; Sending health, Templates, Mailboxes, the read-only
+  notice and the select's clear button fixed.
+- CRM, acceptance fixes for desk work and administration: Test login says each result in words with what
+  to do next; the pause log names the person ("Automatic" for an automatic pause); a rule's last runs show the
+  company by name and the result in words; Reports opens with the Funnel and shows dates in the UI language; Import
+  takes an owner, lists the custom-field columns and reports the ignored columns and the companies the automation
+  started for; Sending health flags every rate over its limit and gives the thresholds a unit; Deal stages has one
+  Save; every Settings section is read-only for a role without the write area; the hub says what each section changes;
+  Approvals keeps its bulk bar in sight above the pager; Today's drafts counter and a draft opened from Approvals lead
+  back to Approvals; one word for a company and the
+  board throughout.
+- CRM, acceptance fixes for a salesperson's day: History reads every event in the interface language (stage
+  moves in the channel's stage names, reply types in words) and refreshes after a mail, a call or a task; an inbound
+  reply has Reply (quoted, "Re:" subject, the sender as To); Confirm opt-out asks first; message and thread states are
+  badges; a hand-written mail is never labelled Follow-up. Tasks can be edited and cancelled with a reason from Today,
+  the Tasks tab and the task title; a task from Today keeps its company; Log call explains Outcome and Note; Today
+  keeps its chip in the URL. Approvals names the company (a link to its card) and the channel, shows the template in
+  full and asks before approving; toasts say what happened. The company card keeps every tab in sight, labels its
+  stage and lead-type selects, goes back where the person came from and shows each contact's state (Can be mailed,
+  Blocked, No e-mail); "N replies need review" opens only those replies. The deal board fits six stages at 1280 px,
+  an empty column takes a drop and says so, every move toasts; the Deals list says "Stage" once and the value once;
+  Delete deal comes after Mark lost. One date format across the Leads screens; "Refresh site audit" replaces
+  "Re-audit".
+- Boots: BasicTabs `wrap` breaks a long tab row onto a second line instead of scrolling it.
+- Boots: a disabled primary button and a disabled select look locked; the date picker shows its value in the UI
+  locale; a `max-content` table column fits its values;
+  breadcrumbs never repeat a level.
+- Leads → Settings → Send settings: with communicator 0.5.0 the suppression list moved to Do not contact.
+- Order page: the item table's column labels are translated.
+- Stock alerts panel (django-stock-alerts, Munin module `stock_alerts`, area `stock_alerts.subscriptions`): Demand
+  lists the variants customers wait for — waiting requests, the oldest one, the stock now and the requests notified
+  in 30 days — and a row opens Requests filtered by its SKU. Requests shows the addresses with search (exact address
+  or SKU), a status filter, a removable SKU chip, Cancel request on waiting rows (hidden in read-only mode) and
+  Download CSV of the current filter.
+
+### Added
+
+- CRM, Review on a phone: the first draft says once, above the card, that it can be swiped — "← Skip" and
+- CRM, Import (U17, django-leads with `imports/preview/`): a check step between the file and the import —
+  every column of the file with the CRM field it goes to, how sure the proposal is (Sure / Check it / Not
+  recognised, with why), sample values and the first rows as the CRM would store them; each field can be changed or
+  the column skipped, and Import sends the approved mapping. Two columns on one field or no domain / website / e-mail
+  column keep Import disabled. The report says where each column went. `.xlsx` files are accepted beside `.csv`; file
+  errors read in words (en + pl). An older backend imports straight away, as before.
+- CRM, Review on a phone: the first draft says once, above the card, that it can be swiped — "← Skip" and
+  "Send →" with Got it (en + pl). Got it or the first swipe hides it for good in that browser; a desk never shows it.
+- CRM, Review: Skip can be undone — an Undo button beside "Skipped — this mail will not be sent" for 4 s
+  (en + pl); the skip reaches communicator only after that (or at the next Skip or Send, or on leaving the screen), so
+  Undo simply reopens the draft. No API change.
+- CRM: a possible opt-out can be marked "Not an opt-out" beside Confirm opt-out (django-communicator
+  `dismiss-optout`, no confirm); the conversation, the card's contacts and History reload, and the reply loses its
+  opt-out mark. The Next line of a possible opt-out reads "nothing is sent until you confirm the opt-out or mark it as
+  not one".
+- CRM, deal archive (django-leads with deal archiving): a won or lost deal is archived from its card's more
+  menu and restored from the archived card (read-only, one Restore); the Deals list shows the archived deals behind its own
+  "Archived" button (a toggle kept in the address, `?archived=1`), the status filter stays Open / Won / Lost. The board
+  and the company card list no archived deal; History reads "Deal archived" and "Deal restored". An older backend
+  shows no Archive on the card.
+- `ActionBar`: an action's `pressed` makes its text button a toggle (`aria-pressed`, the `surface-hover` fill).
+- CRM, deals (django-leads 0.5.0): Deals (nav entry, also in the phone bar) lists the deals with search, owner
+  chips, status, stage and expected-close filters and a stage select on every row; at a desk a board shows one column
+  per deal stage with its count and totals per currency and moves deals by drag and drop. A lost stage always asks
+  the reason first. The deal card shows the values, contact, owner, custom fields, tasks and history, with Mark won,
+  Mark lost, Reopen and delete. The company card gains a Deals tab and "Open deal"; Settings gains Deal stages
+  (open, won, lost). A bell alert about a deal opens its card.
+- CRM, CRM screens (django-leads 0.5.0; tasks with django-todo): Today is the panel root — the caller's
+  tasks by chip (Due now, Upcoming, No date, Done) and owner, the drafts and replies waiting, Add task and Mark done
+  with an outcome. Companies is a full list page (filters, owner chips, custom-field columns, sort and page in the URL,
+  bulk "Assign owner"; Board and Import are its page actions). The company card is one card on a phone and a desk:
+  Details (owner, origin, custom fields), Score with Score now, a Tasks tab (add, log a call, mark done, edit,
+  cancel), Write mail (a hand-written mail; the gate's refusal is shown) and History (the mail thread and the
+  company's events). Settings gains Custom fields (company, contact, deal), Scoring and Rules (conditions); Reports
+  shows the funnel as tables. New access area `todo.tasks`.
+- CRM, outbound screens (django-communicator / django-leads 0.5.0; an older backend keeps today's panel):
+  Approvals (desktop nav entry with a badge of waiting drafts) lists the drafts of every channel oldest first with
+  their problem, approves or rejects them in bulk (a reason for a rejection, 100 ids per call, refused rows stay
+  selected with their reason) and keeps a log; Settings → Mailboxes (one per salesperson plus a default, write-only
+  passwords, Test login, Pause / Resume with a reason, daily cap and warm-up), Sending health (rates per mailbox over
+  24 h / 7 d, the automatic-pause policy, the pause log), Automatic moves (the stage per event and, per reply type,
+  the sequence, the alert and the review flag), Reply classification (AI profile) and Do not contact (reach, source,
+  add, remove, check an address). The Settings hub groups its sections (Sales process · Automation · Sending).
+- CRM: a reply shows its type (and "Needs review", the return date, the confidence and what happens next)
+  in the Inbox row and the conversation; Review says why a draft cannot go out before Send and the last reply's type;
+  a contact gets "Why no mail?"; Import can start the automation on new companies; a sequence can be turned off and
+  one can start automatically.
+- Emails panel: the "Order confirmation" and "Order canceled" templates (`checkout-order-confirmation`,
+  `checkout-order-canceled`, django-email 4.4.0), each field with a hint. Their edit page shows a preview of the
+  saved wording next to the form (under it on a phone): sample order variants, desktop and phone width, the subject
+  and a "Text version" toggle. The e-mail renders in a sandboxed frame; while the form has unsaved changes a note
+  says to save to refresh it.
+- Order page: an "E-mails" section lists the order's e-mails (kind, status, recipient, language, attempts, sent
+  time, the last error of a failed one, the other orders a shared confirmation covers) with "Send again" behind a
+  confirmation; an order without a confirmation gets "Send confirmation" in the header (django-checkout 10.2.0).
+  Both need write on `checkout.orders` and an e-mail address on the order. The delivery card shows the pickup
+  point.
+
 ## [3.7.0] (2026-11-11)
 
 ### Changed
@@ -30,6 +256,9 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Leads panel: a card title no longer sits on the content under it — every titled card of the Leads views (Settings,
+  Reports, Sending health, Scoring, mailbox, deal and company cards, …) keeps 16 px between the title and its content,
+  with no doubled margins; the `BasicCard` boot is unchanged.
 - Deleting a route in the "Routes" window failed with a server error: the request went to an address without the
   closing slash, which the API refuses for DELETE and PUT. Every contentdb request built by `_METHOD_content` now ends
   in a slash (before the query string), which also covers deleting an attribute value, editing and deleting a

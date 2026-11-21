@@ -43,7 +43,7 @@ import { useNotifyStore } from "@/stores/notify";
 import { useMuninStore } from "@/stores/munin";
 import { useAccessStore } from "@/stores/access";
 import { AREAS } from "@/configs/areas";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { findDuplicates } from "@/utils/faqDuplicates";
 import { loadFaqOccurrences, loadContentOccurrences } from "./duplicateSources";
 
@@ -109,7 +109,7 @@ export default {
         }));
       } catch (err) {
         this.loadFailed = true;
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }

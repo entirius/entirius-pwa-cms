@@ -16,9 +16,10 @@ describe("GET_ReviewMessage", () => {
     expect(get).toHaveBeenCalledWith("/api/communicator/v2/admin/b2b/review/150/");
   });
 
-  it("returns null once the draft left the review queue", async () => {
+  // N9: a draft that left the queue comes back in its status — Review says what happened to it
+  it("returns a draft that left the review queue in its status", async () => {
     get.mockResolvedValueOnce({ data: { id: 9, status: "approved" } });
-    expect(await GET_ReviewMessage(9)).toBeNull();
+    expect(await GET_ReviewMessage(9)).toEqual({ id: 9, status: "approved" });
   });
 
   it("returns null for an id the channel does not have (404 from the real client shape)", async () => {

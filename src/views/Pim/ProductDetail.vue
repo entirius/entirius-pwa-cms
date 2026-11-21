@@ -405,6 +405,7 @@ import {
 import { GET_BulkHasChanges } from "@/api/atlas/api";
 import { hasQualityFields } from "./quality";
 import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { isNotFound } from "@/api/createClient";
 
 // Translatable system fields per place: the info card and the text tabs (T9N_TABS[activeTab]).
@@ -895,10 +896,7 @@ export default {
         this.product[flag] = newVal;
         await this.fetchProduct();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     async onToggleOverride({ featureIdx, language, override }) {
@@ -920,10 +918,7 @@ export default {
           [featureIdx]: langs,
         };
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       }
     },
     onAddedToChannel(targetChannelIdx) {

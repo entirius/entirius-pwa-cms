@@ -4,7 +4,7 @@
       <PageHeader :title="$t('pricefighter.history')" />
     </template>
     <template #toolbar>
-      <div class="history__toolbar">
+      <div class="list-toolbar history__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('pricefighter.search_sku')"
@@ -113,7 +113,7 @@ import { useNotifyStore } from '@/stores/notify'
 import { useSearchDebounce } from '@/composables/useSearchDebounce'
 import { usePfChannels } from '@/composables/usePfChannels'
 import { GET_PfHistory } from '@/api/pricefighter/api'
-import { extractApiMessage } from '@/composables/useFormErrors'
+import { notifyApiError } from '@/composables/useNotify'
 import { PF_PAGE_SIZE, pfFormat } from './constants'
 import { formatDate } from '@/utils/format'
 import MarketCell from './components/MarketCell.vue'
@@ -147,7 +147,7 @@ export default {
         { key: 'change', label: this.$t('pricefighter.price_change'), sortable: false, width: '1fr' },
         { key: 'strategy', label: this.$t('pricefighter.strategy'), sortable: false, width: 'max-content', priority: 2 },
         { key: 'applied_by', label: this.$t('pricefighter.applied_by'), sortable: false, width: '1.2fr', priority: 2 },
-        { key: 'created_at', label: this.$t('pricefighter.observed_at'), sortable: false, width: '1.2fr', priority: 2 },
+        { key: 'created_at', label: this.$t('pricefighter.applied_at'), sortable: false, width: '1.2fr', priority: 2 },
       ]
     },
     paginationState() {
@@ -174,10 +174,7 @@ export default {
         this.totalCount = data.count || 0
       } catch (err) {
         this.decisions = []
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loading = false
       }
@@ -204,13 +201,6 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.history__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-
 .history__search {
   flex: 1;
   min-width: 150px;

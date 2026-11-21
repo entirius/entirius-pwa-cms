@@ -43,6 +43,24 @@
           </span>
         </div>
 
+        <!-- A link from Picture checks narrows the list to one product and one worker version, every status. -->
+        <div v-if="filters.subject_ref || linkedSource" class="filter-chip-row" data-testid="enrichment-link-chips">
+          <FilterChip
+            v-if="filters.subject_ref"
+            :label="$t('enrichment.review.chip_product', { sku: filters.subject_ref })"
+            active
+            data-testid="enrichment-chip-subject"
+            @click="clearUrlFilter('subject_ref', '')"
+          />
+          <FilterChip
+            v-if="linkedSource"
+            :label="$t('enrichment.review.chip_source', { source: filters.source })"
+            active
+            data-testid="enrichment-chip-source"
+            @click="clearUrlFilter('source', '__all')"
+          />
+        </div>
+
         <div
           v-if="filters.task"
           class="enrichment-review__task flex ai-ct flex-wrap gap-3 fs-300"
@@ -78,7 +96,7 @@
             icon="search"
             class="enrichment-review__search"
             data-testid="enrichment-search-input"
-            @input="onSearchChange"
+            @input="debouncedFetch(onSearchChange)"
           />
           <BasicSelect
             :floating-label="$t('enrichment.review.col.module')"
@@ -108,7 +126,7 @@
             :aria-label="$t('enrichment.review.confidence_min')"
             class="enrichment-review__confidence"
             data-testid="enrichment-confidence-filter"
-            @input="onSearchChange"
+            @input="debouncedFetch(onSearchChange)"
           />
         </MobileFilterPanel>
       </div>
@@ -122,7 +140,7 @@
         :loading="loading"
         :total-count="totalCount"
         :busy="busy"
-        :bulk="!filters.task && canBulk"
+        :bulk="!filters.task && !filters.subject_ref && canBulk"
         :status-filter="filters.status"
         @accept="acceptOne"
         @reject="rejectOne"
@@ -247,7 +265,7 @@ import { useNotifyStore } from "@/stores/notify";
 import { usePimChannelStore } from "@/stores/pimChannel";
 import { useAccessStore } from "@/stores/access";
 import { AREAS } from "@/configs/areas";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import RouteTabs from "@/components/Navigation/RouteTabs.vue";
 import { ENRICHMENT_REVIEW_TABS, routeTabPanel } from "@/components/Navigation/nav-routes";
 import ListMode from "./ListMode.vue";
@@ -263,6 +281,7 @@ import RunCorrections from "./RunCorrections.vue";
 import { runUidOf, subjectName } from "./reviewLogic";
 import { noteProductNames } from "./runLabel";
 import { useRunLabels } from "./useRunLabels";
+import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import {
   GET_Task,
   GET_Proposals,
@@ -275,7 +294,10 @@ import {
 const FocusMode = defineAsyncComponent(() => import("./FocusMode.vue"));
 
 const MODES = ["list", "product", "focus"];
-const DEFAULT_NARROWING = { target_module: "__all", target_kind: "__all", source: "__all", confidence_min: "", search: "" };
+// The URL keys "Clear filters" drops, in one address change.
+const CLEARED_QUERY_KEYS = ["subject_ref", "source", "task"];
+const queryWithout = (query, keys) => Object.fromEntries(Object.entries(query).filter(([key]) => !keys.includes(key)));
+const DEFAULT_NARROWING = { target_module: "__all", target_kind: "__all", source: "__all", confidence_min: "", search: "", subject_ref: "" };
 
 const STATUS_VALUES = [
   "pending",
@@ -294,9 +316,10 @@ export default {
   components: { ListMode, ProductMode, FocusMode, DriftModal, ImportCsvDialog, ProductPreviewDrawer, ProposalPanel, BatchCorrection, RunCorrections, RouteTabs },
   setup() {
     const { labels: runLabels, load: loadRuns } = useRunLabels();
+    const { debouncedFetch } = useSearchDebounce();
     return {
       notify: useNotifyStore(), pimChannel: usePimChannelStore(), ENRICHMENT_REVIEW_TABS,
-      tabPanel: routeTabPanel(ENRICHMENT_REVIEW_TABS, "EnrichmentReview"), runLabels, loadRuns,
+      tabPanel: routeTabPanel(ENRICHMENT_REVIEW_TABS, "EnrichmentReview"), runLabels, loadRuns, debouncedFetch,
     };
   },
   data() {
@@ -306,9 +329,11 @@ export default {
         status: this.$route.query.status || "pending",
         target_module: "__all",
         target_kind: "__all",
-        source: "__all",
+        // `?source=` / `?subject_ref=`: the link from Picture checks (one worker version's proposals on one product).
+        source: this.$route.query.source || "__all",
         confidence_min: "",
         search: "",
+        subject_ref: this.$route.query.subject_ref || "",
         task: this.$route.query.task || "",
       },
       rows: [],
@@ -317,7 +342,6 @@ export default {
       totalCount: 0,
       loading: false,
       busy: false,
-      searchTimer: null,
       driftVisible: false,
       detail: null,
       bulkAsk: null,
@@ -381,6 +405,10 @@ export default {
         },
       ];
     },
+    // A source that came in through the URL reads as a chip; the panel's dropdown still sets it from the loaded rows.
+    linkedSource() {
+      return this.filters.source !== "__all" && this.filters.source === this.$route.query.source;
+    },
     taskLink() {
       return { name: "EnrichmentRuns", query: { task: String(this.filters.task) } };
     },
@@ -388,7 +416,7 @@ export default {
     narrowed() {
       const f = this.filters;
       return [f.target_module, f.target_kind, f.source].some((v) => v !== "__all") ||
-        !!(f.search || f.task) || (f.confidence_min !== "" && f.confidence_min != null);
+        !!(f.search || f.task || f.subject_ref) || (f.confidence_min !== "" && f.confidence_min != null);
     },
     statusOptions() {
       return [
@@ -451,6 +479,8 @@ export default {
       for (const r of this.rows) {
         if (r[field]) seen.add(r[field]);
       }
+      // The value in use stays pickable even when the loaded rows do not carry it (a link set it).
+      if (this.filters[field] && this.filters[field] !== "__all") seen.add(this.filters[field]);
       return [
         { value: "__all", label: this.$t("common.all") },
         ...Array.from(seen).map((v) => ({ value: v, label: v })),
@@ -479,6 +509,7 @@ export default {
       }
       if (this.filters.search) params.search = this.filters.search;
       if (this.filters.task) params.task = this.filters.task;
+      if (this.filters.subject_ref) params.subject_ref = this.filters.subject_ref;
       return params;
     },
     // Server-side filter payload (no pagination) reused by bulk accept/reject.
@@ -510,10 +541,7 @@ export default {
         this.loadRuns([...this.rows.map((row) => row.task_id), this.filters.task]);
       } catch (err) {
         if (mine !== this.fetchSeq) return;
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
         this.rows = [];
         this.totalCount = 0;
       } finally {
@@ -533,7 +561,15 @@ export default {
     },
     clearFilters() {
       Object.assign(this.filters, DEFAULT_NARROWING);
-      this.clearTask();
+      this.$router.replace({ path: this.$route.path, query: queryWithout(this.$route.query, CLEARED_QUERY_KEYS) });
+      this.onFilterChange("task", "");
+    },
+    // A filter that arrived in the URL: dropped from the list and from the address.
+    clearUrlFilter(field, empty) {
+      const query = { ...this.$route.query };
+      delete query[field];
+      this.$router.replace({ path: this.$route.path, query });
+      this.onFilterChange(field, empty);
     },
     clearTask() {
       const query = { ...this.$route.query };
@@ -542,11 +578,8 @@ export default {
       this.onFilterChange("task", "");
     },
     onSearchChange() {
-      clearTimeout(this.searchTimer);
-      this.searchTimer = setTimeout(() => {
-        this.page = 1;
-        this.fetchRows();
-      }, 300);
+      this.page = 1;
+      this.fetchRows();
     },
     onPage(page) {
       if (this.loading || this.busy) return;
@@ -619,10 +652,7 @@ export default {
         });
         await this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -641,10 +671,7 @@ export default {
           msg: this.$t("enrichment.review.toast.bulk_accepted", { count: accepted }),
         });
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -661,10 +688,7 @@ export default {
         });
         await this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -690,10 +714,7 @@ export default {
         });
         await this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -722,10 +743,7 @@ export default {
         }
         await this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -745,10 +763,7 @@ export default {
         });
         await this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }
@@ -774,10 +789,7 @@ export default {
         this.closeDrift();
         await this.fetchRows();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }

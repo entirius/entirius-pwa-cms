@@ -1,6 +1,6 @@
 import { computed, onBeforeUnmount, ref, watch } from "vue";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { t } from "@/i18n";
 import { pluralKey } from "@/utils/plural";
 import { GET_Proposals, GET_Tasks } from "@/api/enrichment/api";
@@ -66,7 +66,7 @@ export function useProductAi(sku, nameOf = (task) => runName(task)) {
     try {
       await Promise.all([loadProposals(), loadTasks()]);
     } catch (err) {
-      notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, t("notifications.error")) });
+      notifyApiError(notify, err, t("notifications.error"));
     } finally {
       loading.value = false;
       schedule();

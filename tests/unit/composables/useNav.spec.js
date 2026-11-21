@@ -17,6 +17,7 @@ vi.mock("@/stores/munin", () => ({
 }));
 vi.mock("@/stores/quality", () => ({ useQualityStore: () => ({ available: true }) }));
 vi.mock("@/stores/enrichmentProfile", () => ({ useEnrichmentProfileStore: () => ({ pendingSuggestions: 0 }) }));
+vi.mock("@/stores/approvals", () => ({ useApprovalsStore: () => ({ total: 0 }) }));
 vi.mock("@/stores/user", () => ({ useUserStore: () => ({ isAuth: true }) }));
 
 import router from "@/router";
@@ -59,8 +60,8 @@ describe("navTree", () => {
   it("groups the filtered entries per panel, every panel of the registry present", () => {
     const desktop = tree();
     expect(Object.keys(desktop)).toEqual(panels.map((p) => p.idx));
-    expect(desktop.leads.map((e) => e.route)).toEqual(["/leads/inbox", "/leads/board", "/leads/import", "/leads/settings"]);
-    expect(tree(false).leads.map((e) => e.route)).toEqual(["/leads/inbox", "/leads/settings"]);
+    expect(desktop.leads.map((e) => e.route)).toEqual(["/crm/today", "/crm/inbox", "/crm/companies", "/crm/settings"]);
+    expect(tree(false).leads.map((e) => e.route)).toEqual(["/crm/today", "/crm/inbox", "/crm/companies"]);
   });
 
   it("single-entry panels have one entry (leaf links, decision 2)", () => {
@@ -82,8 +83,8 @@ describe("resolveNavEntry", () => {
     ["/emails/templates/order/5", "/emails"],
     ["/stock/manage", "/stock"],
     ["/pages/content/static-page", "/pages/content"],
-    ["/leads/companies/100", "/leads/inbox"],
-    ["/leads/settings/templates/3", "/leads/settings"],
+    ["/crm/companies/100", "/crm/companies"],
+    ["/crm/settings/templates/3", "/crm/settings"],
   ])("%s lights %s", (path, entry) => {
     expect(litEntry(path)).toBe(entry);
   });
@@ -183,13 +184,30 @@ describe("buildCrumbs", () => {
       label: t("emails.template_types"),
       to: { name: "EmailTemplateList", params: { emailType: "order" } },
     });
-    const template = crumbsAt("/leads/settings/templates/3");
+    const template = crumbsAt("/crm/settings/templates/3");
     expect(template.map((c) => c.to)).toEqual([
-      "/leads/inbox",
-      { path: "/leads/settings", query: {} },
+      "/crm/today",
+      { path: "/crm/settings", query: {} },
       { name: "CommunicatorTemplates", params: {} },
       undefined,
     ]);
+  });
+});
+
+// Acceptance CM7 (plan 22): a crumbParent that is the nav entry's page is not repeated, on every Leads route.
+describe("buildCrumbs on the Leads routes", () => {
+  it("never repeats a level", () => {
+    const leadsPaths = router.getRoutes().filter((r) => r.meta?.panel === "leads" && r.name).map((r) => r.path.replace(/:(\w+)(\([^)]*\))?/g, "1"));
+    expect(leadsPaths.length).toBeGreaterThan(20);
+    for (const path of leadsPaths) {
+      // a record's page names itself (the view passes its title); a fixed page reads its titleKey
+      const labels = crumbsAt(path, path.endsWith("/1") ? "Record" : undefined).map((crumb) => crumb.label);
+      expect(new Set(labels).size, `${path}: ${labels.join(" / ")}`).toBe(labels.length);
+    }
+  });
+
+  it("Settings once above a settings section", () => {
+    expect(crumbsAt("/crm/settings/custom-fields").map((c) => c.label)).toEqual([t("panels.leads"), t("nav.leads_settings"), t("leads.fields.title")]);
   });
 });
 

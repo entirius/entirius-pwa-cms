@@ -175,7 +175,8 @@
 <script>
 import { useLoaderStore } from '@/stores/loader'
 import { useNotifyStore } from '@/stores/notify'
-import { useFormErrors, extractApiMessage } from '@/composables/useFormErrors'
+import { useFormErrors } from '@/composables/useFormErrors'
+import { notifyApiError } from '@/composables/useNotify'
 import { isNotFound } from '@/api/createClient'
 import { GET_PmPriceDetail, GET_PmPrices, PATCH_PmPrice, DELETE_PmPrice, POST_PmFlushSpecial, GET_PmPriceHistory } from '@/api/pricemanager/api'
 import { formatDate } from '@/utils/format'
@@ -361,10 +362,7 @@ export default {
         if (isNotFound(err)) {
           this.productNotFound = true
         } else {
-          this.notify.spawnNotification({
-            type: 'negative',
-            msg: extractApiMessage(err, this.$t('notifications.error')),
-          })
+          notifyApiError(this.notify, err, this.$t('notifications.error'))
         }
       } finally {
         this.loading = false
@@ -459,10 +457,7 @@ export default {
         }
       } catch (err) {
         this.formErrors.handleApiError(err)
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.save_error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.save_error'))
       } finally {
         this.loader.loaderFinish()
       }
@@ -475,10 +470,7 @@ export default {
         this.notify.spawnNotification({ type: 'positive', msg: this.$t('notifications.success') })
         await this.fetchDetail()
       } catch (err) {
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loader.loaderFinish()
       }
@@ -491,10 +483,7 @@ export default {
         this.notify.spawnNotification({ type: 'positive', msg: this.$t('notifications.success') })
         await this.fetchDetail()
       } catch (err) {
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loader.loaderFinish()
       }

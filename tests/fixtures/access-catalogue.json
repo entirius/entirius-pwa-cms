@@ -2,6 +2,7 @@
   "areas": [
     "pim.products",
     "pim.categories",
+    "pim.attribute_values",
     "pim.schema",
     "pim.quality",
     "pim.product_delete",
@@ -34,6 +35,7 @@
     "accounts.customers",
     "checkout.orders",
     "checkout.discounts",
+    "stock_alerts.subscriptions",
     "returns.attachments",
     "contact_forms.submissions",
     "contact_forms.leads",
@@ -41,6 +43,7 @@
     "leads.companies",
     "leads.settings",
     "leads.gdpr",
+    "todo.tasks",
     "communicator.review",
     "communicator.content",
     "communicator.conversations",
@@ -60,6 +63,7 @@
     "returns.api",
     "reviews.moderate",
     "vault.api",
-    "agreements.subscribe"
+    "agreements.subscribe",
+    "stock_alerts.subscribe"
   ]
 }

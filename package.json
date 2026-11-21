@@ -1,6 +1,6 @@
 {
   "name": "entirius-pwa-cms",
-  "version": "3.7.0",
+  "version": "3.8.0",
   "private": true,
   "license": "MPL-2.0",
   "description": "Admin CMS of Entirius: a Vue 3 single-page app with a visual page builder and per-module panels",
@@ -48,7 +48,7 @@
     "test:pim": "playwright test tests/e2e/07-pim-smoke.spec.js",
     "test:navigation": "playwright test tests/e2e/08-navigation-editor.spec.js",
     "test:suppliers": "playwright test tests/e2e/09-suppliers-smoke.spec.js tests/e2e/10-supplier-review-smoke.spec.js",
-    "test:suppliers:live": "playwright test tests/e2e/11-suppliers-live.spec.js --workers=1",
+    "test:suppliers:live": "SUPPLIERS_LIVE=1 playwright test tests/e2e/11-suppliers-live.spec.js --workers=1",
     "test:comprehensive": "playwright test tests/e2e/03-content-builder.spec.js tests/e2e/04-gallery-upload.spec.js tests/e2e/05-theme-and-layout.spec.js tests/e2e/06-content-list.spec.js",
     "pretest:unit": "node scripts/init-client.js",
     "test:unit": "vitest run",

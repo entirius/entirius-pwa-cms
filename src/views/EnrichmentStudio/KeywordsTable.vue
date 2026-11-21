@@ -78,7 +78,7 @@
 import { PATCH_Proposal } from "@/api/enrichment/api";
 import { uiLocale } from "@/i18n";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import StepCallout from "./StepCallout.vue";
 import { MAX_SECONDARY, keywordRole, keywordRows, pickKeyword } from "./studioLogic";
 
@@ -166,7 +166,7 @@ export default {
         const { data } = await PATCH_Proposal(this.proposal.id, { proposed_value: value });
         this.$emit("updated", data);
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.busy = false;
       }

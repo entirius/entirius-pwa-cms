@@ -99,7 +99,17 @@
           data-test="quality-toggle"
           @click="toggleQualitySensor"
         />
-        <span v-if="totalCount > 0" class="fs-200 t-muted ml-auto"
+        <BasicButton
+          v-if="canRunOnMatching"
+          variant="outline"
+          size="sm"
+          class="ml-auto"
+          data-testid="ai-run-matching"
+          @click="openAiTaskOnMatching"
+        >
+          {{ $t("enrichment.ai.run_on_matching", { count: Math.min(totalCount, MAX_REFS) }) }}
+        </BasicButton>
+        <span v-if="totalCount > 0" class="fs-200 t-muted" :class="{ 'ml-auto': !canRunOnMatching }"
           >{{ totalCount }} {{ $t("pim.products").toLowerCase() }}</span
         >
       </div>
@@ -252,6 +262,8 @@
       :templates="aiTemplates"
       :initial-template="aiTemplate"
       :skus="aiSkus"
+      :filters="aiFilters"
+      :filter-count="aiCount"
       @close="aiDialogOpen = false"
       @created="onSpawned"
       @template-saved="reloadAiTemplates"
@@ -284,13 +296,15 @@ import {
 } from "./quality";
 import RunAiTaskDialog from "./components/enrichment/RunAiTaskDialog.vue";
 import { useAiWorkers } from "./components/enrichment/useAiWorkers";
+import { gridFilterScope } from "./gridScope";
+import { MAX_REFS } from "./components/enrichment/taskTargets";
 
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
 import GapStatusAlert from "./components/GapStatusAlert.vue";
 import PimTranslateDialog from "./components/PimTranslateDialog.vue";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
 import FeatureAttributeSelect from "./components/FeatureAttributeSelect.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 const HIDE_QUALITY_KEY = "pim_hide_quality_sensor";
 
@@ -324,7 +338,7 @@ export default {
     } = useAiWorkers();
     return {
       loader, notify, pimChannel, munin, search, debouncedFetch, categorySource,
-      aiWorkers, aiTemplates, aiWritable, aiUsable, reloadAiTemplates,
+      aiWorkers, aiTemplates, aiWritable, aiUsable, reloadAiTemplates, MAX_REFS,
     };
   },
   data() {
@@ -353,6 +367,11 @@ export default {
       aiDialogOpen: false,
       aiTemplate: "",
       aiSkus: [],
+      aiFilters: null,
+      aiCount: 0,
+      // The AI scope of the grid's filters as of the last finished read, and the sequence that keeps a late read out.
+      fetchedScope: null,
+      fetchSeq: 0,
     };
   },
   computed: {
@@ -516,6 +535,13 @@ export default {
       if (this.onlySourceGaps) count++;
       return count;
     },
+    // The scope of the last finished list read (fetchProducts): it always matches the rows and the count on screen.
+    matchingScope() {
+      return this.fetchedScope;
+    },
+    canRunOnMatching() {
+      return !!this.matchingScope && this.totalCount > 0 && this.aiWritable && this.aiUsable && !!this.aiWorkers.length;
+    },
     paginationState() {
       return {
         page: this.currentPage,
@@ -549,7 +575,21 @@ export default {
     this.fetchProducts();
   },
   methods: {
+    // The grid's filters as an AI task scope; null when none is set or one (quality gaps) has no adapter key.
+    currentScope() {
+      if (this.gapSeverityFilter || this.onlySourceGaps) return null;
+      return gridFilterScope({
+        search: this.search,
+        activeFilter: this.activeFilter,
+        visibility: this.visibilityFilter,
+        productClass: this.productClassFilter,
+        category: this.categoryFilter,
+        attributeFilters: this.attributeFilters,
+      });
+    },
     async fetchProducts() {
+      const mine = ++this.fetchSeq;
+      const scope = this.currentScope();
       this.loading = true;
       try {
         const params = { page: this.currentPage, page_size: this.pageSize };
@@ -577,18 +617,18 @@ export default {
         }
 
         const { data } = await GET_Products(this.channelIdx, params);
+        if (mine !== this.fetchSeq) return;
         this.products = data.results || [];
         this.totalCount = data.count || 0;
+        this.fetchedScope = scope;
         this.hasQualityData = this.products.some(hasQualityFields);
         this.fetchSupplierStatuses();
         this.fetchQualityFindings();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        if (mine !== this.fetchSeq) return;
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
-        this.loading = false;
+        if (mine === this.fetchSeq) this.loading = false;
       }
     },
     async fetchFilterableFeatures() {
@@ -769,6 +809,15 @@ export default {
     openAiTask(templateKey) {
       this.aiTemplate = templateKey === CUSTOM_RUN ? "" : templateKey;
       this.aiSkus = this.selectedProducts.map((p) => p.sku);
+      this.aiFilters = null;
+      this.aiDialogOpen = true;
+    },
+    // Every product matching the grid's filters, not only the selected ones: the dialog's filter scope.
+    openAiTaskOnMatching() {
+      this.aiTemplate = "";
+      this.aiSkus = [];
+      this.aiFilters = this.matchingScope;
+      this.aiCount = this.totalCount;
       this.aiDialogOpen = true;
     },
     onSpawned() {
@@ -786,10 +835,7 @@ export default {
         this.selectedProducts = [];
         await this.fetchProducts();
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }

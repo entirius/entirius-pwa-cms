@@ -4,7 +4,7 @@ import { createPinia, setActivePinia } from "pinia";
 
 const munin = vi.hoisted(() => ({ isModuleInstalled: vi.fn(() => false) }));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => munin }));
-vi.mock("vue-router", () => ({ useRoute: () => ({ fullPath: "/leads/companies/100" }) }));
+vi.mock("vue-router", () => ({ useRoute: () => ({ fullPath: "/crm/companies/100" }) }));
 
 import OverviewTab from "@/views/Leads/tabs/OverviewTab.vue";
 import { leadsFrame } from "./leadsFrame";
@@ -31,13 +31,12 @@ const company = {
 describe("Company overview tab", () => {
   beforeEach(() => setActivePinia(createPinia()));
 
-  it("names the customer, the lead type and the activity status", () => {
+  // k13 (walk 4): name, stage and company type stand in the header, not again in this table
+  it("names the customer and leaves out what the header shows", () => {
     const text = mount(OverviewTab, { props: { company }, global: { components } }).text();
     expect(text).toContain("Jan Kowalski");
     expect(text).not.toContain("91010000");
-    expect(text).toContain("Type unknown");
-    expect(text).toContain("Draft — to review");
-    expect(text).not.toContain("review_required");
+    expect(text).not.toContain("Unknown");
   });
 
   it("falls back to the uid while the name is unknown", () => {
@@ -45,22 +44,14 @@ describe("Company overview tab", () => {
     expect(text).toContain("91010000-0000-0000-0000-000000000000");
   });
 
-  // FIX-17b item 1: every activity line reads as a sentence — no snake_case, no None, no ASCII arrow.
-  it("reads the activity lines as sentences", () => {
-    const text = mount(OverviewTab, { props: { company }, global: { components } }).text();
-    expect(text).toContain("Blocked: no eligible contact");
-    expect(text).toContain("Legal basis set to legitimate interest");
-    expect(text).toContain("Stage: new → replied");
-    expect(text).not.toMatch(/no_eligible|None|->/);
-  });
-
+  // Leads CRM: the activity lines moved to the card's History tab (Company.spec, `timeline-event`).
   // FIX-17b item 4: with accounts the Customer row links to the customer, with the way back to this card.
   it("links the customer row when accounts is installed", () => {
     munin.isModuleInstalled.mockReturnValue(true);
     const RouterLink = { props: ["to"], template: "<a :data-uid='to.params.uid' :data-back='to.query.back'><slot /></a>" };
     const link = mount(OverviewTab, { props: { company }, global: { components, stubs: { RouterLink } } }).get('[data-testid="overview-customer"] a');
     expect(link.attributes("data-uid")).toBe(company.customer_uid);
-    expect(link.attributes("data-back")).toBe("/leads/companies/100");
+    expect(link.attributes("data-back")).toBe("/crm/companies/100");
     expect(link.text()).toBe("Jan Kowalski");
     munin.isModuleInstalled.mockReturnValue(false);
   });

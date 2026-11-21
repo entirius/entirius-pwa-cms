@@ -15,7 +15,7 @@
           </FormField>
           <div class="flex jc-fe flex-wrap gap-3">
             <BasicButton data-testid="pool-text-cancel" @click="editing = null">{{ $t("common.cancel") }}</BasicButton>
-            <BasicButton variant="primary" type="submit" :disabled="!draft.trim()" data-testid="pool-text-save">
+            <BasicButton variant="primary" type="submit" mutates :disabled="!draft.trim()" data-testid="pool-text-save">
               {{ $t("communicator.pool.save") }}
             </BasicButton>
           </div>
@@ -23,8 +23,8 @@
         <template v-else>
           <p class="pool__body m-0" data-testid="pool-text-body">{{ text.body }}</p>
           <template v-if="text.is_active">
-            <IconButton icon="edit" variant="outline" :label="$t('communicator.pool.edit')" data-testid="pool-text-edit" @click="startEdit(text)" />
-            <IconButton icon="delete" variant="danger" :label="$t('communicator.pool.remove')" data-testid="pool-text-remove" @click="confirming = text" />
+            <IconButton mutates icon="edit" variant="outline" :label="$t('communicator.pool.edit')" data-testid="pool-text-edit" @click="startEdit(text)" />
+            <IconButton mutates icon="delete" variant="danger" :label="$t('communicator.pool.remove')" data-testid="pool-text-remove" @click="confirming = text" />
           </template>
           <template v-else>
             <StatusBadge tone="neutral" size="sm" :dot="false" :label="$t('communicator.pool.inactive')" />

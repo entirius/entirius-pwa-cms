@@ -8,12 +8,12 @@
       </PageHeader>
     </template>
     <template #toolbar>
-      <div class="feature-set-list__toolbar">
+      <div class="list-toolbar feature-set-list__toolbar">
         <BasicInput
           v-model="search"
           :placeholder="$t('common.start_typing')"
           icon="search"
-          class="feature-set-list__search"
+          class="list-search feature-set-list__search"
           @input="debouncedFetch(searchAndFetch)"
         />
       </div>
@@ -59,7 +59,7 @@ import { useNotifyStore } from "@/stores/notify";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
 import { GET_FeatureSetsGlobal, POST_FeatureSet } from "@/api/pim/api";
 import PimChannelSelect from "./components/PimChannelSelect.vue";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 
 export default {
   name: "FeatureSetList",
@@ -152,10 +152,7 @@ export default {
         this.featureSets = data.results || [];
         this.totalCount = data.count || 0;
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loading = false;
       }
@@ -192,10 +189,7 @@ export default {
         });
         this.$router.push(`/pim/feature-sets/${idx}`);
       } catch (err) {
-        this.notify.spawnNotification({
-          type: "negative",
-          msg: extractApiMessage(err, this.$t("notifications.error")),
-        });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.loader.loaderFinish();
       }
@@ -205,15 +199,4 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.feature-set-list__toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-5);
-  flex-wrap: wrap;
-}
-.feature-set-list__search {
-  flex: 1;
-  min-width: 150px;
-  max-width: 400px;
-}
 </style>

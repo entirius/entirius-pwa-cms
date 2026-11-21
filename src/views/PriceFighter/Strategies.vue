@@ -43,7 +43,7 @@
             <span v-else class="t-muted">—</span>
           </template>
           <template #cell-mode="{ row }">
-            {{ row.mode }}
+            {{ pfLabel($t, 'mode', row.mode) }}
           </template>
         </DataTable>
       </template>
@@ -153,12 +153,13 @@
 <script>
 import { useLoaderStore } from '@/stores/loader'
 import { useNotifyStore } from '@/stores/notify'
-import { useFormErrors, extractApiMessage } from '@/composables/useFormErrors'
+import { useFormErrors } from '@/composables/useFormErrors'
+import { notifyApiError } from '@/composables/useNotify'
 import { usePfChannels } from '@/composables/usePfChannels'
 import { useProductFetch, useCategoryFetch } from '@/composables/useEntityFetch'
 import { useMuninStore } from '@/stores/munin'
 import { GET_PfRules, POST_PfRule, PATCH_PfRule, DELETE_PfRule } from '@/api/pricefighter/api'
-import { STRATEGIES, RECOMMENDATION_VARIANTS } from './constants'
+import { STRATEGIES, RECOMMENDATION_VARIANTS, pfLabel } from './constants'
 
 const SCOPE_TYPES = ['sku', 'category_idx', 'channel']
 
@@ -235,6 +236,7 @@ export default {
     await Promise.all([this.fetchRules(), this.fetchChannels()])
   },
   methods: {
+    pfLabel,
     strategyVariant(strategy) {
       return RECOMMENDATION_VARIANTS[strategy] || 'neutral'
     },
@@ -250,10 +252,7 @@ export default {
         const { data } = await GET_PfRules({ page_size: 100 })
         this.rules = data.results || []
       } catch (err) {
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loading = false
       }
@@ -308,10 +307,7 @@ export default {
         await this.fetchRules()
       } catch (err) {
         this.formErrors.handleApiError(err)
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.save_error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.save_error'))
       } finally {
         this.loader.loaderFinish()
       }
@@ -325,10 +321,7 @@ export default {
         this.editingRule = null
         await this.fetchRules()
       } catch (err) {
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loader.loaderFinish()
       }

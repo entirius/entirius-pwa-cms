@@ -22,6 +22,7 @@ first area is the read-only default of a route without `meta.area`
 | `forms` | Forms | `/forms/list` | `envelope` | `contact_forms.submissions`, `contact_forms.leads`, `contact_forms.settings` |
 | `accounts` | Accounts | `/accounts/customers` | `users` | `accounts.customers` |
 | `checkout` | Orders | `/checkout-orders/orders` | `shopping-cart` | `checkout.orders` |
+| `stockAlerts` | Stock alerts | `/stock-alerts` | `hourglass-half` | `stock_alerts.subscriptions` (Munin module `stock_alerts`) |
 | `agreements` | Agreements | `/agreements/list` | `file-contract` | `agreements.definitions`, `agreements.consents` |
 | `emails` | Emails | `/emails` | `at` | `email.templates` |
 | `faq` | FAQ | `/faq/groups` | `circle-question` | `faq.faq` |
@@ -32,7 +33,7 @@ first area is the read-only default of a route without `meta.area`
 | `pricefighter` | PriceFighter | `/pricefighter/gap` | `scale-balanced` | `pricefighter.decisions`, `pricefighter.rules` |
 | `enricher` | Enricher | `/enrichment` | `wand-magic-sparkles` | `enrichment.rules`, `enrichment.proposals` |
 | `promo` | Promo | `/promo/list` | `tags` | `checkout.discounts` |
-| `leads` | Leads | `/leads/inbox` (fallback `/leads/companies`) | `inbox` | `leads.companies`, `leads.settings`, `leads.gdpr`, `communicator.review`, `communicator.content`, `communicator.conversations`, `communicator.settings`, `siteintel.audits` |
+| `leads` | CRM | `/crm/today` (fallback `/crm/companies`) | `inbox` | `leads.companies`, `leads.settings`, `leads.gdpr`, `todo.tasks`, `communicator.review`, `communicator.content`, `communicator.conversations`, `communicator.settings`, `siteintel.audits` |
 | `access` | Access | `/access/roles` | `user-shield` | `access.manage` |
 
 This array is static metadata only. Whether a panel is *usable* is decided at
@@ -54,6 +55,7 @@ path prefix and lazy-loaded (`() => import(...)`). Grouped by panel:
 | `/agreements/...` | AgreementList/Edit, ConsentPeople, ConsentPersonDetail |
 | `/accounts/...` | CustomerList, CustomerDetail |
 | `/checkout-orders/...` | OrderList, OrderDetail |
+| `/stock-alerts/...` | StockAlertsDemand (`/stock-alerts`), StockAlertsSubscriptions (`subscriptions`, `?sku=`) |
 | `/emails/...` | EmailsDashboard, EmailChannelEdit, EmailLangConfigEdit, EmailTemplateList/Edit |
 | `/faq/...` | GroupList/Edit, ItemList/Edit, DuplicateReport (`duplicates`) |
 | `/pricing/...` | PriceList/Detail, TaxClassList/Detail, ChannelList/Detail |
@@ -64,7 +66,7 @@ path prefix and lazy-loaded (`() => import(...)`). Grouped by panel:
 | `/pricefighter/...` | GapTable, Strategies, DecisionHistory |
 | `/enrichment/...` | Review: EnrichmentReview (Proposals) and RunsPage (`runs`, `runs?task=<id>` = one run, its proposals in place) as tabs (`RouteTabs`); EnrichmentStudio RunList + RunView (`studio`, `studio/:uid?step=`); Settings (`settings/…`): Profile, Memory, EnrichmentTemplates List/Edit, EnrichmentSpawnRules List/Edit as tabs; the old `tasks`, `profile`, `memory`, `templates/…`, `spawn-rules/…` paths redirect with their query |
 | `/promo/...` | PromoList/Edit, VoucherDetail |
-| `/leads/...`, `/communicator/*` + `/leads/stages` (legacy redirects) | Inbox, Companies, Company, Review, Thread, Board, Import, Settings and its sections (communicator templates, sequences, sending, stages, lead types); every screen on PageLayout + PageHeader and the boots, with no panel stylesheet of its own |
+| `/crm/...`, `/communicator/*` + `/crm/stages` (legacy redirects) | Inbox, Companies, Company, Review, Thread, Board, Import, Settings and its sections (communicator templates, sequences, sending, stages, lead types); every screen on PageLayout + PageHeader and the boots, with no panel stylesheet of its own |
 | `/change-password`, `/password-reset` | ChangePassword (authenticated), PasswordReset (unauthenticated, from email link) |
 | `/sso/callback` | SsoCallback (unauthenticated, return leg of the optional SSO login; `docs/sso-login.md`) |
 
@@ -194,7 +196,7 @@ One model feeds every region of the shell (`src/composables/useNav.js`):
   page whose path does not nest under its list declares `meta.navParent: "<entry
   route>"` (points, forms, agreements, atlas and promo details / creates).
 - **Route tabs** — a screen whose sections are routes of their own (Enricher
-  Review: Proposals | Runs; Enricher Settings: profile, memory, templates, spawn
+  Review: Proposals | Runs | Picture checks (enrichment >= 2.5.0); Enricher Settings: profile, memory, templates, spawn
   rules) has one entry (it lights by path prefix) and shows the sections as
   `RouteTabs` in its `PageHeader` `tabs` slot (the tab sets live in `nav-routes.js`; a tab
   whose route's area the user cannot read is left out). Each tabbed page passes

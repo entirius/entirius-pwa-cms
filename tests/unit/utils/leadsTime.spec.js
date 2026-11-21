@@ -1,5 +1,6 @@
 import { describe, it, expect } from "vitest";
-import { applyPolicy, capReached, channelTimeZone, formatDayTime, formatTime, sendState } from "@/utils/leadsTime";
+import { applyPolicy, capReached, channelTimeZone, formatDayTime, formatLeadsDateTime, formatLeadsDay, formatTime, sendState } from "@/utils/leadsTime";
+import { formatDate, formatDay } from "@/utils/format";
 
 const at = (hhmm) => new Date(`2026-09-15T${hhmm}:00Z`).getTime();
 
@@ -73,5 +74,17 @@ describe("sendState — a state, never a clock that slides forward", () => {
     expect(sendState("", at("22:00"))).toEqual({ state: "held", window: "08:00–17:00", next: "" });
     expect(sendState("2026-09-15T14:00:00Z", now)).toEqual({ state: "at", time: "14:00" });
     applyPolicy(null);
+  });
+});
+
+// Acceptance m4: one date and one date-time form for every Leads screen, the one the date picker shows.
+describe("Leads date helpers", () => {
+  it("read in the UI locale, empty for nothing", () => {
+    channelTimeZone.value = undefined;
+    const iso = "2026-11-13T21:18:00Z";
+    expect(formatLeadsDay(iso)).toBe(formatDay(iso));
+    expect(formatLeadsDateTime(iso)).toBe(formatDate(iso));
+    expect(formatLeadsDay(null)).toBe("");
+    expect(formatLeadsDateTime("")).toBe("");
   });
 });

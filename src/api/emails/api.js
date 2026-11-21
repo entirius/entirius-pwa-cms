@@ -35,3 +35,7 @@ export const GET_EmailTemplate = (emailType, pk) =>
 
 export const PATCH_EmailTemplate = (emailType, pk, data) =>
   emailApi.patch(`${BASE}/templates/${emailType}/${pk}/`, data)
+
+// Rendered from sample data with the saved wording: { subject, html, text }.
+export const GET_EmailTemplatePreview = (emailType, params) =>
+  emailApi.get(`${BASE}/templates/${emailType}/preview/`, { params })

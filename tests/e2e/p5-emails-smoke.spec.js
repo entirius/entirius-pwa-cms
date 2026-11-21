@@ -5,9 +5,13 @@ const en = require('../../src/i18n/locales/en.json');
 const pl = require('../../src/i18n/locales/pl.json');
 
 /**
- * P5 Emails smoke (plan 34): dashboard → channel → language config, dashboard → template type → first template.
- * Read-only: opens lists and details, never saves, sends, confirms or deletes.
+ * P5 Emails smoke (plan 34): dashboard → channel → language config, dashboard → template type → first template; the
+ * order templates (order e-mail plan 03) show their preview frame. Read-only: opens lists and details, never saves,
+ * sends, confirms or deletes.
  */
+
+// Chromium logs a blocked script for every sandboxed srcdoc frame (the preview), even an empty one: not a page error.
+const SRCDOC_NOTE = ["Blocked script execution in 'about:srcdoc'"];
 
 const VIEWPORTS = {
   desktop: { width: 1280, height: 720 },
@@ -73,5 +77,21 @@ for (const [name, viewport] of Object.entries(VIEWPORTS)) {
 
       collector.assertNoErrors(expect, 'Emails templates');
     });
+
+    for (const type of ['checkout-order-confirmation', 'checkout-order-canceled']) {
+      test(`${type} template shows its preview`, async ({ page }) => {
+        const collector = createErrorCollector(page, { whitelist: SRCDOC_NOTE });
+        await page.goto(`/emails/templates/${type}`);
+        await page.waitForLoadState('networkidle');
+
+        await openFirstCard(page, 'emails-template-card', new RegExp(`/emails/templates/${type}/[^/]+$`));
+        await expectDetail(page);
+        await expect(page.getByTestId('email-preview')).toBeVisible();
+        await expect(page.getByTestId('email-preview-frame')).toBeVisible({ timeout: 10000 });
+        await expect(page.getByTestId('email-preview-subject')).not.toBeEmpty();
+
+        collector.assertNoErrors(expect, `Emails ${type}`);
+      });
+    }
   });
 }

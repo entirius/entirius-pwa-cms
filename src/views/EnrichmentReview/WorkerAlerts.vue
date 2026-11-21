@@ -27,7 +27,7 @@
 
 <script>
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { GET_WorkersStatus, POST_ResumeWorker } from "@/api/enrichment/api";
 import { listOf } from "@/api/enrichment/listOf";
 import StepCallout from "@/views/EnrichmentStudio/StepCallout.vue";
@@ -84,7 +84,7 @@ export default {
         this.notify.spawnNotification({ type: "positive", msg: this.$t("enrichment.workers.resumed", { label: row.label }) });
         this.fetchStatus();
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
         this.resuming = "";
       }

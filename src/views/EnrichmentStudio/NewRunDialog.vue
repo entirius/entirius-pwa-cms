@@ -72,7 +72,8 @@ import { uiLocale } from "@/i18n";
 import { useContentDBChannelStore } from "@/stores/contentDBChannel";
 import { useMuninStore } from "@/stores/munin";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage, useFormErrors } from "@/composables/useFormErrors";
+import { useFormErrors } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import BriefProductPicker from "./BriefProductPicker.vue";
 import ProfileGate from "./ProfileGate.vue";
 import {
@@ -250,7 +251,7 @@ export default {
       this.$emit("update:open", false);
     },
     failed(err) {
-      this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+      notifyApiError(this.notify, err, this.$t("notifications.error"));
     },
   },
 };

@@ -21,3 +21,17 @@ describe("DataTable rowAttrs", () => {
     expect(wrapper.get(".data-table__row").attributes("data-testid")).toBeUndefined();
   });
 });
+
+// Acceptance CM4 (plan 22): a `max-content` column fits its longest value; truncated it shrank to its header.
+describe("DataTable truncation", () => {
+  it("truncates a plain cell, never a max-content one unless asked", () => {
+    const columns = [
+      { key: "name", label: "Name", width: "1fr" },
+      { key: "kind", label: "Kind", width: "max-content" },
+      { key: "note", label: "Note", width: "max-content", truncate: true },
+    ];
+    const wrapper = mount(DataTable, { props: { columns, rows: [{ uid: 1, name: "A", kind: "Domain", note: "x" }] } });
+    const cells = wrapper.findAll(".data-table__row .data-table__cell");
+    expect(cells.map((cell) => cell.classes().includes("data-table__cell--truncate"))).toEqual([true, false, true]);
+  });
+});

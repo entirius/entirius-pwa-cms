@@ -69,7 +69,7 @@
 <script>
 import { PATCH_Proposal } from "@/api/enrichment/api";
 import { useNotifyStore } from "@/stores/notify";
-import { extractApiMessage } from "@/composables/useFormErrors";
+import { notifyApiError } from "@/composables/useNotify";
 import { answeredCount, answersShort, isChoice, missingAnswers } from "./studioLogic";
 
 const RADIO_MAX = 5;
@@ -172,7 +172,7 @@ export default {
         this.$emit("updated", data);
         return true;
       } catch (err) {
-        this.notify.spawnNotification({ type: "negative", msg: extractApiMessage(err, this.$t("notifications.error")) });
+        notifyApiError(this.notify, err, this.$t("notifications.error"));
         return false;
       } finally {
         this.saving = false;

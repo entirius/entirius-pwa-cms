@@ -174,12 +174,12 @@ describe("notification bar", () => {
     expect(wrapper.findAll('[data-testid="notif-row"]')).toHaveLength(0);
   });
 
-  it("notification rows carry the company name (and the company for Possible opt-out), not the raw address", async () => {
+  it("notification rows carry the company name (a possible opt-out in the shape of every reply title), not the raw address", async () => {
     api.GET_Notifications.mockResolvedValueOnce({
       data: {
         results: [
           { id: 3, title: "Reply from anna@example-shop-5.test", severity: "medium", subject_ref: "leads.Company:5", created_at: "2026-09-14T08:00:00Z" },
-          { id: 4, title: "Possible opt-out", severity: "medium", subject_ref: "leads.Company:6", created_at: "2026-09-14T08:01:00Z" },
+          { id: 4, title: "Reply from owner@example-shop-6.test — Possible opt-out", severity: "medium", subject_ref: "leads.Company:6", created_at: "2026-09-14T08:01:00Z" },
         ],
       },
     });
@@ -187,7 +187,7 @@ describe("notification bar", () => {
     await wrapper.get('[data-testid="notif-bell"]').trigger("click");
     await flushPromises();
     const titles = wrapper.findAll(".notif-row__title").map((row) => row.text());
-    expect(titles).toEqual(["Reply from Example Shop 5", "Possible opt-out · Example Shop 6"]);
+    expect(titles).toEqual(["Reply from Example Shop 5", "Reply from Example Shop 6 — Possible opt-out"]);
   });
 
   // FIX-17c item 4: three replies from one company are three different rows — the reply's words and its day.

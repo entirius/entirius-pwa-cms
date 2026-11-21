@@ -66,10 +66,7 @@
             @select="selectedRows = $event"
           >
             <template #cell-sku="{ row }">
-              <div class="flex flex-column">
-                <span class="fw-600 t-accent">{{ row.sku }}</span>
-                <span class="t-muted fs-200">{{ row.name }}</span>
-              </div>
+              <span class="fw-600 t-accent">{{ row.sku }}</span>
             </template>
             <template #cell-market="{ row }">
               <MarketCell :channel="row.channel_idx" :country="row.country" :currency="row.currency" />
@@ -137,7 +134,7 @@ import { useLoaderStore } from '@/stores/loader'
 import { useNotifyStore } from '@/stores/notify'
 import { usePfChannels } from '@/composables/usePfChannels'
 import { GET_PfDecisions } from '@/api/pricefighter/api'
-import { extractApiMessage } from '@/composables/useFormErrors'
+import { notifyApiError } from '@/composables/useNotify'
 import { PF_PAGE_SIZE, RECOMMENDATIONS, RECOMMENDATION_VARIANTS, pfFormat } from './constants'
 import GapRowDetail from './components/GapRowDetail.vue'
 import ApplyPreviewModal from './components/ApplyPreviewModal.vue'
@@ -198,7 +195,8 @@ export default {
     },
     columns() {
       return [
-        { key: 'sku', label: this.$t('pricefighter.sku'), sortable: true, width: '1.5fr' },
+        { key: 'sku', label: this.$t('pricefighter.sku'), sortable: true, width: '1fr' },
+        { key: 'name', label: this.$t('pricefighter.product'), sortable: false, width: '1.5fr' },
         { key: 'market', label: this.$t('pricefighter.market'), sortable: false, width: '1fr' },
         { key: 'current_price', label: this.$t('pricefighter.current_price'), sortable: true, width: '0.8fr', numeric: true, priority: 2 },
         { key: 'cost', label: this.$t('pricefighter.cost'), sortable: false, width: '0.7fr', numeric: true, priority: 2 },
@@ -241,10 +239,7 @@ export default {
         this.totalCount = data.count || 0
       } catch (err) {
         this.rows = []
-        this.notify.spawnNotification({
-          type: 'negative',
-          msg: extractApiMessage(err, this.$t('notifications.error')),
-        })
+        notifyApiError(this.notify, err, this.$t('notifications.error'))
       } finally {
         this.loading = false
       }

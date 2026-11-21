@@ -15,6 +15,10 @@ vi.mock("@/api/enrichment/api", () => ({
   GET_Workers: () => Promise.resolve({ data: [{ key: "pim.writer", label: "Product texts" }] }),
   GET_Templates: () => Promise.resolve({ data: [{ key: "meta", label: "Meta descriptions" }] }),
 }));
+const mockEnrichmentVersion = vi.hoisted(() => ({ ok: true }));
+vi.mock("@/stores/munin", () => ({
+  useMuninStore: () => ({ isModuleAtLeast: () => mockEnrichmentVersion.ok }),
+}));
 vi.mock("@/stores/notify", () => ({
   useNotifyStore: () => ({ spawnNotification: mockNotify }),
 }));
@@ -62,6 +66,21 @@ describe("RunsPage", () => {
     mockNotify.mockReset();
     mockRetry.mockReset();
     mockGetTasks.mockResolvedValue({ data: { results: [], count: 0 } });
+  });
+
+  it("a comfy run has Results only on enrichment >= 2.5.0, opening its run with history", async () => {
+    mockGetTasks.mockResolvedValue({ data: { results: [task({ id: 9, type: "pim.packshot", status: "done" })], count: 1 } });
+    const push = vi.fn();
+    const wrapper = mountList({ push });
+    await flushPromises();
+    wrapper.vm.workers = [{ key: "pim.packshot", kind: "comfy" }];
+    const row = { id: 9, type: "pim.packshot" };
+    expect(wrapper.vm.isComfy(row)).toBe(true);
+    wrapper.vm.openResults(row);
+    expect(push).toHaveBeenCalledWith({ name: "EnrichmentChecks", query: { task: "9", worker: "pim.packshot", history: "1" } });
+    mockEnrichmentVersion.ok = false;
+    expect(wrapper.vm.isComfy(row)).toBe(false);
+    mockEnrichmentVersion.ok = true;
   });
 
   it("the page header raises the AI workers that need attention", async () => {

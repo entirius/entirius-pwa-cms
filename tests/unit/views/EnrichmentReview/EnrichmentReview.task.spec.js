@@ -154,3 +154,26 @@ describe("EnrichmentReview product view", () => {
   });
 });
 
+
+describe("EnrichmentReview opened from Picture checks", () => {
+  const link = { subject_ref: "SKU-1", source: "worker:pim.packshot@v2", status: "__all", task: "12" };
+
+  it("reads the product and source from the URL, as chips, and asks the API for them", async () => {
+    mockGetProposals.mockClear();
+    const w = await mountPage(link);
+    expect(mockGetProposals.mock.calls[0][0]).toMatchObject({ subject_ref: "SKU-1", source: "worker:pim.packshot@v2", status: "all" });
+    expect(w.find("[data-testid='enrichment-chip-subject']").exists()).toBe(true);
+    expect(w.find("[data-testid='enrichment-chip-source']").exists()).toBe(true);
+    expect(w.findComponent({ name: "ListMode" }).props("bulk")).toBe(false);
+  });
+
+  it("Clear filters drops subject_ref, source and task from the URL in one replace", async () => {
+    const w = await mountPage(link);
+    replace.mockClear();
+    w.vm.clearFilters();
+    await flushPromises();
+    expect(replace).toHaveBeenCalledTimes(1);
+    expect(replace).toHaveBeenCalledWith({ path: "/enrichment", query: { status: "__all" } });
+    expect(w.vm.filters).toMatchObject({ subject_ref: "", source: "__all", task: "" });
+  });
+});

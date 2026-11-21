@@ -22,6 +22,7 @@ vi.mock("@/stores/user", () => ({ useUserStore: () => user }));
 vi.mock("@/stores/configHealth", () => ({ useConfigHealthStore: () => health }));
 vi.mock("@/stores/quality", () => ({ useQualityStore: () => ({ available: true }) }));
 vi.mock("@/stores/enrichmentProfile", () => ({ useEnrichmentProfileStore: () => ({ pendingSuggestions: 0 }) }));
+vi.mock("@/stores/approvals", () => ({ useApprovalsStore: () => ({ total: 0 }) }));
 // django-access is not under test here: allow-all, as without the module.
 vi.mock("@/stores/access", () => ({
   useAccessStore: () => ({ can: () => true, canAny: () => true, ensureLoaded: () => Promise.resolve(), available: false, isStaff: true }),
@@ -231,18 +232,18 @@ describe("MobileMenu", () => {
 describe("BottomTabBar", () => {
   it("lists the current panel's entries on a phone, named by the panel, the lit one aria-current", async () => {
     setViewport(false);
-    await goTo("/leads/companies/7", { panel: "leads" });
+    await goTo("/crm/companies/7", { panel: "leads" });
     const nav = mountIt(BottomTabBar).get("nav");
-    expect(nav.attributes("aria-label")).toBe("Leads");
+    expect(nav.attributes("aria-label")).toBe("CRM");
     expect(nav.attributes("data-fid")).toBe("tab-bar");
-    expect(nav.findAll("a").map((a) => a.attributes("href"))).toEqual(["/leads/inbox", "/leads/settings"]);
-    expect(nav.get("[aria-current='page']").attributes("href")).toBe("/leads/inbox");
+    expect(nav.findAll("a").map((a) => a.attributes("href"))).toEqual(["/crm/today", "/crm/inbox", "/crm/companies"]);
+    expect(nav.get("[aria-current='page']").attributes("href")).toBe("/crm/companies");
   });
 
   it("is hidden with one entry and on meta.noBottomBar", async () => {
     await goTo("/checkout-orders/orders", { panel: "checkout" });
     expect(mountIt(BottomTabBar).find("nav").exists()).toBe(false);
-    await goTo("/leads/inbox/3", { panel: "leads", noBottomBar: true });
+    await goTo("/crm/inbox/3", { panel: "leads", noBottomBar: true });
     expect(mountIt(BottomTabBar).find("nav").exists()).toBe(false);
   });
 });

@@ -7,8 +7,7 @@ const mockImages = vi.fn();
 vi.mock("@/api/contentDB/api", () => ({ GET_Images: (...args) => mockImages(...args) }));
 vi.mock("@/stores/munin", () => ({ useMuninStore: () => ({ isPanelEnabled: () => true }) }));
 
-import EditMenuItemModal from "@/functionals/EditMenuItemModal.vue";
-import EditLinkModal from "@/functionals/EditLinkModal.vue";
+import EditNavLinkModal from "@/functionals/EditNavLinkModal.vue";
 import EditBannerModal from "@/functionals/EditBannerModal.vue";
 
 const BasicModal = { name: "BasicModal", props: ["actions"], template: "<div><slot /></div>" };
@@ -47,9 +46,9 @@ const save = (wrapper) =>
     .find((action) => action.key === "save")
     .onClick();
 
-describe("EditMenuItemModal", () => {
+describe("EditNavLinkModal as a menu item dialog", () => {
   it("offers display-as and link-type radios; a mega menu drops the link fields", async () => {
-    const wrapper = await open(EditMenuItemModal);
+    const wrapper = await open(EditNavLinkModal, { withDisplayAs: true });
     expect(radios(wrapper).map((group) => group.props("options").map((option) => option.value))).toEqual([
       ["link", "megamenu"],
       ["category", "page", "url"],
@@ -60,7 +59,7 @@ describe("EditMenuItemModal", () => {
   });
 
   it("saves only with a label, with the chosen link type", async () => {
-    const wrapper = await open(EditMenuItemModal);
+    const wrapper = await open(EditNavLinkModal, { withDisplayAs: true });
     save(wrapper);
     expect(wrapper.emitted("save")).toBeUndefined();
     wrapper.vm.form.label = "Shoes";
@@ -71,12 +70,26 @@ describe("EditMenuItemModal", () => {
   });
 });
 
-describe("EditLinkModal", () => {
+describe("EditNavLinkModal as a link dialog", () => {
   it("keeps the stored link type of an edited link", async () => {
-    const wrapper = await open(EditLinkModal, { link: { label: "Sale", link_type: "page", link_value: "sale" } });
+    const wrapper = await open(EditNavLinkModal, { item: { label: "Sale", link_type: "page", link_value: "sale" } });
     expect(radios(wrapper)[0].props("modelValue")).toBe("page");
+    expect(radios(wrapper)).toHaveLength(1);
     save(wrapper);
-    expect(wrapper.emitted("save")[0][0]).toMatchObject({ label: "Sale", link_type: "page", link_value: "sale" });
+    expect(wrapper.emitted("save")[0][0]).toEqual({
+      label: "Sale",
+      label_t9n: {},
+      link_type: "page",
+      link_value: "sale",
+      link_display: "",
+    });
+  });
+
+  it("shows the link fields and saves no display_as for a record that carries a mega menu", async () => {
+    const wrapper = await open(EditNavLinkModal, { item: { label: "Sale", display_as: "megamenu", link_type: "url" } });
+    expect(radios(wrapper)).toHaveLength(1);
+    save(wrapper);
+    expect(wrapper.emitted("save")[0][0]).not.toHaveProperty("display_as");
   });
 });
 
