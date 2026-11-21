@@ -2,6 +2,9 @@
   <PageLayout class="comfy-results fs-300 t-body">
     <template #header>
       <PageHeader :title="$t('enrichment.review.title')" :crumbs="[]">
+        <template #actions>
+          <ActionBar :actions="pageActions" />
+        </template>
         <template #tabs>
           <RouteTabs :tabs="ENRICHMENT_REVIEW_TABS" />
         </template>
@@ -61,6 +64,35 @@
             data-testid="checks-reason"
             @input="debouncedFetch(applyReason)"
           />
+          <template v-if="filters.worker">
+            <BasicInput
+              v-model="scoreMinInput"
+              type="number"
+              step="0.01"
+              :placeholder="$t('enrichment.checks.score_from')"
+              :aria-label="$t('enrichment.checks.score_from')"
+              class="comfy-results__score"
+              data-testid="checks-score-min"
+              @input="debouncedFetch(applyScore)"
+            />
+            <BasicInput
+              v-model="scoreMaxInput"
+              type="number"
+              step="0.01"
+              :placeholder="$t('enrichment.checks.score_to')"
+              :aria-label="$t('enrichment.checks.score_to')"
+              class="comfy-results__score"
+              data-testid="checks-score-max"
+              @input="debouncedFetch(applyScore)"
+            />
+          </template>
+          <BasicCheckbox
+            :model-value="filters.history"
+            data-testid="checks-history"
+            @update:model-value="(value) => setFilter({ history: value })"
+          >
+            {{ $t("enrichment.checks.history") }}
+          </BasicCheckbox>
           <BasicSelect
             :model-value="effectiveSort(filters)"
             :options="sortOptions"
@@ -112,6 +144,15 @@
         <template #cell-checked_at="{ row }">
           <span class="fs-200 t-muted">{{ formatDate(row.checked_at) }}</span>
         </template>
+        <template #cell-actions="{ row }">
+          <IconButton
+            icon="preview"
+            size="sm"
+            :label="$t('enrichment.checks.proposals')"
+            :data-testid="`checks-proposals-${row.id}`"
+            @click="openProposals(row)"
+          />
+        </template>
         <template #cell-task_id="{ row }">
           <router-link v-if="row.task_id" :to="{ name: 'EnrichmentRuns', query: { task: row.task_id } }" class="t-accent">
             #{{ row.task_id }}
@@ -137,13 +178,13 @@ import { ENRICHMENT_REVIEW_TABS, routeTabPanel } from "@/components/Navigation/n
 import { useNotifyStore } from "@/stores/notify";
 import { notifyApiError } from "@/composables/useNotify";
 import { useSearchDebounce } from "@/composables/useSearchDebounce";
-import { GET_ComfyResults, GET_ComfyVerdicts, GET_Workers } from "@/api/enrichment/api";
+import { GET_ComfyResults, GET_ComfyResultsExport, GET_ComfyVerdicts, GET_Workers } from "@/api/enrichment/api";
 import { listOf } from "@/api/enrichment/listOf";
 import { formatDate } from "@/utils/format";
 import { resolveMediaUrl } from "@/utils/resolveMediaUrl";
 import { t } from "@/i18n";
 import {
-  DEFAULT_SORT, PAGE_SIZE, SOURCES, VERDICTS, effectiveSort, filtersToQuery, formatMetrics, queryToFilters,
+  DEFAULT_SORT, PAGE_SIZE, SOURCES, VERDICTS, effectiveSort, exportParams, filtersToQuery, formatMetrics, proposalsQuery, queryToFilters,
   resultsParams, totalsParams, verdictChips, verdictTone,
 } from "./comfyResults";
 
@@ -156,6 +197,8 @@ const { debouncedFetch } = useSearchDebounce();
 const filters = ref(queryToFilters(route.query));
 const skuInput = ref(filters.value.sku);
 const reasonInput = ref(filters.value.reason);
+const scoreMinInput = ref(filters.value.score_min);
+const scoreMaxInput = ref(filters.value.score_max);
 const workers = ref([]);
 const rows = ref([]);
 const count = ref(0);
@@ -164,9 +207,9 @@ const loading = ref(false);
 let seq = 0;
 
 const chips = computed(() => verdictChips(totals.value));
-const hasFilters = computed(() => !!(filters.value.verdict || filters.value.source || filters.value.reason || filters.value.sku || filters.value.task));
+const hasFilters = computed(() => !!(filters.value.verdict || filters.value.source || filters.value.reason || filters.value.sku || filters.value.task || filters.value.score_min || filters.value.score_max || filters.value.history));
 const panelFilterCount = computed(() =>
-  [filters.value.worker, filters.value.sku, filters.value.source, filters.value.reason, filters.value.sort !== DEFAULT_SORT].filter(Boolean).length
+  [filters.value.worker, filters.value.sku, filters.value.source, filters.value.reason, filters.value.score_min, filters.value.score_max, filters.value.history, filters.value.sort !== DEFAULT_SORT].filter(Boolean).length
 );
 const workerOptions = computed(() => [
   { value: "", label: t("enrichment.checks.all_workers") },
@@ -196,6 +239,7 @@ const columns = computed(() => [
   { key: "source", label: t("enrichment.checks.source"), width: "max-content", priority: 3 },
   { key: "checked_at", label: t("enrichment.checks.col_checked"), width: "max-content", priority: 2 },
   { key: "task_id", label: t("enrichment.checks.col_task"), width: "80px", priority: 3 },
+  { key: "actions", label: "", actions: true },
 ]);
 
 const chipLabel = (verdict) => (verdict ? verdictLabel(verdict) : t("common.all"));
@@ -208,11 +252,35 @@ function setFilter(patch, resetPage = true) {
   router.replace({ path: route.path, query: filtersToQuery(next) });
 }
 const applySku = () => setFilter({ sku: skuInput.value.trim() });
+const applyScore = () => setFilter({ score_min: String(scoreMinInput.value ?? ""), score_max: String(scoreMaxInput.value ?? "") });
 const applyReason = () => setFilter({ reason: reasonInput.value.trim() });
+// The Review's Proposals tab on this product and this worker version, every status.
+const openProposals = (row) => router.push({ name: "EnrichmentReview", query: proposalsQuery(row) });
+const pageActions = computed(() => [
+  { key: "export", role: "secondary", label: t("enrichment.checks.export"), testid: "checks-export", onClick: exportCsv },
+]);
+// The whole filtered list as a CSV, fetched through the API client (the JWT) and saved from a blob.
+async function exportCsv() {
+  try {
+    const { data } = await GET_ComfyResultsExport(exportParams(filters.value));
+    const url = window.URL.createObjectURL(new Blob([data], { type: "text/csv" }));
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "comfy-results.csv");
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    window.URL.revokeObjectURL(url);
+  } catch (err) {
+    notifyApiError(notify, err, t("notifications.error"));
+  }
+}
 function clearFilters() {
   skuInput.value = "";
   reasonInput.value = "";
-  setFilter({ verdict: "", source: "", reason: "", sku: "", task: "" });
+  scoreMinInput.value = "";
+  scoreMaxInput.value = "";
+  setFilter({ verdict: "", source: "", reason: "", sku: "", task: "", score_min: "", score_max: "", history: false });
 }
 
 async function load() {
@@ -252,6 +320,8 @@ watch(
     filters.value = queryToFilters(query);
     skuInput.value = filters.value.sku;
     reasonInput.value = filters.value.reason;
+    scoreMinInput.value = filters.value.score_min;
+    scoreMaxInput.value = filters.value.score_max;
     load();
   }
 );
@@ -266,9 +336,16 @@ onMounted(() => {
   display: flex;
   flex-direction: column;
 }
+// More controls than one row holds: a select's floating label hangs above it, so the wrapped row needs room for it.
+.comfy-results :deep(.mobile-filter-panel__desktop) {
+  row-gap: var(--space-6);
+}
 .comfy-results__count {
   flex-shrink: 0;
   white-space: nowrap;
+}
+.comfy-results__score {
+  width: 110px;
 }
 .comfy-results__search {
   min-width: 180px;

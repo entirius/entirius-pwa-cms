@@ -272,11 +272,17 @@ export const GET_UsageMonth = () =>
 // --- Picture checks (comfy workers, enrichment >= 2.5.0) ---
 
 // Stored verdicts, paged { count, next, previous, results }. params: worker, verdict (set|review|escalate|pass|
-// propose_picture), source (prefilter|workflow), reason, subject_ref (exact SKU), task, ordering (-checked_at default,
-// checked_at, score, -score; a score ordering needs `worker`, else 400), page, page_size (<= 100).
+// propose_picture), source (prefilter|workflow), reason, search (part of the SKU; subject_ref = exact), task,
+// score_min / score_max (need `worker`, else 400), latest (default true = the newest check of each product per worker;
+// false = history), ordering (-checked_at default, checked_at, score, -score; a score ordering needs `worker`, else 400),
+// page, page_size (<= 100).
 export const GET_ComfyResults = (params) =>
   enrichmentApi.get(`${ENR}/comfy-results/`, { params });
 
 // Verdict totals of the same filters (`verdict` ignored): { total, verdicts: { pass: 3800, review: 120, … } }.
 export const GET_ComfyVerdicts = (params) =>
   enrichmentApi.get(`${ENR}/comfy-results/verdicts/`, { params });
+
+// The whole filtered list (same filters + ordering, up to 50 000 rows) as CSV: a blob, the JWT goes with the client.
+export const GET_ComfyResultsExport = (params) =>
+  enrichmentApi.get(`${ENR}/comfy-results/export/`, { params, responseType: "blob" });

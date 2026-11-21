@@ -3049,7 +3049,9 @@
       "feature_set": {
         "now": "Teraz",
         "proposed": "AI proponuje"
-      }
+      },
+      "chip_product": "Produkt {sku}",
+      "chip_source": "Źródło {source}"
     },
     "status": {
       "pending": "Oczekująca",
@@ -3828,7 +3830,7 @@
       "title": "Kontrola zdjęć",
       "worker": "Worker",
       "all_workers": "Wszystkie workery",
-      "sku": "SKU (dokładnie)",
+      "sku": "SKU",
       "source": "Źródło",
       "reason": "Powód",
       "sort": "Sortowanie",
@@ -3846,7 +3848,12 @@
       "sources": {
         "prefilter": "Prefiltr",
         "workflow": "Workflow"
-      }
+      },
+      "score_from": "Wynik od",
+      "score_to": "Wynik do",
+      "history": "Pokaż historię",
+      "export": "Eksportuj CSV",
+      "proposals": "Propozycje"
     }
   },
   "promo": {

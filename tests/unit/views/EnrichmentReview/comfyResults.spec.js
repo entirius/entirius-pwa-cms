@@ -1,12 +1,13 @@
 import { describe, it, expect } from "vitest";
 import {
-  effectiveSort, filtersToQuery, formatMetrics, queryToFilters, resultsParams, totalsParams, verdictChips,
+  effectiveSort, exportParams, filtersToQuery, proposalsQuery, formatMetrics, queryToFilters, resultsParams, totalsParams, verdictChips,
 } from "@/views/EnrichmentReview/comfyResults";
 
 describe("queryToFilters / filtersToQuery", () => {
   it("reads the defaults from an empty query", () => {
     expect(queryToFilters({})).toEqual({
-      worker: "", verdict: "", source: "", reason: "", sku: "", task: "", sort: "-checked_at", page: 1,
+      worker: "", verdict: "", source: "", reason: "", sku: "", task: "", score_min: "", score_max: "", history: false,
+      sort: "-checked_at", page: 1,
     });
   });
 
@@ -16,23 +17,49 @@ describe("queryToFilters / filtersToQuery", () => {
   });
 
   it("round-trips what is set and keeps defaults out of the URL", () => {
-    const query = { worker: "pim.packshot", verdict: "review", task: "42", sort: "-score", page: "3", sku: "A-1" };
+    const query = { worker: "pim.packshot", verdict: "review", task: "42", sort: "-score", page: "3", sku: "A-1", score_min: "0.2", score_max: "0.8", history: "1" };
     expect(filtersToQuery(queryToFilters(query))).toEqual(query);
     expect(filtersToQuery(queryToFilters({}))).toEqual({});
   });
 });
 
 describe("API params", () => {
-  const filters = queryToFilters({ worker: "w", verdict: "pass", reason: "replace_size", sku: "A-1", task: "7", sort: "score", page: "2" });
+  const filters = queryToFilters({
+    worker: "w", verdict: "pass", reason: "replace_size", sku: "A-1", task: "7", sort: "score", page: "2",
+    score_min: "0.2", score_max: "0.8", history: "1",
+  });
 
   it("maps the filters to the contract's names", () => {
     expect(resultsParams(filters)).toEqual({
-      worker: "w", verdict: "pass", reason: "replace_size", subject_ref: "A-1", task: 7, ordering: "score", page: 2, page_size: 20,
+      worker: "w", verdict: "pass", reason: "replace_size", search: "A-1", task: 7, score_min: 0.2, score_max: 0.8, latest: false,
+      ordering: "score", page: 2, page_size: 20,
     });
   });
 
   it("leaves verdict, ordering and paging out of the totals", () => {
-    expect(totalsParams(filters)).toEqual({ worker: "w", reason: "replace_size", subject_ref: "A-1", task: 7 });
+    expect(totalsParams(filters)).toEqual({
+      worker: "w", reason: "replace_size", search: "A-1", task: 7, score_min: 0.2, score_max: 0.8, latest: false,
+    });
+  });
+
+  it("sends the score range only with a worker, latest only for the history view", () => {
+    const params = totalsParams(queryToFilters({ score_min: "0.5" }));
+    expect(params).toEqual({});
+    expect(totalsParams(queryToFilters({ worker: "w", score_min: "0.5" }))).toEqual({ worker: "w", score_min: 0.5 });
+    expect(queryToFilters({ score_min: "abc" }).score_min).toBe("");
+  });
+
+  it("exports the filters and the sort without paging", () => {
+    expect(exportParams(filters)).toEqual({
+      worker: "w", verdict: "pass", reason: "replace_size", search: "A-1", task: 7, score_min: 0.2, score_max: 0.8,
+      latest: false, ordering: "score",
+    });
+  });
+
+  it("opens a row's proposals on its product and worker version, every status", () => {
+    expect(proposalsQuery({ subject_ref: "SKU-1", worker_key: "pim.packshot_quality", worker_version: 2 })).toEqual({
+      subject_ref: "SKU-1", source: "worker:pim.packshot_quality@v2", status: "__all",
+    });
   });
 
   it("falls back to the newest first for a score order without a worker", () => {

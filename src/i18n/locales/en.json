@@ -3050,7 +3050,9 @@
       "feature_set": {
         "now": "Now",
         "proposed": "AI proposes"
-      }
+      },
+      "chip_product": "Product {sku}",
+      "chip_source": "Source {source}"
     },
     "status": {
       "pending": "Pending",
@@ -3829,7 +3831,7 @@
       "title": "Picture checks",
       "worker": "Worker",
       "all_workers": "All workers",
-      "sku": "SKU (exact)",
+      "sku": "SKU",
       "source": "Source",
       "reason": "Reason",
       "sort": "Sort",
@@ -3847,7 +3849,12 @@
       "sources": {
         "prefilter": "Prefilter",
         "workflow": "Workflow"
-      }
+      },
+      "score_from": "Score from",
+      "score_to": "Score to",
+      "history": "Show history",
+      "export": "Export CSV",
+      "proposals": "Proposals"
     }
   },
   "promo": {
