@@ -196,7 +196,7 @@ One model feeds every region of the shell (`src/composables/useNav.js`):
   page whose path does not nest under its list declares `meta.navParent: "<entry
   route>"` (points, forms, agreements, atlas and promo details / creates).
 - **Route tabs** — a screen whose sections are routes of their own (Enricher
-  Review: Proposals | Runs; Enricher Settings: profile, memory, templates, spawn
+  Review: Proposals | Runs | Picture checks (enrichment >= 2.5.0); Enricher Settings: profile, memory, templates, spawn
   rules) has one entry (it lights by path prefix) and shows the sections as
   `RouteTabs` in its `PageHeader` `tabs` slot (the tab sets live in `nav-routes.js`; a tab
   whose route's area the user cannot read is left out). Each tabbed page passes

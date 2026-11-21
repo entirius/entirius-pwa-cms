@@ -30,6 +30,10 @@
       </FormField>
 
       <TaskTargetPicker v-if="pickTargets" v-model="target" />
+      <p v-else-if="filters" class="fs-200 t-secondary m-0" data-testid="ai-task-filter-scope">
+        {{ $t("enrichment.ai.filter_scope", { count: filterCount }) }}
+        <template v-if="filterCount > MAX_REFS">{{ $t("enrichment.studio.task.first_only", { max: MAX_REFS }) }}</template>
+      </p>
 
       <PicturePicker
         v-if="pictureSubject"
@@ -113,6 +117,7 @@ import { LANE_NOW, LANE_QUEUE, RUN_NOW_MAX, canRunNow, defaultLane, spawnToast }
 import { useMediaQuery } from "@/composables/useMediaQuery";
 import { pluralKey } from "@/utils/plural";
 import { MAX_TABLET_QUERY } from "@/utils/breakpoints";
+import { MAX_REFS } from "./taskTargets";
 
 const PICTURE_KINDS = ["video", "image"];
 const NO_CATALOG = { fields: [], languages: [] };
@@ -143,6 +148,10 @@ export default {
     // operator only adds what the action takes (instruction, variants).
     initialPicture: { type: String, default: "" },
     skus: { type: Array, default: () => [] },
+    // A run on every product matching a PIM filter scope (the grid's filters): `filters` = the adapter keys, `filterCount`
+    // = how many match. Queued only; `skus` is ignored.
+    filters: { type: Object, default: null },
+    filterCount: { type: Number, default: 0 },
     module: { type: String, default: "pim" },
     // The channel of a module other than PIM (the active PIM channel otherwise).
     subjectChannel: { type: String, default: "" },
@@ -154,7 +163,7 @@ export default {
   setup() {
     return {
       pimChannel: usePimChannelStore(), notify: useNotifyStore(), health: useConfigHealthStore(),
-      isPhone: useMediaQuery(MAX_TABLET_QUERY),
+      isPhone: useMediaQuery(MAX_TABLET_QUERY), MAX_REFS,
     };
   },
   data() {
@@ -220,10 +229,11 @@ export default {
       return this.pickTargets ? this.target.skus : this.skus;
     },
     runFilters() {
-      return this.pickTargets ? this.target.filters : null;
+      return this.pickTargets ? this.target.filters : this.filters;
     },
     runCount() {
-      return this.pickTargets ? this.target.count : this.skus.length;
+      if (this.pickTargets) return this.target.count;
+      return this.filters ? Math.min(this.filterCount, MAX_REFS) : this.skus.length;
     },
     startsFromPicture() {
       return PICTURE_KINDS.includes(this.kind);

@@ -1320,6 +1320,22 @@ const routes = [
     },
   },
 
+  // Picture checks: the verdicts of the comfy workers (enrichment >= 2.5.0), a third Review tab
+  {
+    path: "/enrichment/checks",
+    name: "EnrichmentChecks",
+    component: () =>
+      import(/* webpackChunkName: "enrichment" */ "../views/EnrichmentReview/ComfyResults.vue"),
+    meta: {
+      requiresAuth: true,
+      titleKey: "enrichment.checks.title",
+      panel: "enricher",
+      area: AREAS.ENRICHMENT_PROPOSALS,
+      module: "enrichment",
+      moduleVersion: "2.5.0",
+    },
+  },
+
   // Full-screen editor of one long text proposal (contract A3 § 1)
   {
     path: "/enrichment/edit/:proposalId",

@@ -12,12 +12,13 @@
 // PageHeader: `tabs` { idPrefix, sections: [{ route, labelKey, badge?, testid }] } from nav-routes.js; the page wraps
 // its body in `routeTabPanel(tabs, <its route name>)`. A section whose area (its route's `meta.area`) the user cannot
 // read is left out, as on Leads → Settings — the page's own tab always stays; a `badge` takes its number from the
-// nav counts.
+// nav counts; one with `requiresModule` / `minVersion` appears when the backend module has that version.
 import { computed } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import BasicTabs from "@/boots/BasicTabs/index.vue";
 import { useNavCounts } from "@/composables/useNav";
 import { useAccessStore } from "@/stores/access";
+import { useMuninStore } from "@/stores/munin";
 import { t } from "@/i18n";
 
 const props = defineProps({
@@ -29,7 +30,11 @@ const router = useRouter();
 const access = useAccessStore();
 const counts = useNavCounts();
 
-const readable = (section) => access.can(router.resolve({ name: section.route }).meta.area);
+// `requiresModule` (+ `minVersion`): the section needs that backend module at that version, as a nav entry does.
+const munin = useMuninStore();
+const available = ({ requiresModule, minVersion }) =>
+  !requiresModule || (munin.isModuleEnabled(requiresModule) && (!minVersion || munin.isModuleAtLeast(requiresModule, minVersion)));
+const readable = (section) => available(section) && access.can(router.resolve({ name: section.route }).meta.area);
 const options = computed(() =>
   props.tabs.sections.filter(readable).map((section) => ({
     value: section.route,

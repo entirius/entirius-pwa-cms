@@ -38,6 +38,7 @@ export const ENRICHMENT_REVIEW_TABS = {
   sections: [
     { route: "EnrichmentReview", labelKey: "enrichment.review.tabs.proposals", testid: "enrichment-tab-proposals" },
     { route: "EnrichmentRuns", labelKey: "enrichment.review.tabs.runs", testid: "enrichment-tab-runs" },
+    { route: "EnrichmentChecks", labelKey: "enrichment.review.tabs.checks", testid: "enrichment-tab-checks", requiresModule: "enrichment", minVersion: "2.5.0" },
   ],
 };
 export const ENRICHMENT_SETTINGS_TABS = {

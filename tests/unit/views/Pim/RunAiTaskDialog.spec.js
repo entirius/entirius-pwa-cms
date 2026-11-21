@@ -239,6 +239,17 @@ describe("RunAiTaskDialog", () => {
     expect(w.vm.values.target_languages).toEqual(["de"]);
   });
 
+  it("a filter scope of more than 500 products says one run takes the first 500, and counts 500", async () => {
+    const w = await openDialog({ filters: { attribute_filters: { packshot_check: "replace_size" } }, filterCount: 1200 });
+    expect(w.vm.runCount).toBe(500);
+    const note = w.find("[data-testid='ai-task-filter-scope']").text();
+    expect(note).toContain("1200");
+    expect(note).toContain("500");
+    const small = await openDialog({ filters: { search: "x" }, filterCount: 40 });
+    expect(small.vm.runCount).toBe(40);
+    expect(small.find("[data-testid='ai-task-filter-scope']").text()).not.toContain("first");
+  });
+
   it("runs one task over the SKUs and shows one link: the run on Runs, where its proposals show once it is done", async () => {
     mockSpawn.mockResolvedValue({ data: { id: 42, status: "open" } });
     const w = await openDialog();

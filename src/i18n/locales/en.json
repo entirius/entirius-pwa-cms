@@ -2799,7 +2799,15 @@
       "counts": {
         "proposed": "Proposed",
         "failed": "Failed",
-        "kept_edited": "Kept your edits"
+        "kept_edited": "Kept your edits",
+        "checked": "Checked",
+        "set": "Flagged",
+        "review": "To review",
+        "pass": "No issues",
+        "escalate": "Escalated",
+        "propose_picture": "New picture",
+        "cached": "From stored results",
+        "prefiltered": "No GPU"
       },
       "empty_filtered": "No tasks with this status",
       "show_all": "Show all tasks",
@@ -2814,7 +2822,8 @@
       "from_rule": "Started by a rule",
       "products_one": "1 product",
       "products_few": "{count} products",
-      "products_many": "{count} products"
+      "products_many": "{count} products",
+      "results": "Results"
     },
     "runs": {
       "show_all": "Show all {count} in Proposals"
@@ -2901,7 +2910,8 @@
       "title": "Enrichment Review",
       "tabs": {
         "proposals": "Proposals",
-        "runs": "Runs"
+        "runs": "Runs",
+        "checks": "Picture checks"
       },
       "filters": "Filters",
       "search_placeholder": "Search by name or SKU…",
@@ -3040,7 +3050,9 @@
       "feature_set": {
         "now": "Now",
         "proposed": "AI proposes"
-      }
+      },
+      "chip_product": "Product {sku}",
+      "chip_source": "Source {source}"
     },
     "status": {
       "pending": "Pending",
@@ -3190,7 +3202,9 @@
         "summary_few": "Runs on {count} images.",
         "summary_many": "Runs on {count} images.",
         "now_cap": "Run now takes at most {max} images at a time. Add this run to the queue instead."
-      }
+      },
+      "filter_scope": "{count} products matching the current filters",
+      "run_on_matching": "Run AI on all {count} matching"
     },
     "video": {
       "download": "Download video",
@@ -3812,6 +3826,35 @@
       "add": "Add next to the original",
       "replace": "Replace the original",
       "replace_hint": "The original picture is kept, so Undo can bring it back."
+    },
+    "checks": {
+      "title": "Picture checks",
+      "worker": "Worker",
+      "all_workers": "All workers",
+      "sku": "SKU",
+      "source": "Source",
+      "reason": "Reason",
+      "sort": "Sort",
+      "sort_newest": "Newest first",
+      "sort_score_asc": "Score, lowest first",
+      "sort_score_desc": "Score, highest first",
+      "verdict": "Verdict",
+      "task_chip": "Run #{id}",
+      "empty": "No picture checks",
+      "col_sku": "SKU",
+      "col_score": "Score",
+      "col_metrics": "Metrics",
+      "col_checked": "Checked",
+      "col_task": "Run",
+      "sources": {
+        "prefilter": "Prefilter",
+        "workflow": "Workflow"
+      },
+      "score_from": "Score from",
+      "score_to": "Score to",
+      "history": "Show history",
+      "export": "Export CSV",
+      "proposals": "Proposals"
     }
   },
   "promo": {
