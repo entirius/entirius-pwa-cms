@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.8.1] (2026-11-21)
+
 ### Fixed
 
 - Enricher, picture checks: the SKU of a result opens the product card on the checked picture (`?picture=<sha1>`): the
