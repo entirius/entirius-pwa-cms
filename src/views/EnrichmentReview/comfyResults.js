@@ -50,11 +50,11 @@ export function filtersToQuery(filters) {
   return query;
 }
 
-/** A score order needs a worker (the backend answers 400 otherwise): without one the newest first stands. */
+/** A score order is offered with a worker only (scores compare within one worker): without one the newest first stands. */
 export const effectiveSort = (filters) => (filters.sort !== DEFAULT_SORT && !filters.worker ? DEFAULT_SORT : filters.sort);
 
-/** `verdicts/` params: the filters of the list without verdict, ordering and paging. The score range needs a worker
- * (the backend answers 400 otherwise); `latest` is sent only for the history view (the default is the newest check of
+/** `verdicts/` params: the filters of the list without verdict, ordering and paging. The score range is sent with a worker
+ * only (scores compare within one worker); `latest` is sent only for the history view (the default is the newest check of
  * each product per worker). */
 export function totalsParams(filters) {
   const params = {};
@@ -104,4 +104,24 @@ export function exportParams(filters) {
  * (applied ones included, to find and undo them). */
 export function proposalsQuery(row) {
   return { subject_ref: row.subject_ref, source: `worker:${row.worker_key}@v${row.worker_version}`, status: "__all" };
+}
+
+/** The Picture checks query for one run's "Results": that run and its worker, with history (a product rechecked later
+ * would otherwise drop out of the run's own results). */
+export const runResultsQuery = (row) => ({ task: String(row.id), worker: row.type, history: "1" });
+
+const INPUT_KEYS = ["sku", "score_min", "score_max"];
+const typed = (value) => String(value ?? "").trim();
+
+/** The filters the typed fields make: trimmed, a score bound that is not a number left blank. */
+export function inputsPatch(inputs) {
+  const patch = Object.fromEntries(INPUT_KEYS.map((key) => [key, typed(inputs[key])]));
+  for (const key of ["score_min", "score_max"]) if (!Number.isFinite(Number(patch[key]))) patch[key] = "";
+  return patch;
+}
+
+/** The typed fields after the filters changed: an input whose trimmed value already equals its filter stays as typed
+ * (writing "low" back over "low " would eat the space), any other takes the filter's value. */
+export function syncInputs(inputs, filters) {
+  return Object.fromEntries(INPUT_KEYS.map((key) => [key, typed(inputs[key]) === String(filters[key] ?? "") ? inputs[key] ?? "" : filters[key] ?? ""]));
 }

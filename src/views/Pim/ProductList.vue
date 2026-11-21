@@ -107,7 +107,7 @@
           data-testid="ai-run-matching"
           @click="openAiTaskOnMatching"
         >
-          {{ $t("enrichment.ai.run_on_matching", { count: totalCount }) }}
+          {{ $t("enrichment.ai.run_on_matching", { count: Math.min(totalCount, MAX_REFS) }) }}
         </BasicButton>
         <span v-if="totalCount > 0" class="fs-200 t-muted" :class="{ 'ml-auto': !canRunOnMatching }"
           >{{ totalCount }} {{ $t("pim.products").toLowerCase() }}</span
@@ -263,7 +263,7 @@
       :initial-template="aiTemplate"
       :skus="aiSkus"
       :filters="aiFilters"
-      :filter-count="totalCount"
+      :filter-count="aiCount"
       @close="aiDialogOpen = false"
       @created="onSpawned"
       @template-saved="reloadAiTemplates"
@@ -297,6 +297,7 @@ import {
 import RunAiTaskDialog from "./components/enrichment/RunAiTaskDialog.vue";
 import { useAiWorkers } from "./components/enrichment/useAiWorkers";
 import { gridFilterScope } from "./gridScope";
+import { MAX_REFS } from "./components/enrichment/taskTargets";
 
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
 import GapStatusAlert from "./components/GapStatusAlert.vue";
@@ -337,7 +338,7 @@ export default {
     } = useAiWorkers();
     return {
       loader, notify, pimChannel, munin, search, debouncedFetch, categorySource,
-      aiWorkers, aiTemplates, aiWritable, aiUsable, reloadAiTemplates,
+      aiWorkers, aiTemplates, aiWritable, aiUsable, reloadAiTemplates, MAX_REFS,
     };
   },
   data() {
@@ -367,6 +368,10 @@ export default {
       aiTemplate: "",
       aiSkus: [],
       aiFilters: null,
+      aiCount: 0,
+      // The AI scope of the grid's filters as of the last finished read, and the sequence that keeps a late read out.
+      fetchedScope: null,
+      fetchSeq: 0,
     };
   },
   computed: {
@@ -530,17 +535,9 @@ export default {
       if (this.onlySourceGaps) count++;
       return count;
     },
-    // The grid's filters as an AI task scope; null when none is set or one (quality gaps) has no adapter key.
+    // The scope of the last finished list read (fetchProducts): it always matches the rows and the count on screen.
     matchingScope() {
-      if (this.gapSeverityFilter || this.onlySourceGaps) return null;
-      return gridFilterScope({
-        search: this.search,
-        activeFilter: this.activeFilter,
-        visibility: this.visibilityFilter,
-        productClass: this.productClassFilter,
-        category: this.categoryFilter,
-        attributeFilters: this.attributeFilters,
-      });
+      return this.fetchedScope;
     },
     canRunOnMatching() {
       return !!this.matchingScope && this.totalCount > 0 && this.aiWritable && this.aiUsable && !!this.aiWorkers.length;
@@ -578,7 +575,21 @@ export default {
     this.fetchProducts();
   },
   methods: {
+    // The grid's filters as an AI task scope; null when none is set or one (quality gaps) has no adapter key.
+    currentScope() {
+      if (this.gapSeverityFilter || this.onlySourceGaps) return null;
+      return gridFilterScope({
+        search: this.search,
+        activeFilter: this.activeFilter,
+        visibility: this.visibilityFilter,
+        productClass: this.productClassFilter,
+        category: this.categoryFilter,
+        attributeFilters: this.attributeFilters,
+      });
+    },
     async fetchProducts() {
+      const mine = ++this.fetchSeq;
+      const scope = this.currentScope();
       this.loading = true;
       try {
         const params = { page: this.currentPage, page_size: this.pageSize };
@@ -606,15 +617,18 @@ export default {
         }
 
         const { data } = await GET_Products(this.channelIdx, params);
+        if (mine !== this.fetchSeq) return;
         this.products = data.results || [];
         this.totalCount = data.count || 0;
+        this.fetchedScope = scope;
         this.hasQualityData = this.products.some(hasQualityFields);
         this.fetchSupplierStatuses();
         this.fetchQualityFindings();
       } catch (err) {
+        if (mine !== this.fetchSeq) return;
         notifyApiError(this.notify, err, this.$t("notifications.error"));
       } finally {
-        this.loading = false;
+        if (mine === this.fetchSeq) this.loading = false;
       }
     },
     async fetchFilterableFeatures() {
@@ -803,6 +817,7 @@ export default {
       this.aiTemplate = "";
       this.aiSkus = [];
       this.aiFilters = this.matchingScope;
+      this.aiCount = this.totalCount;
       this.aiDialogOpen = true;
     },
     onSpawned() {

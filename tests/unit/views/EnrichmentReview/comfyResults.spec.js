@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import {
-  effectiveSort, exportParams, filtersToQuery, proposalsQuery, formatMetrics, queryToFilters, resultsParams, totalsParams, verdictChips,
+  effectiveSort, exportParams, filtersToQuery, inputsPatch, proposalsQuery, runResultsQuery, syncInputs, formatMetrics, queryToFilters, resultsParams, totalsParams, verdictChips,
 } from "@/views/EnrichmentReview/comfyResults";
 
 describe("queryToFilters / filtersToQuery", () => {
@@ -83,5 +83,24 @@ describe("verdictChips", () => {
       { value: "", count: 4149 }, { value: "review", count: 120 }, { value: "pass", count: 3800 }, { value: "escalate", count: 40 },
     ]);
     expect(verdictChips(null)).toEqual([{ value: "", count: 0 }]);
+  });
+});
+
+describe("typed fields", () => {
+  it("applies every typed field together, trimmed, a non-number bound blank", () => {
+    expect(inputsPatch({ sku: " low ", score_min: 0.5, score_max: "x" })).toEqual({ sku: "low", score_min: "0.5", score_max: "" });
+    expect(inputsPatch({})).toEqual({ sku: "", score_min: "", score_max: "" });
+  });
+
+  it("writes an input back only when its trimmed value differs from the filter", () => {
+    const filters = { sku: "low", score_min: "", score_max: "0.9" };
+    expect(syncInputs({ sku: "low ", score_min: "", score_max: "0.9" }, filters)).toEqual({ sku: "low ", score_min: "", score_max: "0.9" });
+    expect(syncInputs({ sku: "other", score_min: "0.1", score_max: "0.9" }, filters)).toEqual({ sku: "low", score_min: "", score_max: "0.9" });
+  });
+});
+
+describe("runResultsQuery", () => {
+  it("opens the run's results with history, so a product rechecked later stays in", () => {
+    expect(runResultsQuery({ id: 9, type: "pim.packshot" })).toEqual({ task: "9", worker: "pim.packshot", history: "1" });
   });
 });

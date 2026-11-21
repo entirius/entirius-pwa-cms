@@ -294,6 +294,9 @@ import {
 const FocusMode = defineAsyncComponent(() => import("./FocusMode.vue"));
 
 const MODES = ["list", "product", "focus"];
+// The URL keys "Clear filters" drops, in one address change.
+const CLEARED_QUERY_KEYS = ["subject_ref", "source", "task"];
+const queryWithout = (query, keys) => Object.fromEntries(Object.entries(query).filter(([key]) => !keys.includes(key)));
 const DEFAULT_NARROWING = { target_module: "__all", target_kind: "__all", source: "__all", confidence_min: "", search: "", subject_ref: "" };
 
 const STATUS_VALUES = [
@@ -558,11 +561,8 @@ export default {
     },
     clearFilters() {
       Object.assign(this.filters, DEFAULT_NARROWING);
-      const query = { ...this.$route.query };
-      delete query.subject_ref;
-      delete query.source;
-      this.$router.replace({ path: this.$route.path, query });
-      this.clearTask();
+      this.$router.replace({ path: this.$route.path, query: queryWithout(this.$route.query, CLEARED_QUERY_KEYS) });
+      this.onFilterChange("task", "");
     },
     // A filter that arrived in the URL: dropped from the list and from the address.
     clearUrlFilter(field, empty) {

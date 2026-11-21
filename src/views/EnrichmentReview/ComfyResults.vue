@@ -41,13 +41,13 @@
             @update:model-value="(value) => setFilter({ worker: value })"
           />
           <BasicInput
-            v-model="skuInput"
+            v-model="inputs.sku"
             :placeholder="$t('enrichment.checks.sku')"
             :aria-label="$t('enrichment.checks.sku')"
             icon="search"
             class="comfy-results__search"
             data-testid="checks-sku"
-            @input="debouncedFetch(applySku)"
+            @input="debouncedFetch(applyInputs)"
           />
           <BasicSelect
             :model-value="filters.source"
@@ -56,34 +56,33 @@
             data-testid="checks-source"
             @update:model-value="(value) => setFilter({ source: value })"
           />
-          <BasicInput
-            v-model="reasonInput"
-            :placeholder="$t('enrichment.checks.reason')"
-            :aria-label="$t('enrichment.checks.reason')"
-            class="comfy-results__search"
+          <BasicSelect
+            :model-value="filters.reason"
+            :options="reasonOptions"
+            :floating-label="$t('enrichment.checks.reason')"
             data-testid="checks-reason"
-            @input="debouncedFetch(applyReason)"
+            @update:model-value="(value) => setFilter({ reason: value })"
           />
           <template v-if="filters.worker">
             <BasicInput
-              v-model="scoreMinInput"
+              v-model="inputs.score_min"
               type="number"
               step="0.01"
               :placeholder="$t('enrichment.checks.score_from')"
               :aria-label="$t('enrichment.checks.score_from')"
               class="comfy-results__score"
               data-testid="checks-score-min"
-              @input="debouncedFetch(applyScore)"
+              @input="debouncedFetch(applyInputs)"
             />
             <BasicInput
-              v-model="scoreMaxInput"
+              v-model="inputs.score_max"
               type="number"
               step="0.01"
               :placeholder="$t('enrichment.checks.score_to')"
               :aria-label="$t('enrichment.checks.score_to')"
               class="comfy-results__score"
               data-testid="checks-score-max"
-              @input="debouncedFetch(applyScore)"
+              @input="debouncedFetch(applyInputs)"
             />
           </template>
           <BasicCheckbox
@@ -171,7 +170,7 @@
 <script setup>
 // Enricher → Review → Picture checks (enrichment >= 2.5.0): the verdicts the comfy workers stored, one row per picture
 // checked. Filters live in the URL query (comfyResults.js), so a run's "Results" link and a reload land on the same view.
-import { computed, onMounted, ref, watch } from "vue";
+import { computed, onMounted, reactive, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import RouteTabs from "@/components/Navigation/RouteTabs.vue";
 import { ENRICHMENT_REVIEW_TABS, routeTabPanel } from "@/components/Navigation/nav-routes";
@@ -182,10 +181,11 @@ import { GET_ComfyResults, GET_ComfyResultsExport, GET_ComfyVerdicts, GET_Worker
 import { listOf } from "@/api/enrichment/listOf";
 import { formatDate } from "@/utils/format";
 import { resolveMediaUrl } from "@/utils/resolveMediaUrl";
+import { withStoredOption } from "@/utils/options";
 import { t } from "@/i18n";
 import {
-  DEFAULT_SORT, PAGE_SIZE, SOURCES, VERDICTS, effectiveSort, exportParams, filtersToQuery, formatMetrics, proposalsQuery, queryToFilters,
-  resultsParams, totalsParams, verdictChips, verdictTone,
+  DEFAULT_SORT, PAGE_SIZE, SOURCES, VERDICTS, effectiveSort, exportParams, filtersToQuery, inputsPatch, formatMetrics, proposalsQuery, queryToFilters,
+  resultsParams, syncInputs, totalsParams, verdictChips, verdictTone,
 } from "./comfyResults";
 
 const route = useRoute();
@@ -195,10 +195,8 @@ const tabPanel = routeTabPanel(ENRICHMENT_REVIEW_TABS, "EnrichmentChecks");
 const { debouncedFetch } = useSearchDebounce();
 
 const filters = ref(queryToFilters(route.query));
-const skuInput = ref(filters.value.sku);
-const reasonInput = ref(filters.value.reason);
-const scoreMinInput = ref(filters.value.score_min);
-const scoreMaxInput = ref(filters.value.score_max);
+// The typed fields (SKU, score range): applied to the URL together, after one pause.
+const inputs = reactive(syncInputs({}, filters.value));
 const workers = ref([]);
 const rows = ref([]);
 const count = ref(0);
@@ -215,6 +213,11 @@ const workerOptions = computed(() => [
   { value: "", label: t("enrichment.checks.all_workers") },
   ...workers.value.map((w) => ({ value: w.key, label: w.label || w.key })),
 ]);
+// The escalation reasons present under the other filters (`verdicts/` reasons), each with its count.
+const reasonOptions = computed(() => {
+  const reasons = Object.entries(totals.value?.reasons || {}).map(([reason, n]) => ({ value: reason, label: `${reason} (${n})` }));
+  return withStoredOption([{ value: "", label: t("common.all") }, ...reasons], filters.value.reason);
+});
 const sourceOptions = computed(() => [
   { value: "", label: t("common.all") },
   ...SOURCES.map((value) => ({ value, label: t(`enrichment.checks.sources.${value}`) })),
@@ -246,14 +249,13 @@ const chipLabel = (verdict) => (verdict ? verdictLabel(verdict) : t("common.all"
 const verdictLabel = (verdict) => (VERDICTS.includes(verdict) ? t(`enrichment.tasks.counts.${verdict}`) : verdict);
 
 function setFilter(patch, resetPage = true) {
-  const next = { ...filters.value, ...patch, ...(resetPage ? { page: 1 } : {}) };
+  // What is typed but not applied yet goes along, so a chip or select changed meanwhile never drops it.
+  const next = { ...filters.value, ...inputsPatch(inputs), ...patch, ...(resetPage ? { page: 1 } : {}) };
   // A different worker may not have the score order the list was on.
   if (patch.worker !== undefined && !next.worker && next.sort !== DEFAULT_SORT) next.sort = DEFAULT_SORT;
   router.replace({ path: route.path, query: filtersToQuery(next) });
 }
-const applySku = () => setFilter({ sku: skuInput.value.trim() });
-const applyScore = () => setFilter({ score_min: String(scoreMinInput.value ?? ""), score_max: String(scoreMaxInput.value ?? "") });
-const applyReason = () => setFilter({ reason: reasonInput.value.trim() });
+const applyInputs = () => setFilter({});
 // The Review's Proposals tab on this product and this worker version, every status.
 const openProposals = (row) => router.push({ name: "EnrichmentReview", query: proposalsQuery(row) });
 const pageActions = computed(() => [
@@ -276,10 +278,7 @@ async function exportCsv() {
   }
 }
 function clearFilters() {
-  skuInput.value = "";
-  reasonInput.value = "";
-  scoreMinInput.value = "";
-  scoreMaxInput.value = "";
+  Object.assign(inputs, { sku: "", score_min: "", score_max: "" });
   setFilter({ verdict: "", source: "", reason: "", sku: "", task: "", score_min: "", score_max: "", history: false });
 }
 
@@ -296,7 +295,11 @@ async function load() {
     count.value = list.data.count || 0;
     totals.value = verdicts.data;
   } catch (err) {
-    if (mine === seq) notifyApiError(notify, err, t("notifications.error"));
+    if (mine !== seq) return;
+    rows.value = [];
+    count.value = 0;
+    totals.value = null;
+    notifyApiError(notify, err, t("notifications.error"));
   } finally {
     if (mine === seq) loading.value = false;
   }
@@ -318,10 +321,8 @@ watch(
   (query) => {
     if (route.name !== "EnrichmentChecks") return;
     filters.value = queryToFilters(query);
-    skuInput.value = filters.value.sku;
-    reasonInput.value = filters.value.reason;
-    scoreMinInput.value = filters.value.score_min;
-    scoreMaxInput.value = filters.value.score_max;
+    // An input is written back only when it differs from the filter (a typed "low " stays as typed).
+    Object.assign(inputs, syncInputs(inputs, filters.value));
     load();
   }
 );

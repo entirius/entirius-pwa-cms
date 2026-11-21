@@ -32,6 +32,7 @@
       <TaskTargetPicker v-if="pickTargets" v-model="target" />
       <p v-else-if="filters" class="fs-200 t-secondary m-0" data-testid="ai-task-filter-scope">
         {{ $t("enrichment.ai.filter_scope", { count: filterCount }) }}
+        <template v-if="filterCount > MAX_REFS">{{ $t("enrichment.studio.task.first_only", { max: MAX_REFS }) }}</template>
       </p>
 
       <PicturePicker
@@ -116,6 +117,7 @@ import { LANE_NOW, LANE_QUEUE, RUN_NOW_MAX, canRunNow, defaultLane, spawnToast }
 import { useMediaQuery } from "@/composables/useMediaQuery";
 import { pluralKey } from "@/utils/plural";
 import { MAX_TABLET_QUERY } from "@/utils/breakpoints";
+import { MAX_REFS } from "./taskTargets";
 
 const PICTURE_KINDS = ["video", "image"];
 const NO_CATALOG = { fields: [], languages: [] };
@@ -161,7 +163,7 @@ export default {
   setup() {
     return {
       pimChannel: usePimChannelStore(), notify: useNotifyStore(), health: useConfigHealthStore(),
-      isPhone: useMediaQuery(MAX_TABLET_QUERY),
+      isPhone: useMediaQuery(MAX_TABLET_QUERY), MAX_REFS,
     };
   },
   data() {
@@ -231,7 +233,7 @@ export default {
     },
     runCount() {
       if (this.pickTargets) return this.target.count;
-      return this.filters ? this.filterCount : this.skus.length;
+      return this.filters ? Math.min(this.filterCount, MAX_REFS) : this.skus.length;
     },
     startsFromPicture() {
       return PICTURE_KINDS.includes(this.kind);

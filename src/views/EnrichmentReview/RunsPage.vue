@@ -132,6 +132,7 @@
 
 <script>
 import { useNotifyStore } from "@/stores/notify";
+import { useMuninStore } from "@/stores/munin";
 import { notifyApiError } from "@/composables/useNotify";
 import { GET_Task, GET_Tasks, GET_Templates, GET_Workers } from "@/api/enrichment/api";
 import { formatDate } from "@/utils/format";
@@ -144,6 +145,7 @@ import RunProposals from "./RunProposals.vue";
 import TaskQueueDrawer from "./TaskQueueDrawer.vue";
 import WorkerAlerts from "./WorkerAlerts.vue";
 import { loadProductNames, runName, runScope, runTitle } from "./runLabel";
+import { runResultsQuery } from "./comfyResults";
 import { needsRefresh, opensDrawer, orderedCounts, taskStatusTone } from "./taskProgress";
 import { useTaskRetry } from "./useTaskRetry";
 import { listOf } from "@/api/enrichment/listOf";
@@ -163,8 +165,9 @@ export default {
   components: { CostLabel, RouteTabs, RunProposals, TaskQueueDrawer, WorkerAlerts },
   setup() {
     const notify = useNotifyStore();
+    const munin = useMuninStore();
     const tabPanel = routeTabPanel(ENRICHMENT_REVIEW_TABS, "EnrichmentRuns");
-    return { notify, formatDate, ALL, isQueued, isRetryable, ENRICHMENT_REVIEW_TABS, tabPanel, ...useTaskRetry() };
+    return { notify, munin, formatDate, ALL, isQueued, isRetryable, ENRICHMENT_REVIEW_TABS, tabPanel, ...useTaskRetry() };
   },
   data() {
     return {
@@ -356,11 +359,12 @@ export default {
       if (next) this.onFilterChange(ALL);
     },
     // A picture check (comfy worker) keeps its verdicts: the Picture checks screen filtered to this run.
+    // Only where the backend has the results (enrichment >= 2.5.0).
     isComfy(row) {
-      return this.workers.some((w) => w.key === row.type && w.kind === "comfy");
+      return this.munin.isModuleAtLeast("enrichment", "2.5.0") && this.workers.some((w) => w.key === row.type && w.kind === "comfy");
     },
     openResults(row) {
-      this.$router.push({ name: "EnrichmentChecks", query: { task: String(row.id), worker: row.type } });
+      this.$router.push({ name: "EnrichmentChecks", query: runResultsQuery(row) });
     },
     openQueue(row) {
       this.queueTaskId = row.id;

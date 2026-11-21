@@ -61,3 +61,14 @@ describe("ComfyResults", () => {
     expect(wrapper.find("[data-testid='checks-verdict-pass']").attributes("label")).toContain("(3)");
   });
 });
+
+describe("ComfyResults reasons and failures", () => {
+  it("fills the reason select from the verdicts' reasons, all first", async () => {
+    mockVerdicts.mockResolvedValue({ data: { total: 2, verdicts: { escalate: 2 }, reasons: { replace_size: 2 } } });
+    const wrapper = mountPage();
+    await flushPromises();
+    expect(wrapper.vm.reasonOptions).toEqual([
+      { value: "", label: "All" }, { value: "replace_size", label: "replace_size (2)" },
+    ]);
+  });
+});
