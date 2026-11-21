@@ -99,7 +99,17 @@
           data-test="quality-toggle"
           @click="toggleQualitySensor"
         />
-        <span v-if="totalCount > 0" class="fs-200 t-muted ml-auto"
+        <BasicButton
+          v-if="canRunOnMatching"
+          variant="outline"
+          size="sm"
+          class="ml-auto"
+          data-testid="ai-run-matching"
+          @click="openAiTaskOnMatching"
+        >
+          {{ $t("enrichment.ai.run_on_matching", { count: totalCount }) }}
+        </BasicButton>
+        <span v-if="totalCount > 0" class="fs-200 t-muted" :class="{ 'ml-auto': !canRunOnMatching }"
           >{{ totalCount }} {{ $t("pim.products").toLowerCase() }}</span
         >
       </div>
@@ -252,6 +262,8 @@
       :templates="aiTemplates"
       :initial-template="aiTemplate"
       :skus="aiSkus"
+      :filters="aiFilters"
+      :filter-count="totalCount"
       @close="aiDialogOpen = false"
       @created="onSpawned"
       @template-saved="reloadAiTemplates"
@@ -284,6 +296,7 @@ import {
 } from "./quality";
 import RunAiTaskDialog from "./components/enrichment/RunAiTaskDialog.vue";
 import { useAiWorkers } from "./components/enrichment/useAiWorkers";
+import { gridFilterScope } from "./gridScope";
 
 import AiToolboxHint from "@/components/ConfigHealth/AiToolboxHint.vue";
 import GapStatusAlert from "./components/GapStatusAlert.vue";
@@ -353,6 +366,7 @@ export default {
       aiDialogOpen: false,
       aiTemplate: "",
       aiSkus: [],
+      aiFilters: null,
     };
   },
   computed: {
@@ -515,6 +529,21 @@ export default {
       if (this.gapSeverityFilter) count++;
       if (this.onlySourceGaps) count++;
       return count;
+    },
+    // The grid's filters as an AI task scope; null when none is set or one (quality gaps) has no adapter key.
+    matchingScope() {
+      if (this.gapSeverityFilter || this.onlySourceGaps) return null;
+      return gridFilterScope({
+        search: this.search,
+        activeFilter: this.activeFilter,
+        visibility: this.visibilityFilter,
+        productClass: this.productClassFilter,
+        category: this.categoryFilter,
+        attributeFilters: this.attributeFilters,
+      });
+    },
+    canRunOnMatching() {
+      return !!this.matchingScope && this.totalCount > 0 && this.aiWritable && this.aiUsable && !!this.aiWorkers.length;
     },
     paginationState() {
       return {
@@ -766,6 +795,14 @@ export default {
     openAiTask(templateKey) {
       this.aiTemplate = templateKey === CUSTOM_RUN ? "" : templateKey;
       this.aiSkus = this.selectedProducts.map((p) => p.sku);
+      this.aiFilters = null;
+      this.aiDialogOpen = true;
+    },
+    // Every product matching the grid's filters, not only the selected ones: the dialog's filter scope.
+    openAiTaskOnMatching() {
+      this.aiTemplate = "";
+      this.aiSkus = [];
+      this.aiFilters = this.matchingScope;
       this.aiDialogOpen = true;
     },
     onSpawned() {

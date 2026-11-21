@@ -6,6 +6,14 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+- Enricher, picture checks (backend enrichment 2.5.0, comfy workers): a "Picture checks" tab under Review lists the verdicts a
+  comfy worker stored (thumbnail, SKU, verdict, reason, score, metrics, source, run), with verdict totals as chips, worker,
+  source, reason, SKU and run filters (`?task=<id>`), a score sort and the filters in the URL; a comfy run has a "Results" action in
+  Runs; the Runs list shows the new counts (checked, the verdicts, from stored results, no GPU).
+- Enricher, spawn rules: the task type is picked from the active workers of the rule's module (the old three stay only when
+  the workers cannot be read).
+- PIM, products: with filters set the grid offers "Run AI on all N matching", a run on every product matching the grid's
+  filters (attribute, category, search, status, visibility, type, no media), not only the selected ones.
 - CRM, sender settings (U20–U25): a salesperson may have several mailboxes, each with a brand, CC and BCC lists (up to 10
   addresses each, replacing the single CC address) and an HTML signature with a preview; the mail footer is set per
   brand and language, with the text of its unsubscribe link and a preview of the link at `{{ unsubscribe }}` or under

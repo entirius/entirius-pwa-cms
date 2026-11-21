@@ -10,6 +10,13 @@ describe("orderedCounts", () => {
     ]);
     expect(orderedCounts(null)).toEqual([]);
   });
+
+  it("puts a picture check's checked and verdicts after failed, cached and prefiltered last", () => {
+    const counts = { prefiltered: 1, cached: 2, pass: 3, skipped: 9, review: 4, checked: 7, failed: 1, proposed: 4 };
+    expect(orderedCounts(counts).map(([key]) => key)).toEqual([
+      "proposed", "failed", "checked", "review", "pass", "cached", "prefiltered", "skipped",
+    ]);
+  });
 });
 
 describe("needsRefresh", () => {

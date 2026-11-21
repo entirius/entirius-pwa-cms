@@ -159,14 +159,17 @@ import { notifyApiError } from "@/composables/useNotify";
 import {
   DELETE_SpawnRule,
   GET_SpawnRule,
+  GET_Workers,
   PATCH_SpawnRule,
   POST_SpawnRule,
   POST_SpawnRuleRun,
 } from "@/api/enrichment/api";
 import { GET_GapDefinitions } from "@/api/pim/api";
 import { withStoredOption } from "@/utils/options";
+import { listOf } from "@/api/enrichment/listOf";
 
-const TASK_TYPES = ["fix-attribute", "fill-attribute", "translate"];
+// Only when the workers call fails: the task types of the first workers.
+const FALLBACK_TASK_TYPES = ["fix-attribute", "fill-attribute", "translate"];
 const KEY_PATTERN = /^[a-z0-9][a-z0-9_-]*$/;
 
 export default {
@@ -196,6 +199,7 @@ export default {
       limitStr: "",
       cooldownStr: "",
       checkOptions: [],
+      workers: null,
       loading: false,
       showDeleteConfirm: false,
     };
@@ -208,7 +212,9 @@ export default {
       return withStoredOption(this.checkOptions, this.form.check_key);
     },
     taskTypeOptions() {
-      const options = TASK_TYPES.map((t) => ({ label: this.taskTypeLabel(t), value: t }));
+      const options = this.workers
+        ? this.workers.map((w) => ({ label: w.label || w.key, value: w.key }))
+        : FALLBACK_TASK_TYPES.map((t) => ({ label: this.taskTypeLabel(t), value: t }));
       return withStoredOption(options, this.form.task_type, this.taskTypeLabel(this.form.task_type));
     },
     // "" = no channel scope: the rule runs for every channel.
@@ -239,6 +245,7 @@ export default {
     if (!this.pimChannel.channels?.length) this.pimChannel.fetchChannels?.();
     this.fetchChecks();
     if (!this.isCreate) await this.fetchRule();
+    await this.fetchWorkers();
   },
   methods: {
     // Task types are free strings on the backend; a type without a label shows its code.
@@ -263,6 +270,17 @@ export default {
         this.checkOptions = (data.results || []).map((d) => ({ label: d.key, value: d.key }));
       } catch {
         this.checkOptions = [];
+      }
+    },
+    // The task types are the active workers of the rule's module; `workers` stays null (the old three) on a failed call.
+    async fetchWorkers() {
+      try {
+        const { data } = await GET_Workers({ target_module: this.form.module });
+        this.workers = listOf(data);
+        // A new rule starts on a worker that exists, not on the old default.
+        if (this.isCreate && this.workers.length) this.form.task_type = this.workers[0].key;
+      } catch {
+        this.workers = null;
       }
     },
     async fetchRule() {

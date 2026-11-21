@@ -268,3 +268,15 @@ export const POST_SuggestFact = (proposalId, data) =>
 // 503 while the toolbox is down (the caller stays quiet).
 export const GET_UsageMonth = () =>
   enrichmentApi.get(`${ENR}/usage/month/`);
+
+// --- Picture checks (comfy workers, enrichment >= 2.5.0) ---
+
+// Stored verdicts, paged { count, next, previous, results }. params: worker, verdict (set|review|escalate|pass|
+// propose_picture), source (prefilter|workflow), reason, subject_ref (exact SKU), task, ordering (-checked_at default,
+// checked_at, score, -score; a score ordering needs `worker`, else 400), page, page_size (<= 100).
+export const GET_ComfyResults = (params) =>
+  enrichmentApi.get(`${ENR}/comfy-results/`, { params });
+
+// Verdict totals of the same filters (`verdict` ignored): { total, verdicts: { pass: 3800, review: 120, … } }.
+export const GET_ComfyVerdicts = (params) =>
+  enrichmentApi.get(`${ENR}/comfy-results/verdicts/`, { params });

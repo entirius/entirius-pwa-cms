@@ -88,6 +88,14 @@
             @click="retryTask(row)"
           />
           <IconButton
+            v-if="isComfy(row)"
+            icon="preview"
+            size="sm"
+            :label="$t('enrichment.tasks.results')"
+            :data-testid="`enrichment-task-results-${row.id}`"
+            @click="openResults(row)"
+          />
+          <IconButton
             icon="next"
             size="sm"
             :label="$t('enrichment.tasks.open')"
@@ -346,6 +354,13 @@ export default {
     async retryTask(row) {
       const next = await this.retry(row.raw);
       if (next) this.onFilterChange(ALL);
+    },
+    // A picture check (comfy worker) keeps its verdicts: the Picture checks screen filtered to this run.
+    isComfy(row) {
+      return this.workers.some((w) => w.key === row.type && w.kind === "comfy");
+    },
+    openResults(row) {
+      this.$router.push({ name: "EnrichmentChecks", query: { task: String(row.id), worker: row.type } });
     },
     openQueue(row) {
       this.queueTaskId = row.id;

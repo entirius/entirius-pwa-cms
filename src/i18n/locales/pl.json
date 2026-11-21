@@ -2798,7 +2798,15 @@
       "counts": {
         "proposed": "Zaproponowano",
         "failed": "Błędy",
-        "kept_edited": "Zachowano Twoje zmiany"
+        "kept_edited": "Zachowano Twoje zmiany",
+        "checked": "Sprawdzone",
+        "set": "Oznaczone",
+        "review": "Do przeglądu",
+        "pass": "Bez uwag",
+        "escalate": "Eskalowane",
+        "propose_picture": "Nowe zdjęcie",
+        "cached": "Z zapisanych",
+        "prefiltered": "Bez GPU"
       },
       "empty_filtered": "Brak zadań o tym statusie",
       "show_all": "Pokaż wszystkie zadania",
@@ -2813,7 +2821,8 @@
       "from_rule": "Uruchomione przez regułę",
       "products_one": "1 produkt",
       "products_few": "{count} produkty",
-      "products_many": "{count} produktów"
+      "products_many": "{count} produktów",
+      "results": "Wyniki"
     },
     "runs": {
       "show_all": "Pokaż wszystkie ({count}) w Propozycjach"
@@ -2900,7 +2909,8 @@
       "title": "Wzbogacanie treści",
       "tabs": {
         "proposals": "Propozycje",
-        "runs": "Uruchomienia"
+        "runs": "Uruchomienia",
+        "checks": "Kontrola zdjęć"
       },
       "filters": "Filtry",
       "search_placeholder": "Szukaj po nazwie lub SKU…",
@@ -3189,7 +3199,9 @@
         "summary_few": "Uruchomi się na {count} zdjęciach.",
         "summary_many": "Uruchomi się na {count} zdjęciach.",
         "now_cap": "Uruchom teraz obsłuży najwyżej {max} zdjęć naraz. Dodaj to uruchomienie do kolejki."
-      }
+      },
+      "filter_scope": "Produkty pasujące do bieżących filtrów: {count}",
+      "run_on_matching": "Uruchom AI na wszystkich pasujących ({count})"
     },
     "video": {
       "download": "Pobierz wideo",
@@ -3811,6 +3823,30 @@
       "add": "Dodaj obok oryginału",
       "replace": "Zastąp oryginał",
       "replace_hint": "Oryginalne zdjęcie zostaje zachowane, więc Cofnij może je przywrócić."
+    },
+    "checks": {
+      "title": "Kontrola zdjęć",
+      "worker": "Worker",
+      "all_workers": "Wszystkie workery",
+      "sku": "SKU (dokładnie)",
+      "source": "Źródło",
+      "reason": "Powód",
+      "sort": "Sortowanie",
+      "sort_newest": "Najnowsze",
+      "sort_score_asc": "Wynik rosnąco",
+      "sort_score_desc": "Wynik malejąco",
+      "verdict": "Werdykt",
+      "task_chip": "Zadanie #{id}",
+      "empty": "Brak kontroli zdjęć",
+      "col_sku": "SKU",
+      "col_score": "Wynik",
+      "col_metrics": "Metryki",
+      "col_checked": "Sprawdzono",
+      "col_task": "Zadanie",
+      "sources": {
+        "prefilter": "Prefiltr",
+        "workflow": "Workflow"
+      }
     }
   },
   "promo": {

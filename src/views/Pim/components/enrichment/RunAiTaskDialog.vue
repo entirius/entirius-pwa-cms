@@ -30,6 +30,9 @@
       </FormField>
 
       <TaskTargetPicker v-if="pickTargets" v-model="target" />
+      <p v-else-if="filters" class="fs-200 t-secondary m-0" data-testid="ai-task-filter-scope">
+        {{ $t("enrichment.ai.filter_scope", { count: filterCount }) }}
+      </p>
 
       <PicturePicker
         v-if="pictureSubject"
@@ -143,6 +146,10 @@ export default {
     // operator only adds what the action takes (instruction, variants).
     initialPicture: { type: String, default: "" },
     skus: { type: Array, default: () => [] },
+    // A run on every product matching a PIM filter scope (the grid's filters): `filters` = the adapter keys, `filterCount`
+    // = how many match. Queued only; `skus` is ignored.
+    filters: { type: Object, default: null },
+    filterCount: { type: Number, default: 0 },
     module: { type: String, default: "pim" },
     // The channel of a module other than PIM (the active PIM channel otherwise).
     subjectChannel: { type: String, default: "" },
@@ -220,10 +227,11 @@ export default {
       return this.pickTargets ? this.target.skus : this.skus;
     },
     runFilters() {
-      return this.pickTargets ? this.target.filters : null;
+      return this.pickTargets ? this.target.filters : this.filters;
     },
     runCount() {
-      return this.pickTargets ? this.target.count : this.skus.length;
+      if (this.pickTargets) return this.target.count;
+      return this.filters ? this.filterCount : this.skus.length;
     },
     startsFromPicture() {
       return PICTURE_KINDS.includes(this.kind);
