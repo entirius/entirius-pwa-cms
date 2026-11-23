@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- PIM, product list: "Translate" on the picked products sends their primary keys (`pk`, what the admin product list
+  returns) instead of the missing `id`; the translator got `[null, …]` and the dialog stopped at "Request validation
+  failed." on "Estimate cost".
+
 ## [3.8.1] (2026-11-21)
 
 ### Fixed

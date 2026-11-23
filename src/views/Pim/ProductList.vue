@@ -796,7 +796,7 @@ export default {
       this.selectedProducts = [];
     },
     openTranslateSelected() {
-      this.translateEntityIds = this.selectedProducts.map((p) => p.id);
+      this.translateEntityIds = this.selectedProducts.map((p) => p.pk);
       this.showTranslateDialog = true;
     },
     handleBulkAction(actionKey, value) {
