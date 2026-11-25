@@ -9,7 +9,8 @@ vi.mock("@/api/pim/api", () => ({
 }));
 vi.mock("@/stores/pimChannel", () => ({
   usePimChannelStore: () => ({
-    channels: [{ idx: "c1", name: "One" }, { idx: "c2", name: "Two" }],
+    channels: [{ idx: "c1", name: "One" }, { idx: "c2", name: "Two" },
+      { idx: "c3", name: "Three", inheritance_enabled: true }],
     activeChannelIdx: "c1",
     defaultChannelIdx: "c1",
     activeChannelLanguages: ["pl", "en"],
@@ -61,13 +62,28 @@ describe("AddToChannelDialog", () => {
     byTestId("pim-add-to-channel-submit").click();
     await flushPromises();
 
-    expect(radios()).toHaveLength(1);
+    expect(radios()).toHaveLength(2);
     expect(POST_AddToChannel).toHaveBeenCalledWith("c1", "SKU-1", { target_channel_idx: "c2", copy_content: true });
     expect(wrapper.emitted("added")).toEqual([["c2"]]);
   });
 
-  it("has nothing to confirm when the product is in every channel", async () => {
+  it("sends the inherit flags, images on by default, when the target channel inherits", async () => {
     await open(AddToChannelDialog, { channelIdx: "c1", sku: "SKU-1", presentInChannels: ["c1", "c2"] });
+    expect(byTestId("pim-add-inherit-images")).toBeNull();
+
+    radios()[0].click();
+    await flushPromises();
+    byTestId("pim-add-to-channel-submit").click();
+    await flushPromises();
+
+    expect(POST_AddToChannel).toHaveBeenCalledWith("c1", "SKU-1", {
+      target_channel_idx: "c3", copy_content: true,
+      inherit_attributes: false, inherit_descriptions: false, inherit_images: true,
+    });
+  });
+
+  it("has nothing to confirm when the product is in every channel", async () => {
+    await open(AddToChannelDialog, { channelIdx: "c1", sku: "SKU-1", presentInChannels: ["c1", "c2", "c3"] });
 
     expect(radios()).toHaveLength(0);
     expect(byTestId("pim-add-to-channel-submit")).toBeNull();

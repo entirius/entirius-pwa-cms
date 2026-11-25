@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- PIM, add to channel: when the target channel has inheritance, the dialog offers inherit attributes, descriptions and
+  images (images on by default) and sends them; before, a product added to such a channel got no pictures.
+
 ## [3.8.1] (2026-11-21)
 
 ### Fixed
