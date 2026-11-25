@@ -38,7 +38,7 @@ export default {
       copyContent: true,
       inheritAttributes: false,
       inheritDescriptions: false,
-      inheritImages: true,
+      inheritImages: false,
     };
   },
   computed: {
@@ -52,9 +52,11 @@ export default {
         (ch) => !this.presentInChannels.includes(ch.idx)
       );
     },
+    targetChannel() {
+      return this.pimChannel.channels.find((ch) => ch.idx === this.targetChannelIdx);
+    },
     targetInheritsEnabled() {
-      const target = this.pimChannel.channels.find((ch) => ch.idx === this.targetChannelIdx);
-      return target?.inheritance_enabled === true;
+      return this.targetChannel?.inheritance_enabled === true;
     },
     channelOptions() {
       return this.availableChannels.map((ch) => ({ label: `${ch.name} · ${ch.idx}`, value: ch.idx }));
@@ -73,10 +75,14 @@ export default {
       if (val) {
         this.targetChannelIdx = "";
         this.copyContent = true;
-        this.inheritAttributes = false;
-        this.inheritDescriptions = false;
-        this.inheritImages = true;
       }
+    },
+    // Pre-tick the flags from the target channel's default_inheritance_flags (PIM channel settings).
+    targetChannel(channel) {
+      const defaults = channel?.default_inheritance_flags || [];
+      this.inheritAttributes = defaults.includes("attributes");
+      this.inheritDescriptions = defaults.includes("descriptions");
+      this.inheritImages = defaults.includes("images");
     },
   },
   methods: {
