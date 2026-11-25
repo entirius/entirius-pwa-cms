@@ -10,7 +10,7 @@ vi.mock("@/api/pim/api", () => ({
 vi.mock("@/stores/pimChannel", () => ({
   usePimChannelStore: () => ({
     channels: [{ idx: "c1", name: "One" }, { idx: "c2", name: "Two" },
-      { idx: "c3", name: "Three", inheritance_enabled: true }],
+      { idx: "c3", name: "Three", inheritance_enabled: true, default_inheritance_flags: ["attributes", "images"] }],
     activeChannelIdx: "c1",
     defaultChannelIdx: "c1",
     activeChannelLanguages: ["pl", "en"],
@@ -44,6 +44,8 @@ async function open(component, props) {
 }
 
 const byTestId = (id) => document.querySelector(`[data-testid="${id}"]`);
+const inheritBoxes = () => Object.fromEntries(["attributes", "descriptions", "images"]
+  .map((flag) => [flag, byTestId(`pim-add-inherit-${flag}`).querySelector("input").checked]));
 const radios = () => [...document.querySelectorAll('[role="dialog"] input[type="radio"]')];
 
 beforeEach(() => vi.clearAllMocks());
@@ -67,19 +69,40 @@ describe("AddToChannelDialog", () => {
     expect(wrapper.emitted("added")).toEqual([["c2"]]);
   });
 
-  it("sends the inherit flags, images on by default, when the target channel inherits", async () => {
+  it("pre-ticks the inherit flags from the target channel's defaults and sends them", async () => {
     await open(AddToChannelDialog, { channelIdx: "c1", sku: "SKU-1", presentInChannels: ["c1", "c2"] });
     expect(byTestId("pim-add-inherit-images")).toBeNull();
 
     radios()[0].click();
     await flushPromises();
+    expect(inheritBoxes()).toEqual({ attributes: true, descriptions: false, images: true });
     byTestId("pim-add-to-channel-submit").click();
     await flushPromises();
 
     expect(POST_AddToChannel).toHaveBeenCalledWith("c1", "SKU-1", {
       target_channel_idx: "c3", copy_content: true,
-      inherit_attributes: false, inherit_descriptions: false, inherit_images: true,
+      inherit_attributes: true, inherit_descriptions: false, inherit_images: true,
     });
+  });
+
+  it("re-applies the target's defaults when the target changes, all off for a channel without defaults", async () => {
+    const wrapper = await open(AddToChannelDialog, { channelIdx: "c1", sku: "SKU-1", presentInChannels: ["c1"] });
+
+    radios()[1].click();
+    await flushPromises();
+    byTestId("pim-add-inherit-attributes").querySelector("input").click();
+    await flushPromises();
+    expect(inheritBoxes()).toEqual({ attributes: false, descriptions: false, images: true });
+
+    radios()[0].click();
+    await flushPromises();
+    expect(byTestId("pim-add-inherit-images")).toBeNull();
+    expect(wrapper.vm.inheritImages).toBe(false);
+    expect(wrapper.vm.inheritAttributes).toBe(false);
+
+    radios()[1].click();
+    await flushPromises();
+    expect(inheritBoxes()).toEqual({ attributes: true, descriptions: false, images: true });
   });
 
   it("has nothing to confirm when the product is in every channel", async () => {
