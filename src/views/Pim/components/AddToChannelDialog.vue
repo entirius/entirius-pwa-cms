@@ -36,6 +36,9 @@ export default {
     return {
       targetChannelIdx: "",
       copyContent: true,
+      inheritAttributes: false,
+      inheritDescriptions: false,
+      inheritImages: false,
     };
   },
   computed: {
@@ -48,6 +51,12 @@ export default {
       return this.pimChannel.channels.filter(
         (ch) => !this.presentInChannels.includes(ch.idx)
       );
+    },
+    targetChannel() {
+      return this.pimChannel.channels.find((ch) => ch.idx === this.targetChannelIdx);
+    },
+    targetInheritsEnabled() {
+      return this.targetChannel?.inheritance_enabled === true;
     },
     channelOptions() {
       return this.availableChannels.map((ch) => ({ label: `${ch.name} · ${ch.idx}`, value: ch.idx }));
@@ -68,16 +77,29 @@ export default {
         this.copyContent = true;
       }
     },
+    // Pre-tick the flags from the target channel's default_inheritance_flags (PIM channel settings).
+    targetChannel(channel) {
+      const defaults = channel?.default_inheritance_flags || [];
+      this.inheritAttributes = defaults.includes("attributes");
+      this.inheritDescriptions = defaults.includes("descriptions");
+      this.inheritImages = defaults.includes("images");
+    },
   },
   methods: {
     async confirmAdd() {
       if (!this.targetChannelIdx) return;
       try {
         this.loader.loaderStart();
-        await POST_AddToChannel(this.channelIdx, this.sku, {
+        const payload = {
           target_channel_idx: this.targetChannelIdx,
           copy_content: this.copyContent,
-        });
+        };
+        if (this.targetInheritsEnabled) {
+          payload.inherit_attributes = this.inheritAttributes;
+          payload.inherit_descriptions = this.inheritDescriptions;
+          payload.inherit_images = this.inheritImages;
+        }
+        await POST_AddToChannel(this.channelIdx, this.sku, payload);
         this.notify.spawnNotification({
           type: "positive",
           msg: this.$t("pim.added_to_channel", {
@@ -124,6 +146,13 @@ export default {
           <BasicRadioGroup v-model="targetChannelIdx" :options="channelOptions" />
         </FormField>
         <BasicCheckbox v-model="copyContent">{{ $t("pim.copy_from_current") }}</BasicCheckbox>
+        <FormField v-if="targetInheritsEnabled" :label="$t('pim.inheritance')">
+          <div class="flex-column gap-2">
+            <BasicCheckbox v-model="inheritAttributes" data-testid="pim-add-inherit-attributes">{{ $t("pim.inherit_attributes") }}</BasicCheckbox>
+            <BasicCheckbox v-model="inheritDescriptions" data-testid="pim-add-inherit-descriptions">{{ $t("pim.inherit_descriptions") }}</BasicCheckbox>
+            <BasicCheckbox v-model="inheritImages" data-testid="pim-add-inherit-images">{{ $t("pim.inherit_images") }}</BasicCheckbox>
+          </div>
+        </FormField>
       </template>
 
       <p v-else class="t-muted fs-200">

@@ -126,16 +126,18 @@
         >
           {{ ch.name + " (" + ch.idx + ")" }}
         </BasicCheckbox>
-        <BasicCheckbox
-          v-if="isChannelSelected(ch.idx)"
-          class="ml-6"
-          :model-value="getChannelOption(ch.idx, 'inherit')"
-          @update:model-value="
-            (on) => setChannelOption(ch.idx, 'inherit', on)
-          "
-        >
-          {{ $t("pim.inherit_translations") }}
-        </BasicCheckbox>
+        <template v-if="isChannelSelected(ch.idx) && ch.inheritance_enabled">
+          <BasicCheckbox
+            v-for="flag in inheritFlagOptions"
+            :key="flag.value"
+            class="ml-6"
+            :data-testid="`pim-create-inherit-${flag.value}`"
+            :model-value="hasChannelFlag(ch.idx, flag.value)"
+            @update:model-value="(on) => setChannelFlag(ch.idx, flag.value, on)"
+          >
+            {{ flag.label }}
+          </BasicCheckbox>
+        </template>
       </div>
     </BasicCard>
   </PageLayout>
@@ -211,6 +213,13 @@ export default {
         (ch) => ch.idx !== this.channelIdx
       );
     },
+    inheritFlagOptions() {
+      return [
+        { label: this.$t("pim.inherit_images"), value: "images" },
+        { label: this.$t("pim.inherit_attributes"), value: "attributes" },
+        { label: this.$t("pim.inherit_descriptions"), value: "descriptions" },
+      ];
+    },
   },
   watch: {
     "pimChannel.activeChannelIdx"() {
@@ -262,25 +271,41 @@ export default {
     isChannelSelected(idx) {
       return !!this.selectedChannels[idx];
     },
-    getChannelOption(idx, key) {
-      return this.selectedChannels[idx]?.[key] ?? true;
+    hasChannelFlag(idx, flag) {
+      return !!this.selectedChannels[idx]?.flags.includes(flag);
+    },
+    // Inherit flags pre-ticked from the channel's default_inheritance_flags (PIM channel settings).
+    channelDefaultFlags(idx) {
+      const channel = this.pimChannel.channels.find((ch) => ch.idx === idx);
+      return channel?.inheritance_enabled ? [...(channel.default_inheritance_flags || [])] : [];
     },
     toggleChannel(idx, selected) {
       if (selected) {
         this.selectedChannels = {
           ...this.selectedChannels,
-          [idx]: { inherit: true },
+          [idx]: { flags: this.channelDefaultFlags(idx) },
         };
       } else {
         const { [idx]: _, ...rest } = this.selectedChannels;
         this.selectedChannels = rest;
       }
     },
-    setChannelOption(idx, key, value) {
+    setChannelFlag(idx, flag, on) {
       if (!this.selectedChannels[idx]) return;
-      this.selectedChannels = {
-        ...this.selectedChannels,
-        [idx]: { ...this.selectedChannels[idx], [key]: value },
+      const flags = this.selectedChannels[idx].flags.filter((f) => f !== flag);
+      if (on) flags.push(flag);
+      this.selectedChannels = { ...this.selectedChannels, [idx]: { flags } };
+    },
+    addToChannelPayload(targetIdx) {
+      const flags = this.selectedChannels[targetIdx]?.flags || [];
+      const inheritsValues = flags.includes("attributes") || flags.includes("descriptions");
+      return {
+        target_channel_idx: targetIdx,
+        // A fresh product has no content to copy; inherited values come from the default channel.
+        copy_content: !inheritsValues,
+        inherit_images: flags.includes("images"),
+        inherit_attributes: flags.includes("attributes"),
+        inherit_descriptions: flags.includes("descriptions"),
       };
     },
     async createProduct() {
@@ -311,13 +336,8 @@ export default {
         // Add to selected channels
         const channelIdxs = Object.keys(this.selectedChannels);
         for (const targetIdx of channelIdxs) {
-          const opts = this.selectedChannels[targetIdx];
           try {
-            await POST_AddToChannel(this.channelIdx, data.sku, {
-              target_channel_idx: targetIdx,
-              copy_content: true,
-              inherit: opts.inherit,
-            });
+            await POST_AddToChannel(this.channelIdx, data.sku, this.addToChannelPayload(targetIdx));
           } catch (err) {
             this.notify.spawnNotification({
               type: "warning",
