@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.8.2] (2026-11-26)
+
 ### Fixed
 
 - Pages, legal page: the Text section is offered for a legal page (`doc_type:legal-page`), so a legal page can hold
