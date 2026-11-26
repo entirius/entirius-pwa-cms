@@ -93,7 +93,8 @@
             ["doc_type:static-page"],
             ["doc_type:blog-post"],
             ["doc_type:product-rich-content"],
-            ["doc_type:category-rich-content"]
+            ["doc_type:category-rich-content"],
+            ["doc_type:legal-page"]
           ]
         },
         {
