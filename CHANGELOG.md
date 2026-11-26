@@ -6,6 +6,9 @@ All notable changes to this project will be documented in this file.
 
 ### Fixed
 
+- Pages, legal page: the Text section is offered for a legal page (`doc_type:legal-page`), so a legal page can hold
+  the one section-text with one Text + button tile that django-agreements needs; before, the Builder added a section
+  without a type.
 - PIM, add to channel: when the target channel has inheritance, the dialog offers inherit attributes, descriptions and
   images, pre-ticked from the target channel's `default_inheritance_flags` (re-applied when the target changes), and
   sends them; before, a product added to such a channel got no pictures.
