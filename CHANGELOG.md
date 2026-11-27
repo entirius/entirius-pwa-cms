@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+## [3.9.0] (2026-11-27)
+
 ### Added
 
 - Pages, Video section: an optional cover image (`images_set`, the same image picker, stored shape and alt/title as the
