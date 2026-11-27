@@ -255,7 +255,8 @@
         {
           "variants_group": [
             ["core_type:section-banner"],
-            ["core_type:section-mini-banner"]
+            ["core_type:section-mini-banner"],
+            ["core_type:section-video"]
           ],
           "related_options": null
         }
