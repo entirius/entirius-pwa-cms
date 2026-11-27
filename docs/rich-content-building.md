@@ -84,7 +84,7 @@ The default `__core_config.json` ships 17 section types. All available for `stat
 | `section-accordion` | Accordion | 1 | dye | Expandable FAQ. Tiles: `tile-accordion` (with group-fields) |
 | `section-table` | Table | 1 | — | Data table layout. Tiles: `tile-text` |
 | `section-form` | Form | — | — | Contact/product/advices form. Tiles: `tile-form` |
-| `section-video` | Video | 2 | — | Embedded video. Tiles: `tile-img-btn` |
+| `section-video` | Video | 2 | video_field, images_set | Video link with an optional cover image (images_set on section). Tiles: `tile-img-btn` |
 
 ### Special
 
@@ -242,7 +242,7 @@ Max 1 button per group entry. Storefront renders `internal` -> `router.push`, `e
 
 Upload via admin API: `POST /api-admin/contentdb/v1/images/`. The storefront normalizes images with `builderImgNormalizer`.
 
-**Section support:** banner, mini-banner
+**Section support:** banner, mini-banner, video (optional cover)
 
 **Tile support:** tile-hero, tile-img-btn, tile-image, tile-title-desc-img, tile-testimonial, tile-blog-extension
 

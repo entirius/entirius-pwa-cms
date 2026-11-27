@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Added
+
+- Pages, Video section: an optional cover image (`images_set`, the same image picker, stored shape and alt/title as the
+  Banner section); the section preview in the Builder shows it, nothing is loaded from YouTube.
+
 ## [3.8.2] (2026-11-26)
 
 ### Fixed
