@@ -1,7 +1,7 @@
 <template>
   <BasicCard :title="$t('leads.tasks.open_title')" gap :data-testid="`${prefix}-tasks`">
     <template #actions>
-      <ActionBar :actions="actions" :labelled="false" />
+      <ActionBar :actions="actions" />
     </template>
     <Loader v-if="loading" block />
     <DataTable

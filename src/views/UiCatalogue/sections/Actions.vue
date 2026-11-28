@@ -50,7 +50,7 @@
       <CatalogueCell id="action-bar-desktop-default" label="utilities · secondary · primary (R5)">
         <ActionBar :actions="pageActions" />
       </CatalogueCell>
-      <CatalogueCell id="action-bar-mobile-default" label="own row with „Akcje” below 768 px" mobile>
+      <CatalogueCell id="action-bar-mobile-default" label="own row, text buttons share its width below 768 px" mobile>
         <ActionBar :actions="pageActions" />
       </CatalogueCell>
       <CatalogueCell id="action-bar-single-default" label="one action">

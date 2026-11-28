@@ -75,9 +75,10 @@ describe("ActionBar", () => {
     expect(save.onClick).toHaveBeenCalledOnce();
   });
 
-  it("carries the visible label 'Akcje' for the mobile row and appends slot content", () => {
+  it("names the group for assistive tech only (no visible caption) and appends slot content", () => {
     const wrapper = mountBar([], { default: "<button class='own'>Own</button>" });
-    expect(wrapper.find(".action-bar__label").text()).toBe("common.actions");
+    expect(wrapper.attributes("aria-label")).toBe("common.actions");
+    expect(wrapper.text()).not.toContain("common.actions");
     expect(wrapper.find(".action-bar__actions .own").exists()).toBe(true);
   });
 
@@ -87,11 +88,5 @@ describe("ActionBar", () => {
     expect(warn).not.toHaveBeenCalled();
     mountBar([action("primary", "Zapisz"), action("primary", "Publikuj")]);
     expect(warn).toHaveBeenCalledWith(expect.stringContaining("2 primary actions"));
-  });
-
-  it("drops the actions caption where it sits in its own footer (a dialog)", () => {
-    expect(mountBar([action("primary", "Start")]).find(".action-bar__label").exists()).toBe(true);
-    const bare = mount(ActionBar, { props: { actions: [action("primary", "Start")], labelled: false }, global: { stubs } });
-    expect(bare.find(".action-bar__label").exists()).toBe(false);
   });
 });

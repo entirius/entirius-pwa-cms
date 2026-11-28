@@ -18,12 +18,12 @@ describe("Leads deals helpers", () => {
       { currency: "EUR", one_off: "500.00", recurring: "0.00" },
       { currency: "PLN", one_off: "12400.00", recurring: "800.00" },
     ];
-    expect(totalLines(totals)).toEqual(["500.00 EUR", "12400.00 PLN", "800.00 PLN / month"]);
+    expect(totalLines(totals)).toEqual(["€500.00", "PLN\u00a012,400.00", "PLN\u00a0800.00 / month"]);
     expect(totalLines([])).toEqual([]);
   });
 
   it("a deal's value reads one-off, then recurring with its period", () => {
-    expect(dealValue({ value_one_off: "12400.00", value_recurring: "100.00", recurring_period: "year", currency: "PLN" })).toBe("12400.00 PLN · 100.00 PLN / year");
+    expect(dealValue({ value_one_off: "12400.00", value_recurring: "100.00", recurring_period: "year", currency: "PLN" })).toBe("PLN\u00a012,400.00 · PLN\u00a0100.00 / year");
     expect(dealValue({ value_one_off: null, value_recurring: null, currency: null })).toBe("");
   });
 

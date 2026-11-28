@@ -1,7 +1,7 @@
 <template>
   <BasicCard :title="$t('leads.company.details')" gap data-testid="company-details">
     <template #actions>
-      <ActionBar v-if="editing" :labelled="false">
+      <ActionBar v-if="editing">
         <BasicButton variant="secondary" :disabled="saving" data-testid="company-details-cancel" @click="editing = false">
           {{ $t("leads.company.cancel") }}
         </BasicButton>

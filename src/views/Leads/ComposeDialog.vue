@@ -28,7 +28,7 @@
       <p class="t-muted m-0">{{ $t("leads.compose.footer_note") }}</p>
     </div>
     <template #footer>
-      <ActionBar :labelled="false">
+      <ActionBar>
         <BasicButton :disabled="sending" data-testid="compose-cancel" @click="askClose(false)">{{ $t("common.cancel") }}</BasicButton>
         <BasicTooltip v-if="blocked || !recipients.length" :text="blocked ? blockReasonLabel(blocked) : $t('leads.compose.no_contact')">
           <BasicButton variant="primary" disabled data-testid="compose-send">{{ $t("leads.compose.send") }}</BasicButton>

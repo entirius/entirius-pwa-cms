@@ -1,11 +1,11 @@
 <template>
   <BasicCard :title="$t('leads.deals.title')" gap data-testid="company-deals">
     <template #actions>
-      <ActionBar v-if="deals.length" :actions="actions" :labelled="false" />
+      <ActionBar v-if="deals.length" :actions="actions" />
     </template>
     <Loader v-if="loading" block />
     <EmptyState v-else-if="!deals.length" icon="empty" size="md" :title="$t('leads.deals.empty')">
-      <ActionBar :actions="actions" :labelled="false" />
+      <ActionBar :actions="actions" />
     </EmptyState>
     <div v-else class="flex-column gap-4">
       <div class="filter-chip-row">

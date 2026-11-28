@@ -107,7 +107,7 @@ onMounted(load);
   padding-bottom: var(--space-5);
   grid-auto-flow: column;
   grid-auto-columns: minmax(7rem, 1fr);
-  gap: var(--space-4);
+  gap: var(--space-3);
   align-items: stretch;
   overflow-x: auto;
 }

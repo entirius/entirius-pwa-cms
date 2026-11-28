@@ -163,7 +163,8 @@ Traps:
 - **R5 Action order.** Page and dialog actions are right-aligned and ordered by importance from the right. The
   primary action (accent fill, one per page or dialog) is rightmost, the secondary (outline) comes next, then the
   icon-only utilities. Every screen uses the same order: `ActionBar` renders it from the actions' `role`, and on a
-  phone takes its own row labelled „Akcje”. Page actions go into PageHeader `actions` as an `ActionBar`: right of
+  phone takes its own row, no caption, its text buttons sharing the full width evenly (a line that cannot hold
+  them wraps and fills the width too). Page actions go into PageHeader `actions` as an `ActionBar`: right of
   the title on desktop, own row below 1024 px.
 - **R6 One icon, one meaning.** An icon stands for one action across the CMS, and it is never reused for another
   action (reorder `arrows-up-down` ≠ menu `grip` ≠ drag handle `grip-vertical`). Pick the meaning from `$icons`

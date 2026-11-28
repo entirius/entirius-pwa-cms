@@ -64,15 +64,12 @@ function forwardMove(company, stageKey) {
 }
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "./board";
+
+// The companies board scrolls sideways past its columns (Board.vue): a column keeps a readable width.
 .column {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
   min-width: 240px;
-  padding: var(--space-5);
-  border-radius: var(--radius-lg);
-  background: var(--surface-raised);
 }
 .column__head {
   display: flex;
@@ -80,9 +77,6 @@ function forwardMove(company, stageKey) {
   gap: var(--space-2);
 }
 .column__cards {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-5);
   min-height: 80px;
 }
 </style>
