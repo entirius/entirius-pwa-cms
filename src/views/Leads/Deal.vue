@@ -210,9 +210,19 @@ async function remove() {
 watch(() => route.params.id, (id) => route.name === "LeadsDeal" && id && open(id), { immediate: true });
 </script>
 
-<style scoped>
+<style lang="scss" scoped>
+@import "@/assets/scss/utils/media-query";
+
+// The floating label hangs above the select without layout height: the top margin is its room (company card's
+// selects keep the same), so it never touches the header's actions. A phone gives the select the full row, as the
+// action buttons above it.
 .deal__stage {
   max-width: 14rem;
+  margin-top: var(--space-4);
+
+  @include max-tablet {
+    max-width: none;
+  }
 }
 .deal__events {
   padding-left: var(--space-4);

@@ -100,7 +100,7 @@
           <template #trail>
             <div class="step-panel__decide">
               <span v-if="saveNote" class="fs-250 t-secondary" :data-testid="saveNote.testid">{{ saveNote.text }}</span>
-              <ActionBar :actions="decisions" :labelled="false" />
+              <ActionBar :actions="decisions" />
             </div>
           </template>
         </ProposalCorrection>
@@ -110,7 +110,7 @@
           </BasicButton>
           <div class="step-panel__decide">
             <span v-if="saveNote" class="fs-250 t-secondary" :data-testid="saveNote.testid">{{ saveNote.text }}</span>
-            <ActionBar :actions="decisions" :labelled="false" />
+            <ActionBar :actions="decisions" />
           </div>
         </div>
       </footer>

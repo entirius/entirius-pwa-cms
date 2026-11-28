@@ -21,7 +21,7 @@
       </ul>
     </div>
     <template #footer>
-      <ActionBar :labelled="false">
+      <ActionBar>
         <BasicButton data-testid="sendcheck-close" @click="$emit('close')">{{ $t("common.close") }}</BasicButton>
       </ActionBar>
     </template>

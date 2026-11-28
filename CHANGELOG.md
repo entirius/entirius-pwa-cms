@@ -7,6 +7,7 @@ All notable changes to this project will be documented in this file.
 ### Fixed
 
 - CRM, deals: the deal value and the column totals are written in the UI language (`18 500,00 zł` in Polish, `PLN 18,500.00` in English) through the new `formatMoney` (Intl with the UI locale and the ISO code), in the list, the card and the board; a currency code Intl does not know falls back to the old format.
+- Phone layout of every action row (`ActionBar`): no grey "Actions" caption above the buttons, and the text buttons share the full row evenly; a row that cannot hold them wraps and every line fills the width, so a deal card reads ⋮ · Mark lost on one line and Mark won full width under it instead of ragged widths. The `labelled` prop is gone (nothing to drop any more). Deal card: the stage select gets room for its label (as on the company card) and the full width on a phone.
 
 ## [3.9.0] (2026-11-27)
 

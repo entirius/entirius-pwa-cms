@@ -113,7 +113,7 @@
           <span>{{ problemOf(drawerRow) }}</span>
         </p>
         <p class="approvals__preview m-0">{{ drawerRow.body_preview }}</p>
-        <ActionBar :labelled="false" :actions="drawerActions" />
+        <ActionBar :actions="drawerActions" />
       </div>
     </SideDrawer>
 

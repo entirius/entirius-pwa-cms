@@ -175,8 +175,8 @@ and one meaning per glyph (unit test). A new meaning adds its glyph to `fa-icons
   `form` = the id of a form the header button submits from outside it — native checks, the form's submit handler,
   and Enter in a field presses it), `role` `utility` (an IconButton, `icon` required) · `secondary` · `danger` ·
   `primary` (one at most, a second warns in dev); extra controls go into the default slot, already in order.
-  Right-aligned, gap 12 px (8 px on a phone); below 768 px it takes its own row: the label „Akcje” above the actions, left-aligned (Figma S7).
-  `labelled` false drops that label where the bar is already a footer of its own (BasicModal, ConfirmDialog).
+  Right-aligned, gap 12 px (8 px on a phone); below 768 px it takes its own row with no caption, and its text buttons
+  share the full width evenly; a line that cannot hold them wraps and fills the width too (icon buttons keep their square).
   On a read-only page only the utilities stay, minus a `danger` one; `mutates` (true/false) overrides the role.
 - **`FloatingActions`** — FAB 44 px `accent-fill`, 24 px inset from 1024 px up; below it 16 px inset and 16 px above
   the tab bar, `data-fid="fab"`;

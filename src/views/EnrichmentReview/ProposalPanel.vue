@@ -92,7 +92,7 @@
       </p>
     </FormField>
 
-    <ActionBar :actions="actions" :labelled="false" />
+    <ActionBar :actions="actions" />
   </article>
 </template>
 
