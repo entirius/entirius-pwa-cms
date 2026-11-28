@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 ## [Unreleased]
 
+### Fixed
+
+- CRM, deals: the deal value and the column totals are written in the UI language (`18 500,00 zł` in Polish, `PLN 18,500.00` in English) through the new `formatMoney` (Intl with the UI locale and the ISO code), in the list, the card and the board; a currency code Intl does not know falls back to the old format.
+
 ## [3.9.0] (2026-11-27)
 
 ### Added

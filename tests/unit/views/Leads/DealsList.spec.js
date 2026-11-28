@@ -102,7 +102,7 @@ describe("Leads → Deals list", () => {
     expect(rowSelects.every((select) => !select.props("floatingLabel"))).toBe(true);
     const summary = table(wrapper).props("rows")[0].summary;
     expect(summary).toBe("Acme");
-    expect(table(wrapper).props("rows")[0].one_off).toContain("12400.00");
+    expect(table(wrapper).props("rows")[0].one_off).toContain("12,400.00");
   });
 
   it("?view=board on a phone lands on the list and says the board is for a larger screen", async () => {
@@ -236,7 +236,7 @@ describe("Leads → Deals list", () => {
   it("on a phone the row's second line carries the value", async () => {
     const matchMedia = vi.spyOn(window, "matchMedia").mockImplementation((query) => ({ matches: query.includes("max-width"), addEventListener() {}, removeEventListener() {} }));
     const wrapper = await mounted();
-    expect(wrapper.get('[data-testid="deal-row"]').text()).toContain("Acme · 12400.00 PLN");
+    expect(wrapper.get('[data-testid="deal-row"]').text()).toContain("Acme · PLN\u00a012,400.00");
     matchMedia.mockRestore();
   });
 

@@ -1,7 +1,7 @@
 import { t } from "@/i18n";
 import { GET_LeadsChannel } from "@/api/leads/api";
 import { GET_RegionalCurrencies } from "@/api/regional/api";
-import { formatCost } from "@/utils/format";
+import { formatMoney } from "@/utils/format";
 import { activityText } from "@/utils/leadsLabels";
 
 // Deals of the Leads CRM (plan 16): stage kinds, money lines, the stages a deal closes in. Amounts stay decimal
@@ -28,9 +28,9 @@ export const stageOptions = (stages) => stages.map((stage) => ({ value: stage.ke
 const isZero = (amount) => !amount || /^0*\.?0*$/.test(amount);
 
 export const recurringText = (amount, currency, period = "month") =>
-  t(`leads.deal.per_${period === "year" ? "year" : "month"}`, { value: formatCost(amount, currency) });
+  t(`leads.deal.per_${period === "year" ? "year" : "month"}`, { value: formatMoney(amount, currency) });
 
-export const oneOffText = (deal) => (isZero(deal.value_one_off) ? "" : formatCost(deal.value_one_off, deal.currency || ""));
+export const oneOffText = (deal) => (isZero(deal.value_one_off) ? "" : formatMoney(deal.value_one_off, deal.currency || ""));
 
 export const recurringValueText = (deal) =>
   isZero(deal.value_recurring) ? "" : recurringText(deal.value_recurring, deal.currency || "", deal.recurring_period);
@@ -40,7 +40,7 @@ export const dealValue = (deal) => [oneOffText(deal), recurringValueText(deal)].
 
 // A board column's totals (the API sums recurring values per month): one-off lines, then recurring lines, by currency.
 export function totalLines(totals = []) {
-  const oneOff = totals.filter((row) => !isZero(row.one_off)).map((row) => formatCost(row.one_off, row.currency));
+  const oneOff = totals.filter((row) => !isZero(row.one_off)).map((row) => formatMoney(row.one_off, row.currency));
   const recurring = totals.filter((row) => !isZero(row.recurring)).map((row) => recurringText(row.recurring, row.currency));
   return [...oneOff, ...recurring];
 }

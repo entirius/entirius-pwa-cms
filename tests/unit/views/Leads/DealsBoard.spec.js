@@ -53,7 +53,7 @@ describe("Leads → Deals board", () => {
     const wrapper = await mounted();
     expect(leads.GET_DealBoard).toHaveBeenCalledWith({ owner: "me" });
     const lines = byTestid(column(wrapper, "qualified"), "deals-column-totals").findAll("span").map((span) => span.text());
-    expect(lines).toEqual(["500.00 EUR", "12400.00 PLN", "800.00 PLN / month"]);
+    expect(lines).toEqual(["€500.00", "PLN\u00a012,400.00", "PLN\u00a0800.00 / month"]);
     expect(byTestid(column(wrapper, "qualified"), "deals-column-all").exists()).toBe(true);
     expect(byTestid(column(wrapper, "won"), "deals-column-all").exists()).toBe(false);
   });

@@ -19,6 +19,29 @@ export function formatCost(amount, currency = "") {
 }
 
 /**
+ * Format a money amount the way the UI language writes it: "18 500,00 zł" (PL), "PLN 18,500.00" (EN).
+ *
+ * Intl with the UI locale and the ISO 4217 code; a code Intl does not know falls back to `formatCost`
+ * ("18500.00 XYZ"), an amount without a currency is a grouped number with 2 decimals.
+ *
+ * @param {string|number|null|undefined} amount - decimal-ish input (the API sends decimal strings)
+ * @param {string} [currency] - ISO 4217 code
+ * @returns {string} "" for null/empty/NaN
+ */
+export function formatMoney(amount, currency = "") {
+  if (amount === null || amount === undefined || amount === "") return ""
+  const num = typeof amount === "string" ? parseFloat(amount) : amount
+  if (Number.isNaN(num)) return ""
+  const digits = { minimumFractionDigits: 2, maximumFractionDigits: 2 }
+  if (!currency) return new Intl.NumberFormat(uiLocale(), digits).format(num)
+  try {
+    return new Intl.NumberFormat(uiLocale(), { style: "currency", currency, ...digits }).format(num)
+  } catch {
+    return formatCost(amount, currency)
+  }
+}
+
+/**
  * Format an ISO datetime string into a compact label in the locale of the UI language.
  *
  * Default: short date + short time. Backend serializes datetimes as ISO 8601 with timezone
