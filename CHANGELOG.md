@@ -8,6 +8,7 @@ All notable changes to this project will be documented in this file.
 
 - CRM, deals: the deal value and the column totals are written in the UI language (`18 500,00 zł` in Polish, `PLN 18,500.00` in English) through the new `formatMoney` (Intl with the UI locale and the ISO code), in the list, the card and the board; a currency code Intl does not know falls back to the old format.
 - Phone layout of every action row (`ActionBar`): no grey "Actions" caption above the buttons, and the text buttons share the full row evenly; a row that cannot hold them wraps and every line fills the width, so a deal card reads ⋮ · Mark lost on one line and Mark won full width under it instead of ragged widths. The `labelled` prop is gone (nothing to drop any more). Deal card: the stage select gets room for its label (as on the company card) and the full width on a phone.
+- CRM boards (deals and companies, one shape in `board.scss`): compact cards (12 px padding, body-size title of at most three lines), the company name and the deal value stand out, owner and close date (type and last activity) never split mid-line, the column total is the column's headline number, and a won or lost column shows its total and values in the outcome's colour. Moving a card without dragging is one "Change stage" menu on both boards (`StageMenu.vue`; the companies board's stage select is gone, its trigger keeps `board-card-stage`, items are `board-card-move-<stage>`).
 
 ## [3.9.0] (2026-11-27)
 

@@ -18,13 +18,14 @@ vi.mock("vue-router", () => ({ useRouter: () => ({ push }) }));
 
 import Board from "@/views/Leads/Board.vue";
 import BoardColumn from "@/views/Leads/BoardColumn.vue";
-import { leadsFrame, setControl } from "./leadsFrame";
+import { leadsFrame } from "./leadsFrame";
 
 const stubs = {
   ...leadsFrame.stubs,
   draggable: { props: ["list"], template: "<div><slot v-for='el in list' name='item' :element='el' /></div>" },
   RouterLink: { template: "<a><slot /></a>" },
   FontAwesomeIcon: true,
+  BasicMenu: { name: "BasicMenu", props: ["items", "label", "placement"], emits: ["select"], template: "<div><slot name='trigger' /></div>" },
 };
 
 async function mountBoard() {
@@ -164,14 +165,13 @@ describe("Leads Board", () => {
     expect(push).not.toHaveBeenCalled();
   });
 
-  // Plan 53: the card's stage select is a BasicSelect with the floating label „Etap”; a pick moves the card.
-  it("the card's stage select moves the company through the transition", async () => {
+  // The card's "Change stage" is the deals board's menu (StageMenu): the other stages; a pick moves the card.
+  it("the card's Change stage menu lists the other stages and moves the company through the transition", async () => {
     api.POST_Transition.mockResolvedValue({ data: { stage: { key: "contacted" } } });
     const wrapper = await mountBoard();
-    const select = wrapper.findComponent('[data-testid="board-card-stage"]');
-    expect(select.props("floatingLabel")).toBe("leads.company.stage");
-    expect(select.props("options").map((option) => option.value)).toEqual(["new", "contacted"]);
-    await setControl(wrapper, "board-card-stage", "contacted");
+    const menu = column(wrapper, "new").findComponent({ name: "BasicMenu" });
+    expect(menu.props("items").map((item) => [item.key, item.testid])).toEqual([["contacted", "board-card-move-contacted"]]);
+    menu.vm.$emit("select", { key: "contacted" });
     await flushPromises();
     expect(api.POST_Transition).toHaveBeenCalledWith(1, "contacted");
     expect(column(wrapper, "contacted").props("cards").map((c) => c.id)).toEqual([1]);

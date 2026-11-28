@@ -26,7 +26,8 @@ both fed by the store `configHealth` — see `docs/config-health.md`. `data-test
 emporium page objects (`src/entirius_tests/cms_pages/`) — rename both together.
 
 Desktop screens (≥ 1024 px; below that `DesktopOnly.vue` shows "Open on a desktop"): `/crm/board` (stage columns,
-drag or the card's stage select → `companies/<id>/transition/`, refused move snaps back; rule badges from
+drag or the card's "Change stage" menu (`StageMenu.vue`, as on the deals board) → `companies/<id>/transition/`,
+refused move snaps back; rule badges from
 `GET rules/` — the stages payload carries none), `/crm/import` (U17: `POST imports/preview/` → the column mapping, then `POST imports/` with `mapping`; polls the batch).
 Settings (`meta.page`: full width, one scroller, no DesktopOnly wall; every section on PageLayout + PageHeader, its tables DataTables):
 `/crm/settings` lists the sections, each its own route — `settings/stages` (renames and moves wait for the header Save; reorder = `PATCH stages/<id>/ {order}`
@@ -131,7 +132,9 @@ deal stage and the expected-close range (`close_from` / `close_to`, written as o
 `expected_close_date`, `value_one_off`, `value_recurring`) and the page live in the URL; a phone shows deal and
 stage only (every other column has a `priority`). `/crm/deals/board` (`DealsBoard.vue`, `meta.desktop`; the wall
 links back to the list through `meta.desktopBack`) shows `GET deals/board/` columns (`DealBoardColumn.vue`,
-`DealCard.vue`): count, totals per currency (`deals.js` `totalLines` — one line per currency, never added across),
+`DealCard.vue`; both boards share `board.scss`, one column and card shape): count, totals per currency (`deals.js`
+`totalLines` — one line per currency, never added across; a won or lost column and its cards' values in the
+outcome's colour),
 the first 25 deals and "Show all" (the list filtered by the stage). Every move — row select, card select, drop, the
 deal card's Mark won / Mark lost / Reopen — goes through `useDealMove.js`: a lost stage opens `LostReasonDialog.vue`
 (a reason is required; the lost stage is picked only when the channel has more than one), a refusal or a cancelled
@@ -284,7 +287,8 @@ One rule: the same thing looks the same everywhere.
   statuses: `importReasonLabel` / `importStatusLabel` (`src/utils/leadsLabels.js`).
 - **Review** goes on to the draft below in the Inbox order (else above); a draft address that left the queue says what
   happened to it and offers "Next draft" (`GET_ReviewMessage` returns the draft in any status, `null` on 404).
-- **Deals**: a board card moves by "Move to…" (BasicMenu of the other stages, `deal-card-stage`); a refused move or a
+- **Deals**: a board card moves by "Change stage" (`StageMenu.vue`, a BasicMenu of the other stages, `deal-card-stage`;
+  the companies board's cards use it too, `board-card-stage`); a refused move or a
   closed reason dialog reads the board again and every read remounts the columns (`version` key) — the next drag
   starts on fresh lists. The deal card: the stage select on its own labelled line; open: more menu (Delete deal) · Mark lost
   · Mark won; closed: Archive · Reopen. An empty Mine offers "Show all deals" when the channel has open deals; a phone row carries the value.

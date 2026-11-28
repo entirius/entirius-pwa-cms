@@ -175,7 +175,7 @@ onBeforeUnmount(() => window.removeEventListener("resize", measure));
 .board {
   display: flex;
   padding-bottom: var(--space-5);
-  gap: var(--space-8);
+  gap: var(--space-3);
   align-items: flex-start;
   overflow-x: auto;
 }

@@ -1,11 +1,11 @@
 <template>
-  <section class="column" :data-stage="column.stage.key" data-testid="deals-column">
+  <section class="column" :class="`column--${column.stage.kind}`" :data-stage="column.stage.key" data-testid="deals-column">
     <header class="flex-column gap-1">
       <span class="flex ai-ct flex-wrap gap-2">
         <strong>{{ column.stage.label }}</strong>
         <CountBadge :count="column.count" data-testid="deals-column-count" />
       </span>
-      <span class="flex-column t-muted fs-200" data-testid="deals-column-totals">
+      <span class="column__totals flex-column" data-testid="deals-column-totals">
         <span v-for="line in totals" :key="line">{{ line }}</span>
       </span>
     </header>
@@ -46,7 +46,8 @@ import { useReadonly } from "@/composables/useReadonly";
 import DealCard from "./DealCard.vue";
 import { totalLines } from "./deals";
 
-// One deal stage of the board (modelled on BoardColumn.vue): label, count, totals per currency, the first 25 deals.
+// One deal stage of the board (one shape with BoardColumn.vue, board.scss): label, count, totals per currency (the
+// outcome's colour in a won or lost stage), the first 25 deals.
 const props = defineProps({
   column: { type: Object, required: true },
   stages: { type: Array, default: () => [] },
@@ -63,15 +64,21 @@ function onChange(event) {
 }
 </script>
 
-<style scoped>
-.column {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-4);
-  min-width: 0;
-  padding: var(--space-4);
-  border-radius: var(--radius-lg);
-  background: var(--surface-raised);
+<style lang="scss" scoped>
+@import "./board";
+
+// The column's sum is the board's headline number: body size, bold, coloured as the cards' values below it.
+.column__totals {
+  color: var(--text-strong);
+  font-size: var(--fs-300);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+.column--won .column__totals {
+  color: var(--positive);
+}
+.column--lost .column__totals {
+  color: var(--negative);
 }
 .column__body {
   position: relative;
@@ -79,12 +86,6 @@ function onChange(event) {
   flex: 1;
   flex-direction: column;
   min-height: 80px;
-}
-.column__cards {
-  display: flex;
-  flex: 1;
-  flex-direction: column;
-  gap: var(--space-4);
 }
 /* The card's place in the column under the pointer while dragging: a faint dashed slot, not a second card. */
 .column__cards :deep(.deal-slot) {

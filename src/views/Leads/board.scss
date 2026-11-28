@@ -1,0 +1,85 @@
+// The two CRM boards (companies: Board.vue, deals: DealsBoard.vue) are one shape: a column and its cards share these
+// rules, imported into each component's scoped style. A view adds only what is its own (the companies column's
+// minimum width, the deal value's outcome colour).
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  min-width: 0;
+  padding: var(--space-3);
+  border-radius: var(--radius-lg);
+  background: var(--surface-raised);
+}
+
+.column__cards {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+// A card: the name link stretched over it (a click anywhere opens it), compact lines under the name, its own control
+// above the link.
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-3);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-base);
+  background: var(--surface-base);
+}
+
+.card:hover {
+  border-color: var(--accent);
+}
+
+// Three lines at most at body size (the full name is the link's title): a narrow column never turns a card into a tower.
+.card__name {
+  display: -webkit-box;
+  overflow: hidden;
+  font-size: var(--fs-300);
+  font-weight: 600;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+}
+
+.card__name::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+}
+
+.card__line {
+  margin: 0;
+  font-size: var(--fs-200);
+  overflow-wrap: anywhere;
+}
+
+// Who and when: one row, each part whole — the date goes under the owner as a unit, never split from it by a dot.
+.card__meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0 var(--space-2);
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--fs-200);
+
+  > * {
+    white-space: nowrap;
+  }
+}
+
+// The card's own control (a stage menu or select) sits above the stretched link, with a little air above it.
+.card__control {
+  position: relative;
+  z-index: 1;
+  align-self: flex-start;
+  margin-top: var(--space-2);
+}

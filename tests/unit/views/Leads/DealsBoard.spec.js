@@ -71,8 +71,8 @@ describe("Leads → Deals board", () => {
     expect(byTestid(column(wrapper, "qualified"), "deals-column-empty").exists()).toBe(false);
   });
 
-  // N16: a card moves by "Move to…", a menu of the other stages — no select with a cut stage name
-  it("the card's Move to menu lists the other stages and moves the deal", async () => {
+  // N16: a card moves by "Change stage" (StageMenu), a menu of the other stages — no select with a cut stage name
+  it("the card's Change stage menu lists the other stages and moves the deal", async () => {
     leads.POST_DealTransition.mockResolvedValue({ data: { ...deal(1, stage("qualified", "open", 0)), stage: stage("won", "won", 10) } });
     const wrapper = await mounted();
     const menu = column(wrapper, "qualified").findComponent({ name: "BasicMenu" });
